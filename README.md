@@ -15,4 +15,10 @@ This repository serves as a **Centralized AI Coding Assistant Workspace**. It is
 - **Dynamic Documentation:** Workflows capable of generating documentation for external repositories by leveraging this workspace as a reference.
 
 ---
+
+## Inspiration
+
+This project is heavily inspired by [hhellbusch/my-ai-workspace](https://github.com/hhellbusch/my-ai-workspace).
+
+---
 *Stay tuned for updates as the framework matures.*
