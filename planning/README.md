@@ -42,6 +42,12 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 - **Documentation**: Every script/role must include a standardized header and usage guide.
 - **Safety**: Prohibit the generation of "quick and dirty" insecure code (e.g., `chmod 777`, `verify=False` in requests).
 
+### 🎭 Working Style Framework
+*How do we standardize AI behavior across different platforms?*
+- **Dynamic Skill Loading**: Develop a mechanism to load skills and behaviors from this repository, allowing any AI assistant to adapt to the workspace's standards dynamically.
+- **Behavioral Profiles**: Define specific "modes" (e.g., Architect, Developer, Reviewer) that dictate tone, verbosity, and primary focus areas.
+- **Agnostic Implementation**: Design the framework to be assistant-neutral, ensuring portability across Gemini, Claude, ChatGPT, and other LLMs.
+
 ### 📖 Cross-Repository Documentation Workflows
 *How do we reference this workspace elsewhere?*
 - **Shared Skills**: Can we create a "Doc-Generator" skill that pulls templates from this repo and applies them to a target repo?
