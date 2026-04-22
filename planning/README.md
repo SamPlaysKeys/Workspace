@@ -24,11 +24,27 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 
 ### 📂 Repository Structure & Navigation
 *How do we organize the chaos?*
-- **`/backlog`**: Active and completed tasks.
-- **`/logs`**: Daily activity summaries.
-- **`/rules`**: Global and project-specific AI system prompts.
-- **`/skills`**: Custom tools and workflow definitions.
-- **`/artifacts`**: Subfolders for `/ansible`, `/bash`, `/github-actions`, `/openshift`.
+
+```
+.
+├── artifacts/              # Reusable automation components
+│   ├── ansible/
+│   ├── bash/
+│   ├── github-actions/
+│   └── openshift/
+├── docs/                   # Documentation hub
+│   ├── ACTIVITY.md         # Daily activity summaries
+│   ├── BACKLOG.md          # Active and completed tasks
+│   ├── blog/
+│   └── presentations/
+├── planning/               # Strategic planning and roadmaps
+│   └── ideas/
+├── research/               # Research and experimentation
+│   └── testing/
+└── workstyle/              # AI behavior and configuration
+    ├── rules/              # Global and project-specific AI prompts
+    └── skills/             # Custom tools and workflow definitions
+```
 
 ### 🔐 Security Workflows & Secret Prevention
 *How do we keep the repo clean?*
