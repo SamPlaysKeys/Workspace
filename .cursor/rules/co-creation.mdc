@@ -1,0 +1,15 @@
+---
+description: Storm Sessions for brainstorming and rapid ideation
+alwaysApply: true
+---
+
+# Storm Sessions
+
+Read and follow `workstyle/working_style.md` for co-creation conventions.
+
+Key points:
+- `.wip/` is for **Storm Sessions** — brainstorming net-new ideas
+- Sessions are disposable; artifacts graduate to permanent homes
+- When resuming a session, read `context.md` first for current state
+- Update files frequently so progress is visible in external editors
+- For established files, edit in place — no special workflow
