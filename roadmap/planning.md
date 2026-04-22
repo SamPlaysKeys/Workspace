@@ -7,15 +7,23 @@ This document serves as the dynamic roadmap and brainstorming hub for the AI Cod
 ### 1. The Centralized Hub
 The primary goal is to move away from fragmented project notes and isolated "custom instructions." This workspace should be the first place I open when starting a new task, providing immediate access to my standard operating procedures, historical activity, and active backlog.
 
-### 2. Universal Artifact Repository
+### 2. Multi-Project Workstream Management
+A critical capability is the ability to work on **multiple projects simultaneously**, maintaining separate workstreams with their own context, state, and planning documents. The `.planning/` directory serves as the central point for this:
+
+- Each active project gets its own subdirectory under `.planning/` (e.g., `.planning/project-alpha/`, `.planning/infra-migration/`)
+- Workstreams can be paused and resumed without losing context
+- The `.planning/whats-next.md` file provides a quick overview of all active workstreams and immediate priorities
+- This enables context-switching between projects while preserving focus and momentum
+
+### 3. Universal Artifact Repository
 I frequently build similar automations (Bash scripts for OpenShift, Ansible roles, GitHub Actions). Instead of hunting through old repos, this workspace will store these as modular, reusable components that can be quickly deployed or referenced.
 
-### 3. Security & Governance
+### 4. Security & Governance
 AI assistants are powerful but require guardrails. We must ensure that:
 - No secrets (API keys, SSH keys, credentials) ever enter the version control system.
 - AI agents have clear, non-negotiable restrictions on their behavior and the types of code they generate.
 
-### 4. Cross-Repository Synergy
+### 5. Cross-Repository Synergy
 The workspace shouldn't just be a static storage bin. It should be "aware" of other projects. I want to build skills that allow the AI to read this workspace to understand my preferred patterns and then generate high-quality documentation or code for entirely different repositories.
 
 ---
@@ -27,17 +35,20 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 
 ```
 .
+├── BACKLOG.md              # Human-in-the-loop task tracking (done/in-progress)
+├── .planning/              # Active workstream management (hidden)
+│   ├── ACTIVITY.md         # Meta changes to workspace structure
+│   ├── whats-next.md       # Active tasks with commit hashes
+│   └── <project>/          # Per-project planning subdirectories
 ├── artifacts/              # Reusable automation components
 │   ├── ansible/
 │   ├── bash/
 │   ├── github-actions/
 │   └── openshift/
 ├── docs/                   # Documentation hub
-│   ├── ACTIVITY.md         # Daily activity summaries
-│   ├── BACKLOG.md          # Active and completed tasks
 │   ├── blog/
 │   └── presentations/
-├── planning/               # Strategic planning and roadmaps
+├── roadmap/                # Strategic planning and long-term roadmaps
 │   └── ideas/
 ├── research/               # Research and experimentation
 │   └── testing/
