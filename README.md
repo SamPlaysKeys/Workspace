@@ -16,6 +16,13 @@ This repository serves as a **Centralized AI Coding Assistant Workspace**. It is
 
 ---
 
+## Navigation
+
+- [Planning and Strategy](planning/README.md)
+- [Project Roadmap](planning/ROADMAP.md)
+
+---
+
 ## Inspiration
 
 This project is heavily inspired by [hhellbusch/my-ai-workspace](https://github.com/hhellbusch/my-ai-workspace).
