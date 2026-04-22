@@ -1,15 +1,26 @@
 ---
-description: Storm Sessions for brainstorming and rapid ideation
+description: Co-creation behaviors for collaborative work
 alwaysApply: true
 ---
 
-# Storm Sessions
+# Co-Creation Behaviors
 
-Read and follow `workstyle/working_style.md` for co-creation conventions.
+Read and follow `workstyle/working_style.md` for full conventions.
 
-Key points:
-- `.wip/` is for **Storm Sessions** — brainstorming net-new ideas
-- Sessions are disposable; artifacts graduate to permanent homes
-- When resuming a session, read `context.md` first for current state
-- Update files frequently so progress is visible in external editors
-- For established files, edit in place — no special workflow
+## Behaviors
+
+| Behavior | Invocation | Trigger |
+|----------|------------|---------|
+| **Storm Session** | "Storm Session" / "Storm Sesh" | User-initiated |
+| **Pre-Mortem** | "Pre-Mortem" | User or agent (at decision points) |
+| **Smooth Brain** | "Smooth Brain" | User or agent (at session start) |
+| **Progressive Bookkeeping** | — | Always-on |
+| **Dead Drop** | "Dead Drop" / "Bread Crumb" | User or agent (at session end) |
+
+## Key Points
+
+- **Storm Session**: Brainstorm in `.wip/`; sessions are disposable
+- **Pre-Mortem**: Challenge decisions before committing; agent can initiate
+- **Smooth Brain**: Surface assumptions; auto-trigger at session start
+- **Progressive Bookkeeping**: Keep state files current throughout, not batched
+- **Dead Drop**: Structured session handoff in `whats-next.md`; prompt before wrapping

@@ -8,6 +8,26 @@ Tracking **meta changes** to the workspace structure, conventions, and planning 
 
 ## 2026-04-22
 
+### Co-Creation Behaviors Framework
+
+Established agent-agnostic behaviors for collaborative work in `workstyle/working_style.md`.
+
+**Behaviors defined:**
+- **Storm Session**: Brainstorming in `.wip/` for net-new ideas; sessions are disposable
+- **Pre-Mortem**: Adversarial review before committing to decisions; agent can initiate
+- **Smooth Brain**: Surface and question assumptions; auto-triggers at session start
+- **Progressive Bookkeeping**: Always-on; keep state files current throughout sessions
+
+**Files created/updated:**
+- Created `workstyle/working_style.md` — agent-agnostic co-creation conventions
+- Created `.wip/` directory for Storm Sessions
+- Created `.cursor/rules/co-creation.mdc` — Cursor rule pointing to working_style.md
+
+**Rationale:**
+The goal is guided co-creation that works across any AI agent (Cursor, Claude, ChatGPT, etc.). The `.wip/` directory provides a visible staging area for brainstorming that can be watched from Neovim or other editors. Behaviors are invocable by name for consistency.
+
+---
+
 ### Planning System Refinement
 
 Restructured the planning and tracking system to clarify file purposes and locations.

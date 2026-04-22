@@ -9,7 +9,6 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 ## In Progress
 
 - [ ] Populate `artifacts/` with reusable automation components
-- [ ] Define AI rules and constraints in `workstyle/rules/`
 - [ ] Create initial skills in `workstyle/skills/`
 - [ ] Set up pre-commit hooks for secret scanning
 
@@ -21,6 +20,9 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [x] Reorganize directory structure to match revised plan
 - [x] Establish `.planning/` directory for workstream management
 - [x] Codify purpose of tracking files (BACKLOG, ACTIVITY, whats-next)
+- [x] Define co-creation behaviors in `workstyle/working_style.md` (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
+- [x] Create `.wip/` directory for Storm Sessions
+- [x] Create Cursor rule for co-creation behaviors (`.cursor/rules/co-creation.mdc`)
 
 ---
 

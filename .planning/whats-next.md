@@ -10,7 +10,7 @@ Tracking active tasks being carried out and their associated commits.
 
 | Task | Status | Commit |
 |------|--------|--------|
-| Codify file purposes | done | *pending* |
+| — | — | *No active tasks* |
 
 ---
 
@@ -28,3 +28,6 @@ Tracking active tasks being carried out and their associated commits.
 
 - Reorganized planning/tracking file locations
 - Added purpose documentation to BACKLOG, ACTIVITY, whats-next
+- Defined co-creation behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
+- Created `.wip/` directory and `workstyle/working_style.md`
+- Created `.cursor/rules/co-creation.mdc`
