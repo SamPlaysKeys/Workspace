@@ -1,0 +1,94 @@
+# Act testing files
+.secrets
+.actrc
+
+# Temporary files
+*.tmp
+*.swp
+*~
+
+
+# ===== Credential Protection =====
+# Prevent accidental commits of real credentials
+
+# TLS certificates and keys
+*.crt
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Real inventory files (use .example.yml for templates)
+inventory.yml
+**/inventory.yml
+!**/inventory.example.yml
+!**/inventory.*.example.yml
+
+# Ansible vault files
+**/*.vault.yml
+!**/*.vault.example.yml
+vault-password.txt
+**/vault-password.txt
+
+# Environment files
+.env
+.env.local
+**/.env
+**/.env.local
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Personal notes
+PERSONAL-NOTES.md
+TODO-PRIVATE.md
+
+# ===== Development Artifacts =====
+# Temporary files from development
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+venv/
+env/
+
+# Node
+node_modules/
+.npm/
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+# ===== Sensitive / Local-only Directories =====
+# OCP install working directory contains pull secrets and kubeconfigs
+devops/ocp/install/
+
+# External git project clones — not part of this repo
+git-projects/
+
+# Private workspace layer — local git repo, not tracked by parent
+private/
+
+# ===== Planning Artifacts =====
+# Project briefs, roadmaps, and style guides are tracked.
+# Phase execution files (PLAN.md, SUMMARY.md) are also tracked
+# for cross-session continuity.
+
+# ===== Meta-System Artifacts =====
+# Backup and temporary import directories
+
+.meta-system-backup/
+.taches-import/
+.cursor-skills/
+
+# macOS files
+.DS_Store
+**/.DS_Store
