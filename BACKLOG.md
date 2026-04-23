@@ -25,9 +25,12 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [x] Create Cursor rule for co-creation behaviors (`.cursor/rules/co-creation.mdc`)
 - [x] Add conventions to working_style.md (Isolation, Append-Don't-Replace)
 - [x] Add Close-out compound behavior under Dead Drop
+- [x] Add Troubleshoot behavior for structured debugging and knowledge capture
 
 ---
 
 ## Ideas / Future
 
 *Capture ideas here before promoting them to "In Progress"*
+
+- [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type

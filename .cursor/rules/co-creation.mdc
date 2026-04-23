@@ -16,6 +16,7 @@ Read and follow `workstyle/working_style.md` for full conventions.
 | **Smooth Brain** | "Smooth Brain" | User or agent (at session start) |
 | **Progressive Bookkeeping** | — | Always-on |
 | **Dead Drop** | "Dead Drop" / "Bread Crumb" | User or agent (at session end) |
+| **Troubleshoot** | "Troubleshoot" / "Debug" | User or agent (problem context detected) |
 
 ## Key Points
 
@@ -25,6 +26,7 @@ Read and follow `workstyle/working_style.md` for full conventions.
 - **Progressive Bookkeeping**: Keep state files current throughout, not batched
 - **Dead Drop**: Structured session handoff in `whats-next.md`; prompt before wrapping
 - **Close-out**: Compound behavior (Smooth Brain → Dead Drop) for session endings
+- **Troubleshoot**: Investigate issues in `.wip/troubleshoot-*/`; graduates to `docs/troubleshooting/` and `docs/guides/`
 
 ## Conventions
 

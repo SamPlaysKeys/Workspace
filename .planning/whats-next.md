@@ -31,6 +31,8 @@ Tracking active tasks being carried out and their associated commits.
 - Defined co-creation behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
 - Created `.wip/` directory and `workstyle/working_style.md`
 - Created `.cursor/rules/co-creation.mdc`
+- Added Dead Drop behavior, Close-out compound behavior, and Conventions (Isolation, Append-Don't-Replace)
+- Added Troubleshoot behavior for structured debugging and knowledge capture
 
 ---
 
@@ -51,3 +53,25 @@ Tracking active tasks being carried out and their associated commits.
 **Git state:** 6a0873b — Add Dead Drop behavior and conventions
 
 **Open threads:** Storm Session `.wip/workspace-behaviors/` still exists with scratch files; can be resumed or discarded
+
+---
+
+# Dead Drop — 2026-04-23
+
+**In progress:** Storm Session on workspace behaviors (`.wip/workspace-behaviors/`) — user had another idea but couldn't recall it
+
+**Just completed:**
+- Added Troubleshoot behavior to `workstyle/working_style.md`
+- Updated `.cursor/rules/co-creation.mdc` with Troubleshoot
+- Troubleshoot includes: investigation sessions, remediation docs, prevention docs, quick doc path
+- Added "tags/categories for findability" to BACKLOG Ideas/Future
+
+**Next step:** User had another idea to discuss — resume when remembered. Otherwise, Storm Session could be graduated/discarded since Troubleshoot behavior is complete.
+
+**Key decision:** Troubleshoot is a behavior (not convention) because it has distinct trigger, session structure, and graduation flow that would encroach on existing behaviors if treated as a convention.
+
+**Git state:** uncommitted changes — Troubleshoot behavior added
+
+**Open threads:** 
+- Storm Session `.wip/workspace-behaviors/` still active
+- User's forgotten idea — may surface later

@@ -120,9 +120,20 @@ Conventions are always-on rules, not invoked. They shape how work happens regard
 
 **Draft:** `scratch/troubleshoot-behavior.md`
 
-**Open questions:**
-- Does investigation.md graduate anywhere, or disposable once walkthrough exists?
-- Tags/categories for findability?
-- Quick-fix path for trivial issues?
+**Open questions (resolved):**
+
+1. **investigation.md graduation?** → Disposable. Delete with session once docs exist.
+
+2. **Tags/categories for findability?** → Deferred. Added to BACKLOG Ideas/Future for later.
+
+3. **Quick-fix path?** → Yes. Two modes:
+   - Full session for actual troubleshooting (investigation needed)
+   - Quick doc path for known fixes or "write up how to do X" requests — skip session, write directly to docs/
+
+**Additional refinement:**
+- Graduation always creates remediation doc (Symptoms, Investigation, Resolution)
+- Prevention doc: agent creates if clearly needed, prompts user if unsure, never skips without user saying so
+
+**Graduated:** Added to `workstyle/working_style.md` and `.cursor/rules/co-creation.mdc`
 
 ---

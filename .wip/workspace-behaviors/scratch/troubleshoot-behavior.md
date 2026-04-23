@@ -187,6 +187,8 @@ docs/
 
 ## Lifecycle
 
+### Full Troubleshooting Session
+
 1. **Detect/Invoke:** Recognize troubleshooting context or explicit trigger
 2. **Start session:** Create `.wip/troubleshoot-<system>-<issue>/investigation.md`
 3. **Investigate:** Update investigation.md progressively
@@ -195,7 +197,19 @@ docs/
    - Prompt to write up docs
    - Create remediation doc (always)
    - Create prevention doc (if clearly needed) or prompt user (if unsure)
-6. **Discard session:** Delete `.wip/` session once docs are graduated
+6. **Discard session:** Delete `.wip/` directory — investigation.md is disposable once docs exist
+
+### Quick Doc Path
+
+Not everything needs a full session. Use the quick path when:
+- The fix is already known (no investigation needed)
+- User asks to document something common ("write up how to configure X")
+- Quick question-and-answer that's worth capturing
+
+**Quick path flow:**
+1. User asks for doc or describes known fix
+2. Agent writes directly to `docs/troubleshooting/` or `docs/guides/`
+3. No `.wip/` session needed
 
 ---
 
@@ -220,8 +234,8 @@ When the user describes a problem (error, misconfiguration, unexpected behavior)
 
 ---
 
-## Open Questions
+## Resolved Questions
 
-- Should investigation.md also graduate somewhere (e.g., `docs/troubleshooting/<system>/investigations/`) or is it truly disposable once the walkthrough exists?
-- Do we want tags/categories for findability?
-- Should there be a "quick fix" path that skips the session for trivial issues?
+- **investigation.md graduation:** Disposable. Delete with session once docs exist.
+- **Quick path:** Yes. Known fixes or doc requests skip the session, write directly to docs/.
+- **Tags/categories for findability:** Deferred. Added to BACKLOG for future consideration.

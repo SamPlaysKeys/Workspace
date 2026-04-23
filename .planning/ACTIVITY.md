@@ -85,3 +85,30 @@ Revised the repository structure to better align with long-term goals.
 
 **Rationale:**
 Moving rules and skills under `workstyle/` consolidates AI behavior configuration in one place. The `artifacts/` directory provides organized storage for reusable automation components (Ansible roles, Bash scripts, GitHub Actions, OpenShift manifests).
+
+---
+
+## 2026-04-23
+
+### Troubleshoot Behavior
+
+Added sixth behavior to the co-creation framework for structured troubleshooting and knowledge capture.
+
+**Behavior added:**
+- **Troubleshoot** (alias: Debug): Structured investigation sessions for debugging external systems (OpenShift, containers, operators, etc.)
+
+**Key features:**
+- Lightweight session in `.wip/troubleshoot-<system>-<issue>/` with single `investigation.md` file
+- Progressive logging: Symptoms → Investigation (hypothesis/tried/result) → Resolution
+- Two graduation outputs:
+  - Remediation doc (always) → `docs/troubleshooting/<system>/`
+  - Prevention/setup doc (conditional) → `docs/guides/<system>/`
+- Quick doc path for known fixes (skip session, write directly to docs/)
+- Agent prompts for prevention doc if unsure, never skips without user confirmation
+
+**Files updated:**
+- `workstyle/working_style.md` — Added Troubleshoot behavior section
+- `.cursor/rules/co-creation.mdc` — Added Troubleshoot to behaviors table and key points
+
+**Source:**
+Workshopped in Storm Session `.wip/workspace-behaviors/`
