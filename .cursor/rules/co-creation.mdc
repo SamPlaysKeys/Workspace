@@ -24,3 +24,9 @@ Read and follow `workstyle/working_style.md` for full conventions.
 - **Smooth Brain**: Surface assumptions; auto-trigger at session start
 - **Progressive Bookkeeping**: Keep state files current throughout, not batched
 - **Dead Drop**: Structured session handoff in `whats-next.md`; prompt before wrapping
+- **Close-out**: Compound behavior (Smooth Brain → Dead Drop) for session endings
+
+## Conventions
+
+- **Isolation**: No write-back to external workspaces without explicit confirmation
+- **Append, Don't Replace**: State files accumulate; history preserved

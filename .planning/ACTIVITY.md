@@ -28,6 +28,27 @@ The goal is guided co-creation that works across any AI agent (Cursor, Claude, C
 
 ---
 
+### Dead Drop Behavior & Conventions
+
+Extended the co-creation framework with session handoff capabilities and foundational conventions.
+
+**Behaviors added:**
+- **Dead Drop** (alias: Bread Crumb): Structured session state capture for handoffs
+- **Close-out**: Compound behavior (Smooth Brain → Dead Drop) for session endings
+
+**Conventions added:**
+- **Isolation**: Artifacts stay in current project; no write-back to external workspaces without confirmation
+- **Append, Don't Replace**: State files accumulate entries; history preserved
+
+**Files updated:**
+- `workstyle/working_style.md` — Added Dead Drop, Close-out, and Conventions section
+- `.cursor/rules/co-creation.mdc` — Updated to reflect new behaviors and conventions
+
+**Source:**
+Ideas drawn from hhellbusch/my-ai-workspace, workshopped in Storm Session `.wip/workspace-behaviors/`
+
+---
+
 ### Planning System Refinement
 
 Restructured the planning and tracking system to clarify file purposes and locations.
