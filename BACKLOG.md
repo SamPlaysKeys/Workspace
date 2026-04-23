@@ -34,3 +34,4 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 *Capture ideas here before promoting them to "In Progress"*
 
 - [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type
+- [ ] Auto-load working_style for CLI agents — explore how to automatically load `workstyle/working_style.md` when launching CLI agents (Cursor, Gemini, OpenCode, Copilot) in this repo; consider AGENTS.md, CLAUDE.md, repo-level configs, wrapper scripts

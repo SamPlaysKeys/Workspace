@@ -74,4 +74,4 @@ Tracking active tasks being carried out and their associated commits.
 
 **Open threads:** 
 - Storm Session `.wip/workspace-behaviors/` still active
-- User's forgotten idea — may surface later
+- Auto-load working_style for CLI agents — added to BACKLOG Ideas/Future

@@ -137,3 +137,17 @@ Conventions are always-on rules, not invoked. They shape how work happens regard
 **Graduated:** Added to `workstyle/working_style.md` and `.cursor/rules/co-creation.mdc`
 
 ---
+
+### Open Item: Auto-load Working Style for CLI Agents
+
+**Context:** User wants to explore how to auto-load `workstyle/working_style.md` when launching CLI agents (Cursor, Gemini, OpenCode, Copilot) in this repo.
+
+**To explore:**
+- What mechanisms do each CLI agent support for auto-loading context?
+- AGENTS.md / CLAUDE.md / similar conventions?
+- Repo-level config files per tool?
+- Wrapper scripts?
+
+**Status:** Parked for future session.
+
+---
