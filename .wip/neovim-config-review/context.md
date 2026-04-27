@@ -1,6 +1,10 @@
 # Storm Session: Neovim Config Review
 
-**Goal**: Review and potentially improve the Neovim configuration located at `~/Src/dotfiles/dotfiles/config/nvim/`.
+**Goal**: Review and potentially improve the Neovim configuration located at `~/Src/dotfiles/configs/nvim/`.
+
+> **Session graduated.** Documentation now lives in:
+> - `~/Src/dotfiles/configs/nvim/README.md` — migration guide, plugin decisions
+> - `docs/troubleshooting/neovim/treesitter-configs-module-not-found.md` — error symptoms and fixes
 
 **Current state**: 
 - Pre-Mortem complete: plugin bloat identified.
