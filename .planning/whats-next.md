@@ -75,3 +75,48 @@ Tracking active tasks being carried out and their associated commits.
 **Open threads:** 
 - Storm Session `.wip/workspace-behaviors/` still active
 - Auto-load working_style for CLI agents — added to BACKLOG Ideas/Future
+
+# Dead Drop — 2026-04-27
+
+**In progress:** Dotfiles restructure — renaming `dotfiles/dotfiles` → `configs/`, flattening `config/` subdirectory.
+
+**Just completed:**
+- Troubleshot OpenShift CLI login timeout (proxy issue) — remediation doc created
+- Migrated neovim treesitter.lua to new nvim-treesitter API (main branch)
+- Added `<leader>gd` keymap for Snacks dashboard
+
+**Next step:** Execute restructure plan — git mv, update ansible playbooks, update symlinks role, fix symlinks.
+
+**Key decision:** Removing broken lazygit symlink, not creating lazygit config for now.
+
+**Git state:** uncommitted changes in dotfiles repo
+
+**Open threads:** None
+
+---
+
+# Dead Drop — 2026-04-24
+
+**In progress:** Neovim config review session complete.
+
+**Just completed:**
+- Removed plugins: `comment.lua`, `mini-files.lua`, `csvview.lua`, `rainbow_csv.lua`, `notify.lua`
+- Re-added `cameron-wags/rainbow_csv.nvim` for CSV (treesitter CSV highlighting was insufficient)
+- Disabled treesitter highlighting for CSV files
+- Consolidated plugins: mini-* → `mini.lua`, git-* → `git.lua`
+- Renamed `init.lua` → `misc.lua` in plugins/
+- Added descriptions to all 24 plugin files (with cursor-agent attribution)
+- Deleted cruft: `lazyvim.json`, `map.txt`, `IDEAS.md`, `PLUGIN_GUIDE.md`
+- Customized lualine: powerline separators, branch styling, removed encoding/fileformat/progress
+- Added `<S-Tab>` keybinding for file info popup in nvim-tree
+- Fixed trouble.lua modes config (was outside opts)
+- Added `diagnostics_split` mode to trouble
+- Created `AI_DISCLAIMER.md` at repo root
+
+**Next step:** Commit the remaining changes (csv.lua, treesitter.lua updates).
+
+**Key decision:** CSV highlighting handled by rainbow_csv.nvim with treesitter disabled for CSV filetype; noice uses built-in mini notifications (nvim-notify removed).
+
+**Git state:** a24dc95 — uncommitted: csv.lua (new), treesitter.lua (csv highlight disabled), lazy-lock.json
+
+**Open threads:** None — session complete.
