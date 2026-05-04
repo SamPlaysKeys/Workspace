@@ -1,0 +1,34 @@
+---
+description: Co-creation behaviors for collaborative work
+alwaysApply: true
+---
+
+# Co-Creation Behaviors
+
+Read and follow `workstyle/working_style.md` for full conventions.
+
+## Behaviors
+
+| Behavior | Invocation | Trigger |
+|----------|------------|---------|
+| **Storm Session** | "Storm Session" / "Storm Sesh" | User-initiated |
+| **Pre-Mortem** | "Pre-Mortem" | User or agent (at decision points) |
+| **Smooth Brain** | "Smooth Brain" | User or agent (at session start) |
+| **Progressive Bookkeeping** | — | Always-on |
+| **Dead Drop** | "Dead Drop" / "Bread Crumb" | User or agent (at session end) |
+| **Troubleshoot** | "Troubleshoot" / "Debug" | User or agent (problem context detected) |
+
+## Key Points
+
+- **Storm Session**: Brainstorm in `.wip/`; sessions are disposable
+- **Pre-Mortem**: Challenge decisions before committing; agent can initiate
+- **Smooth Brain**: Surface assumptions; auto-trigger at session start
+- **Progressive Bookkeeping**: Keep state files current throughout, not batched
+- **Dead Drop**: Structured session handoff in `whats-next.md`; prompt before wrapping
+- **Close-out**: Compound behavior (Smooth Brain → Dead Drop) for session endings
+- **Troubleshoot**: Investigate issues in `.wip/troubleshoot-*/`; graduates to `docs/troubleshooting/` and `docs/guides/`
+
+## Conventions
+
+- **Isolation**: No write-back to external workspaces without explicit confirmation
+- **Append, Don't Replace**: State files accumulate; history preserved
