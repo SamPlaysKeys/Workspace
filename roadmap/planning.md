@@ -8,11 +8,11 @@ This document serves as the dynamic roadmap and brainstorming hub for the AI Cod
 The primary goal is to move away from fragmented project notes and isolated "custom instructions." This workspace should be the first place I open when starting a new task, providing immediate access to my standard operating procedures, historical activity, and active backlog.
 
 ### 2. Multi-Project Workstream Management
-A critical capability is the ability to work on **multiple projects simultaneously**, maintaining separate workstreams with their own context, state, and planning documents. The `.planning/` directory serves as the central point for this:
+A critical capability is the ability to work on **multiple projects simultaneously**, maintaining separate workstreams with their own context, state, and planning documents. The `planning/` directory serves as the central point for this:
 
-- Each active project gets its own subdirectory under `.planning/` (e.g., `.planning/project-alpha/`, `.planning/infra-migration/`)
+- Each active project gets its own subdirectory under `planning/` (e.g., `planning/project-alpha/`, `planning/infra-migration/`)
 - Workstreams can be paused and resumed without losing context
-- The `.planning/whats-next.md` file provides a quick overview of all active workstreams and immediate priorities
+- The `planning/whats-next.md` file provides a quick overview of all active workstreams and immediate priorities
 - This enables context-switching between projects while preserving focus and momentum
 
 ### 3. Universal Artifact Repository
@@ -36,7 +36,7 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 ```
 .
 ├── BACKLOG.md              # Human-in-the-loop task tracking (done/in-progress)
-├── .planning/              # Active workstream management (hidden)
+├── planning/              # Active workstream management (hidden)
 │   ├── ACTIVITY.md         # Meta changes to workspace structure
 │   ├── whats-next.md       # Active tasks with commit hashes
 │   └── <project>/          # Per-project planning subdirectories

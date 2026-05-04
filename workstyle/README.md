@@ -14,7 +14,7 @@ AI behavior configuration and working style definitions for this workspace.
 A key principle of this workspace is **progressive documentation** — capturing decisions, context, and progress as work happens rather than retroactively. This includes:
 
 - **Activity logging**: Recording significant changes and decisions in `docs/ACTIVITY.md`
-- **Workstream tracking**: Maintaining separate planning contexts in `.planning/` subdirectories
+- **Workstream tracking**: Maintaining separate planning contexts in `planning/` subdirectories
 - **Incremental refinement**: Updating documentation as understanding evolves, not just at project completion
 
 ### AI-Assisted Consistency

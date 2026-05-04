@@ -12,7 +12,7 @@ Storm session started and graduated in same day. Documentation moved to `docs/ho
 - `docs/homelab/repo-structure.md` — Infrastructure repo layout
 - `docs/homelab/roadmap.md` — Open questions and future work
 
-**Remaining in .wip:**
+**Remaining in wip/:**
 - `scratch/komodo-plex/` — Example Plex configs (Komodo and ArgoCD for comparison)
 - `scratch/argocd-plex/` — K8s manifests for comparison
 

@@ -16,7 +16,7 @@ Tracking active tasks being carried out and their associated commits.
 
 ## Active Workstreams
 
-*Create subdirectories under `.planning/` for each project workstream.*
+*Create subdirectories under `planning/` for each project workstream.*
 
 | Workstream | Directory | Status |
 |------------|-----------|--------|
@@ -29,7 +29,7 @@ Tracking active tasks being carried out and their associated commits.
 - Reorganized planning/tracking file locations
 - Added purpose documentation to BACKLOG, ACTIVITY, whats-next
 - Defined co-creation behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
-- Created `.wip/` directory and `workstyle/working_style.md`
+- Created `wip/` directory and `workstyle/working_style.md`
 - Created `.cursor/rules/co-creation.mdc`
 - Added Dead Drop behavior, Close-out compound behavior, and Conventions (Isolation, Append-Don't-Replace)
 - Added Troubleshoot behavior for structured debugging and knowledge capture
@@ -38,7 +38,7 @@ Tracking active tasks being carried out and their associated commits.
 
 # Dead Drop — 2026-04-22
 
-**In progress:** Storm Session on workspace behaviors (`.wip/workspace-behaviors/`) — session paused, not graduated
+**In progress:** Storm Session on workspace behaviors (`wip/workspace-behaviors/`) — session paused, not graduated
 
 **Just completed:**
 - Added Dead Drop behavior with Bread Crumb alias (944080e)
@@ -52,13 +52,13 @@ Tracking active tasks being carried out and their associated commits.
 
 **Git state:** 6a0873b — Add Dead Drop behavior and conventions
 
-**Open threads:** Storm Session `.wip/workspace-behaviors/` still exists with scratch files; can be resumed or discarded
+**Open threads:** Storm Session `wip/workspace-behaviors/` still exists with scratch files; can be resumed or discarded
 
 ---
 
 # Dead Drop — 2026-04-23
 
-**In progress:** Storm Session on workspace behaviors (`.wip/workspace-behaviors/`) — user had another idea but couldn't recall it
+**In progress:** Storm Session on workspace behaviors (`wip/workspace-behaviors/`) — user had another idea but couldn't recall it
 
 **Just completed:**
 - Added Troubleshoot behavior to `workstyle/working_style.md`
@@ -73,7 +73,7 @@ Tracking active tasks being carried out and their associated commits.
 **Git state:** uncommitted changes — Troubleshoot behavior added
 
 **Open threads:** 
-- Storm Session `.wip/workspace-behaviors/` still active
+- Storm Session `wip/workspace-behaviors/` still active
 - Auto-load working_style for CLI agents — added to BACKLOG Ideas/Future
 
 # Dead Drop — 2026-04-27
@@ -151,4 +151,4 @@ Tracking active tasks being carried out and their associated commits.
 - Network topology undecided
 - Storage strategy undecided (Unraid vs Synology roles)
 - Specific workloads not fully enumerated
-- Storm session `.wip/homelab-rebuild/` can be deleted (Plex examples remain as reference)
+- Storm session `wip/homelab-rebuild/` can be deleted (Plex examples remain as reference)
