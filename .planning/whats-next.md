@@ -10,7 +10,7 @@ Tracking active tasks being carried out and their associated commits.
 
 | Task | Status | Commit |
 |------|--------|--------|
-| Codify file purposes | done | *pending* |
+| — | — | *No active tasks* |
 
 ---
 
@@ -28,3 +28,95 @@ Tracking active tasks being carried out and their associated commits.
 
 - Reorganized planning/tracking file locations
 - Added purpose documentation to BACKLOG, ACTIVITY, whats-next
+- Defined co-creation behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
+- Created `.wip/` directory and `workstyle/working_style.md`
+- Created `.cursor/rules/co-creation.mdc`
+- Added Dead Drop behavior, Close-out compound behavior, and Conventions (Isolation, Append-Don't-Replace)
+- Added Troubleshoot behavior for structured debugging and knowledge capture
+
+---
+
+# Dead Drop — 2026-04-22
+
+**In progress:** Storm Session on workspace behaviors (`.wip/workspace-behaviors/`) — session paused, not graduated
+
+**Just completed:**
+- Added Dead Drop behavior with Bread Crumb alias (944080e)
+- Added Close-out compound behavior under Dead Drop (6a0873b)
+- Added Conventions section: Isolation, Append-Don't-Replace (6a0873b)
+- Updated Cursor rule to reflect all behaviors and conventions
+
+**Next step:** Decide whether to graduate/discard the Storm Session, or continue adding behaviors. Roadmap Phase 3 mentions behavioral profiles (Architect, DevOps, etc.) as a future direction.
+
+**Key decision:** Close-out is a compound behavior (Smooth Brain → Dead Drop), not a separate table entry. Conventions are always-on rules, distinct from invocable behaviors.
+
+**Git state:** 6a0873b — Add Dead Drop behavior and conventions
+
+**Open threads:** Storm Session `.wip/workspace-behaviors/` still exists with scratch files; can be resumed or discarded
+
+---
+
+# Dead Drop — 2026-04-23
+
+**In progress:** Storm Session on workspace behaviors (`.wip/workspace-behaviors/`) — user had another idea but couldn't recall it
+
+**Just completed:**
+- Added Troubleshoot behavior to `workstyle/working_style.md`
+- Updated `.cursor/rules/co-creation.mdc` with Troubleshoot
+- Troubleshoot includes: investigation sessions, remediation docs, prevention docs, quick doc path
+- Added "tags/categories for findability" to BACKLOG Ideas/Future
+
+**Next step:** User had another idea to discuss — resume when remembered. Otherwise, Storm Session could be graduated/discarded since Troubleshoot behavior is complete.
+
+**Key decision:** Troubleshoot is a behavior (not convention) because it has distinct trigger, session structure, and graduation flow that would encroach on existing behaviors if treated as a convention.
+
+**Git state:** uncommitted changes — Troubleshoot behavior added
+
+**Open threads:** 
+- Storm Session `.wip/workspace-behaviors/` still active
+- Auto-load working_style for CLI agents — added to BACKLOG Ideas/Future
+
+# Dead Drop — 2026-04-27
+
+**In progress:** Dotfiles restructure — renaming `dotfiles/dotfiles` → `configs/`, flattening `config/` subdirectory.
+
+**Just completed:**
+- Troubleshot OpenShift CLI login timeout (proxy issue) — remediation doc created
+- Migrated neovim treesitter.lua to new nvim-treesitter API (main branch)
+- Added `<leader>gd` keymap for Snacks dashboard
+
+**Next step:** Execute restructure plan — git mv, update ansible playbooks, update symlinks role, fix symlinks.
+
+**Key decision:** Removing broken lazygit symlink, not creating lazygit config for now.
+
+**Git state:** uncommitted changes in dotfiles repo
+
+**Open threads:** None
+
+---
+
+# Dead Drop — 2026-04-24
+
+**In progress:** Neovim config review session complete.
+
+**Just completed:**
+- Removed plugins: `comment.lua`, `mini-files.lua`, `csvview.lua`, `rainbow_csv.lua`, `notify.lua`
+- Re-added `cameron-wags/rainbow_csv.nvim` for CSV (treesitter CSV highlighting was insufficient)
+- Disabled treesitter highlighting for CSV files
+- Consolidated plugins: mini-* → `mini.lua`, git-* → `git.lua`
+- Renamed `init.lua` → `misc.lua` in plugins/
+- Added descriptions to all 24 plugin files (with cursor-agent attribution)
+- Deleted cruft: `lazyvim.json`, `map.txt`, `IDEAS.md`, `PLUGIN_GUIDE.md`
+- Customized lualine: powerline separators, branch styling, removed encoding/fileformat/progress
+- Added `<S-Tab>` keybinding for file info popup in nvim-tree
+- Fixed trouble.lua modes config (was outside opts)
+- Added `diagnostics_split` mode to trouble
+- Created `AI_DISCLAIMER.md` at repo root
+
+**Next step:** Commit the remaining changes (csv.lua, treesitter.lua updates).
+
+**Key decision:** CSV highlighting handled by rainbow_csv.nvim with treesitter disabled for CSV filetype; noice uses built-in mini notifications (nvim-notify removed).
+
+**Git state:** a24dc95 — uncommitted: csv.lua (new), treesitter.lua (csv highlight disabled), lazy-lock.json
+
+**Open threads:** None — session complete.
