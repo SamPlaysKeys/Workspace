@@ -120,3 +120,35 @@ Tracking active tasks being carried out and their associated commits.
 **Git state:** a24dc95 — uncommitted: csv.lua (new), treesitter.lua (csv highlight disabled), lazy-lock.json
 
 **Open threads:** None — session complete.
+
+---
+
+# Dead Drop — 2026-05-04
+
+**In progress:** Homelab greenfield rebuild planning — **GRADUATED** to `docs/homelab/`
+
+**Just completed:**
+- Storm Session: Planned homelab architecture with 5 environments (Prod, Test, Dev, DevNode, DevOCP)
+- Decided on Komodo for GitOps (over K3s + ArgoCD) — less complexity, Docker-native
+- Tooling stack: Terraform + Ansible for infra, Komodo for containers
+- Three managed environments (Dev → Test → Prod) with promotion via TOML file moves
+- Two sandbox environments (DevNode, DevOCP) intentionally unmanaged
+- Created architecture diagrams (environment map, GitOps flow)
+- Graduated to documentation: `docs/homelab/` with README, architecture, environments, decisions, repo-structure, roadmap
+- Updated `workstyle/working_style.md` with Documentation Structure convention
+
+**Next step:** Begin implementation — set up infrastructure repo, provision Komodo Controller, install Periphery agents on first managed node.
+
+**Key decisions:**
+- Komodo over K8s — operational simplicity, familiar Docker concepts
+- DevDocker is Komodo-managed (not sandbox) — enables promotion path
+- Poll-based GitOps (not webhooks) — simpler, no public endpoint needed
+- Dedicated NUC for Komodo Controller — separate management plane
+
+**Git state:** uncommitted — new docs in `docs/homelab/`, updated working_style.md
+
+**Open threads:**
+- Network topology undecided
+- Storage strategy undecided (Unraid vs Synology roles)
+- Specific workloads not fully enumerated
+- Storm session `.wip/homelab-rebuild/` can be deleted (Plex examples remain as reference)
