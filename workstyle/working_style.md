@@ -524,6 +524,29 @@ State files accumulate entries rather than being overwritten. The most recent en
 
 **Why:** Provides audit trail and context. A fresh session can scan previous entries to understand trajectory, not just current state.
 
+### Documentation Structure
+
+Graduated documentation lives in `docs/`. Use subdirectories to organize by project or domain.
+
+```
+docs/
+  troubleshooting/       # Remediation docs (from Troubleshoot sessions)
+    <system>/
+      <issue>.md
+  guides/                # Setup/prevention docs (from Troubleshoot sessions)
+    <system>/
+      <component>.md
+  <project>/             # Project-specific documentation
+    README.md            # Overview and entry point
+    architecture.md      # Diagrams, layouts, system design
+    decisions.md         # Key decisions and rationale
+    ...
+```
+
+**Naming:** Use kebab-case for directories and files (`homelab/`, `network-topology.md`).
+
+**Entry point:** Each project directory should have a `README.md` that orients the reader — what is this, why does it exist, where to look next.
+
 ---
 
 ## Working on Established Files
