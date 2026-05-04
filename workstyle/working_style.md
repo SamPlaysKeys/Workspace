@@ -16,6 +16,7 @@ Behaviors are defined modes of interaction that can be invoked by name. Some are
 | **Progressive Bookkeeping** | — | Always-on |
 | **Dead Drop** | "Dead Drop" / "Bread Crumb" | User or agent (at session end) |
 | **Troubleshoot** | "Troubleshoot" / "Debug" | User or agent (problem context detected) |
+| **Sneaky** | "Sneaky" / "Hide your actions" | User-initiated |
 
 ---
 
@@ -23,7 +24,7 @@ Behaviors are defined modes of interaction that can be invoked by name. Some are
 
 **Invocation**: "Storm Session" or "Storm Sesh"
 
-Storm Sessions are focused brainstorming on net-new ideas. The `.wip/` directory serves as a whiteboard for rapid ideation before committing to deeper work.
+Storm Sessions are focused brainstorming on net-new ideas. The `wip/` directory serves as a whiteboard for rapid ideation before committing to deeper work.
 
 #### What Storm Sessions Are For
 
@@ -40,7 +41,7 @@ Storm Sessions are focused brainstorming on net-new ideas. The `.wip/` directory
 
 #### Session Lifecycle
 
-1. **Start**: Create a topic-based session in `.wip/`
+1. **Start**: Create a topic-based session in `wip/`
 2. **Iterate**: Workshop the idea across one or more conversations
 3. **Graduate**: Move valuable artifacts to their permanent homes
 4. **Discard**: Delete the session — the brainstorming itself doesn't need to persist
@@ -50,7 +51,7 @@ Sessions are **disposable by design**. The output matters; the messy process doe
 #### Session Structure
 
 ```
-.wip/
+wip/
   <topic-name>/
     context.md       # What we're exploring, current state, open questions
     discussion.md    # Running log of ideas and exchanges
@@ -192,11 +193,11 @@ Progressive Bookkeeping means keeping state files current throughout a session, 
 - `discussion.md` — update as ideas develop
 - `scratch/` files — update as drafts evolve
 - `BACKLOG.md` — update if tasks are identified or completed
-- `.planning/ACTIVITY.md` — update if structural/meta changes occur
+- `planning/ACTIVITY.md` — update if structural/meta changes occur
 
 **During Established Work:**
 - `BACKLOG.md` — update as work progresses
-- `.planning/ACTIVITY.md` — update if relevant to workspace structure
+- `planning/ACTIVITY.md` — update if relevant to workspace structure
 - Relevant documentation files — update as understanding evolves
 
 #### Update Frequency
@@ -231,7 +232,7 @@ Dead Drop is an explicit, structured capture of session state for handoffs. It l
 
 #### Where It Lives
 
-Dead Drops go in `.planning/whats-next.md`.
+Dead Drops go in `planning/whats-next.md`.
 
 For Storm Sessions, also update the session's `context.md` — but the Dead Drop in `whats-next.md` is the canonical "resume here" marker.
 
@@ -315,10 +316,10 @@ Troubleshoot is a structured mode for investigating issues and capturing remedia
 
 #### Session Structure
 
-Troubleshooting sessions live in `.wip/troubleshoot-<system>-<issue>/` during active investigation.
+Troubleshooting sessions live in `wip/troubleshoot-<system>-<issue>/` during active investigation.
 
 ```
-.wip/troubleshoot-openshift-storage-pvc-pending/
+wip/troubleshoot-openshift-storage-pvc-pending/
   investigation.md    # Running log — the working document
 ```
 
@@ -468,11 +469,11 @@ docs/
 **Full Troubleshooting Session:**
 
 1. **Detect/Invoke**: Recognize troubleshooting context or explicit trigger
-2. **Start session**: Create `.wip/troubleshoot-<system>-<issue>/investigation.md`
+2. **Start session**: Create `wip/troubleshoot-<system>-<issue>/investigation.md`
 3. **Investigate**: Update investigation.md progressively
 4. **Resolve**: Document root cause and fix in investigation.md
 5. **Graduate**: Create remediation doc (always), prevention doc (if needed or user requests)
-6. **Discard session**: Delete `.wip/` directory — investigation.md is disposable once docs exist
+6. **Discard session**: Delete `wip/` session directory — investigation.md is disposable once docs exist
 
 **Quick Doc Path:**
 
@@ -481,7 +482,7 @@ Not everything needs a full session. Use the quick path when:
 - User asks to document something common ("write up how to configure X")
 - Quick question-and-answer that's worth capturing
 
-Quick path: User asks for doc → Agent writes directly to `docs/troubleshooting/` or `docs/guides/` → No `.wip/` session needed.
+Quick path: User asks for doc → Agent writes directly to `docs/troubleshooting/` or `docs/guides/` → No `wip/` session needed.
 
 #### Agent Behavior
 
@@ -498,6 +499,62 @@ When the user describes a problem (error, misconfiguration, unexpected behavior)
 - Prompt: "Want me to write this up?"
 - Create remediation doc (always)
 - Assess whether prevention doc is needed — if clearly yes, create it; if unsure, ask user; never skip without user confirmation
+
+---
+
+### Sneaky
+
+**Invocation**: "Sneaky", "Let's be sneaky", "Hide your actions", "Go dark"
+
+**Trigger**: User-initiated. Used when applying this working style in external repositories where visible working directories might be unwanted.
+
+Sneaky mode consolidates the working directories (`wip/`, `planning/`) into a single hidden `.workspace/` directory. This keeps the working style functional while minimizing visible footprint in the repository.
+
+#### When to Use
+
+- Working in a repository that isn't your own
+- Contributing to open source where working files would be noise
+- Any context where visible `wip/` and `planning/` directories are inappropriate
+
+#### Structure
+
+When Sneaky is invoked, the working directories move under `.workspace/`:
+
+```
+.workspace/
+  wip/
+    <topic-name>/
+      context.md
+      discussion.md
+      scratch/
+  planning/
+    whats-next.md
+    ACTIVITY.md
+```
+
+#### Activation
+
+When the user invokes Sneaky:
+
+1. Create `.workspace/` if it doesn't exist
+2. Move `wip/` → `.workspace/wip/` (or create if doesn't exist)
+3. Move `planning/` → `.workspace/planning/` (or create if doesn't exist)
+4. All subsequent working style behaviors use `.workspace/` as the root
+
+#### Deactivation
+
+**Invocation**: "Stop being sneaky", "Come out of hiding", "Go visible"
+
+1. Move `.workspace/wip/` → `wip/`
+2. Move `.workspace/planning/` → `planning/`
+3. Delete `.workspace/` if empty
+4. Resume normal visible mode
+
+#### Agent Behavior
+
+- When Sneaky is active, all file paths in behaviors adjust automatically (e.g., Dead Drops go to `.workspace/planning/whats-next.md`)
+- The agent should acknowledge when entering/exiting Sneaky mode
+- If `.workspace/` already exists when entering a repo, assume Sneaky mode is active
 
 ---
 
@@ -518,7 +575,7 @@ This workspace may reference or generate content for other repositories, but cha
 State files accumulate entries rather than being overwritten. The most recent entry is the active state, but history is preserved.
 
 **Applies to:**
-- `.planning/whats-next.md` — Dead Drops append, don't replace
+- `planning/whats-next.md` — Dead Drops append, don't replace
 - `discussion.md` in Storm Sessions — running log, not overwritten
 - Any file serving as a session log or state tracker
 
@@ -551,9 +608,9 @@ docs/
 
 ## Working on Established Files
 
-For files that already exist outside `.wip/`:
+For files that already exist outside `wip/`:
 
 - Edit them directly — no special workflow needed
 - Use standard commit practices
-- Keep `BACKLOG.md` and `.planning/ACTIVITY.md` current (Progressive Bookkeeping)
+- Keep `BACKLOG.md` and `planning/ACTIVITY.md` current (Progressive Bookkeeping)
 - If a significant rework is needed, consider whether it's really a new idea (Storm Session) or just iteration on existing work (direct edit)

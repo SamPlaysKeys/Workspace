@@ -13,18 +13,18 @@ Tracking **meta changes** to the workspace structure, conventions, and planning 
 Established agent-agnostic behaviors for collaborative work in `workstyle/working_style.md`.
 
 **Behaviors defined:**
-- **Storm Session**: Brainstorming in `.wip/` for net-new ideas; sessions are disposable
+- **Storm Session**: Brainstorming in `wip/` for net-new ideas; sessions are disposable
 - **Pre-Mortem**: Adversarial review before committing to decisions; agent can initiate
 - **Smooth Brain**: Surface and question assumptions; auto-triggers at session start
 - **Progressive Bookkeeping**: Always-on; keep state files current throughout sessions
 
 **Files created/updated:**
 - Created `workstyle/working_style.md` — agent-agnostic co-creation conventions
-- Created `.wip/` directory for Storm Sessions
+- Created `wip/` directory for Storm Sessions
 - Created `.cursor/rules/co-creation.mdc` — Cursor rule pointing to working_style.md
 
 **Rationale:**
-The goal is guided co-creation that works across any AI agent (Cursor, Claude, ChatGPT, etc.). The `.wip/` directory provides a visible staging area for brainstorming that can be watched from Neovim or other editors. Behaviors are invocable by name for consistency.
+The goal is guided co-creation that works across any AI agent (Cursor, Claude, ChatGPT, etc.). The `wip/` directory provides a visible staging area for brainstorming that can be watched from Neovim or other editors. Behaviors are invocable by name for consistency.
 
 ---
 
@@ -45,7 +45,7 @@ Extended the co-creation framework with session handoff capabilities and foundat
 - `.cursor/rules/co-creation.mdc` — Updated to reflect new behaviors and conventions
 
 **Source:**
-Ideas drawn from hhellbusch/my-ai-workspace, workshopped in Storm Session `.wip/workspace-behaviors/`
+Ideas drawn from hhellbusch/my-ai-workspace, workshopped in Storm Session `wip/workspace-behaviors/`
 
 ---
 
@@ -54,17 +54,17 @@ Ideas drawn from hhellbusch/my-ai-workspace, workshopped in Storm Session `.wip/
 Restructured the planning and tracking system to clarify file purposes and locations.
 
 **Changes made:**
-- Created `.planning/` directory as central point for active task planning
+- Created `planning/` directory as central point for active task planning
 - Moved `BACKLOG.md` from `docs/` to repository root
-- Moved `ACTIVITY.md` from `docs/` to `.planning/`
-- Created `.planning/whats-next.md` for tracking active tasks and commits
+- Moved `ACTIVITY.md` from `docs/` to `planning/`
+- Created `planning/whats-next.md` for tracking active tasks and commits
 - Added multi-project workstream management as a core goal in `roadmap/planning.md`
 - Updated `workstyle/README.md` with progressive tracking/documentation principles
 
 **File purposes codified:**
 - `BACKLOG.md` (root): Human-in-the-loop review and tracking of completed/in-progress work
-- `.planning/ACTIVITY.md`: Meta changes to workspace structure and conventions
-- `.planning/whats-next.md`: Active task tracking with associated commit hashes
+- `planning/ACTIVITY.md`: Meta changes to workspace structure and conventions
+- `planning/whats-next.md`: Active task tracking with associated commit hashes
 
 ---
 
@@ -98,7 +98,7 @@ Added sixth behavior to the co-creation framework for structured troubleshooting
 - **Troubleshoot** (alias: Debug): Structured investigation sessions for debugging external systems (OpenShift, containers, operators, etc.)
 
 **Key features:**
-- Lightweight session in `.wip/troubleshoot-<system>-<issue>/` with single `investigation.md` file
+- Lightweight session in `wip/troubleshoot-<system>-<issue>/` with single `investigation.md` file
 - Progressive logging: Symptoms → Investigation (hypothesis/tried/result) → Resolution
 - Two graduation outputs:
   - Remediation doc (always) → `docs/troubleshooting/<system>/`
@@ -111,4 +111,4 @@ Added sixth behavior to the co-creation framework for structured troubleshooting
 - `.cursor/rules/co-creation.mdc` — Added Troubleshoot to behaviors table and key points
 
 **Source:**
-Workshopped in Storm Session `.wip/workspace-behaviors/`
+Workshopped in Storm Session `wip/workspace-behaviors/`
