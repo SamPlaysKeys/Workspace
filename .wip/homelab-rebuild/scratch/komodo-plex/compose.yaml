@@ -1,0 +1,43 @@
+# Docker Compose for Plex + Uptime-Kuma
+# Managed by Komodo GitOps
+
+services:
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+      - PLEX_CLAIM=${PLEX_CLAIM}
+      - VERSION=docker
+    volumes:
+      - plex-config:/config
+      - /mnt/media/movies:/movies:ro
+      - /mnt/media/shows:/shows:ro
+      - /mnt/media/anime:/anime:ro
+      - /dev/shm:/transcode
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: plex-monitor
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    depends_on:
+      - plex
+
+volumes:
+  plex-config:
+  uptime-kuma-data:
