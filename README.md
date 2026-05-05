@@ -51,9 +51,6 @@ Check `planning/whats-next.md` for recent session activity.
 
 ---
 
-<details>
-<summary>Development Status</summary>
+> [!WARNING]
+> This workspace is under active development. The collaboration patterns are functional and in daily use, but conventions may evolve.
 
-This workspace is under active development. The collaboration patterns are functional and in daily use, but conventions may evolve.
-
-</details>
