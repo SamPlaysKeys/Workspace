@@ -24,15 +24,6 @@ This directory defines how AI agents should collaborate in this workspace. The c
 - **Append, Don't Replace** — State files accumulate history
 - **Documentation Structure** — Graduated docs live in `docs/<project>/`
 
-## Directory Contents
-
-```
-workstyle/
-├── working_style.md    # Full behavior definitions (the source of truth)
-├── rules/              # Cursor-specific rule files
-└── skills/             # Custom skill definitions
-```
-
 ## Quick Reference
 
 ### Starting a session

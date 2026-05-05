@@ -92,3 +92,6 @@ private/
 # macOS files
 .DS_Store
 **/.DS_Store
+
+# Obsidian state files
+.obsidian/
