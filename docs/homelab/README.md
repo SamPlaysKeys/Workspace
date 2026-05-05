@@ -24,6 +24,7 @@ Three environments (Prod, Test, Dev) form a **promotion path** managed by Komodo
 | [Environments](environments.md) | Detailed breakdown of each environment |
 | [Decisions](decisions.md) | Key decisions and rationale |
 | [Repository Structure](repo-structure.md) | Infrastructure-as-code repo layout |
+| [Tailscale](tailscale.md) | Network connectivity, remote access, shared access model |
 | [Roadmap](roadmap.md) | Open questions and future work |
 
 ## Tooling Stack
