@@ -152,3 +152,9 @@ Tracking active tasks being carried out and their associated commits.
 - Storage strategy undecided (Unraid vs Synology roles)
 - Specific workloads not fully enumerated
 - Storm session `wip/homelab-rebuild/` can be deleted (Plex examples remain as reference)
+
+---
+
+> 2026-05-04 23:56 — Refined homelab repo structure: renamed `komodo-configs/` → `komodo/`, removed `_stacks/` (compose files inline with app), apps use subdirectories when they have multiple files (compose, Dockerfile), flat TOML when simple. Also: made `wip/` and `planning/` visible by default, added Sneaky behavior to hide under `.workspace/`. Overhauled READMEs for readability. Next: network topology or storage strategy decisions.
+
+> 2026-05-05 00:11 — Converted architecture.md diagrams from Mermaid to ASCII art. Created CI/CD & GitOps blog brainstorm (`docs/blog/cicd-gitops-homelab-brainstorm.md`) covering declarative vs imperative, pull vs push, K8s vs Docker tradeoffs, Komodo decision logic. Created `docs/homelab/tailscale.md` with full Tailscale strategy: remote access, partner adversarial access model, Docktail for container exposure, installation by node type (direct vs operator vs Docktail). Next: network topology, storage strategy, or continue Tailscale ACL details.
