@@ -12,7 +12,7 @@ The infrastructure repository has three main sections:
 |---------|------|---------|
 | `terraform/` | Terraform | Provision VMs, networks, base infrastructure |
 | `ansible/` | Ansible | System configuration, package management, agent installation |
-| `komodo-configs/` | Komodo | Container orchestration via GitOps |
+| `komodo/` | Komodo | Container definitions and GitOps configs |
 
 ---
 
@@ -37,32 +37,24 @@ infrastructure/
 │   │   └── ...
 │   └── roles/
 │
-└── komodo-configs/
-    ├── _stacks/                      # Shared Compose files
-    │   ├── arr-suite/
-    │   │   └── compose.yaml
-    │   ├── monitoring/
-    │   │   └── compose.yaml
-    │   └── ...
-    │
+└── komodo/
     ├── prod/
     │   ├── servers.toml              # Server definitions
-    │   ├── stacks/
+    │   ├── arr-suite/
     │   │   ├── arr-suite.toml
-    │   │   └── plex.toml
-    │   └── apps/
-    │       ├── homepage.toml
-    │       └── ...
+    │   │   └── compose.yaml
+    │   ├── plex/
+    │   │   ├── plex.toml
+    │   │   └── compose.yaml
+    │   └── homepage.toml             # Simple apps can be flat
     │
     ├── test/
     │   ├── servers.toml
-    │   ├── stacks/
-    │   └── apps/
+    │   └── ...
     │
     ├── dev/
     │   ├── servers.toml
-    │   ├── stacks/
-    │   └── apps/
+    │   └── ...
     │
     └── shared/
         └── variables.toml            # Shared variables across envs
@@ -121,34 +113,17 @@ ansible/
 
 ---
 
-## Komodo Configs Section
+## Komodo Section
 
 Defines what containers run where.
-
-### Stacks (`_stacks/`)
-
-Shared Docker Compose files for groups of related containers. These are referenced by environment-specific TOML files.
-
-```yaml
-# _stacks/arr-suite/compose.yaml
-services:
-  sonarr:
-    image: linuxserver/sonarr:latest
-    # ...
-  radarr:
-    image: linuxserver/radarr:latest
-    # ...
-  prowlarr:
-    image: linuxserver/prowlarr:latest
-    # ...
-```
 
 ### Environment Directories (`prod/`, `test/`, `dev/`)
 
 Each environment has:
 - `servers.toml` — Defines the servers (nodes) in that environment
-- `stacks/` — TOML files that reference shared Compose files
-- `apps/` — TOML files for individual app deployments
+- `<app>/` — Subdirectory per app containing all related files (TOML config, compose.yaml, Dockerfiles, etc.)
+
+Subdirectories are for organization only — Komodo scans recursively and finds TOML files regardless of nesting.
 
 **Server definition example:**
 
@@ -164,10 +139,24 @@ address = "http://192.168.1.10:8120"
 enabled = true
 ```
 
-**Stack reference example:**
+**Stack example (multi-container app):**
+
+```yaml
+# prod/arr-suite/compose.yaml
+services:
+  sonarr:
+    image: linuxserver/sonarr:latest
+    # ...
+  radarr:
+    image: linuxserver/radarr:latest
+    # ...
+  prowlarr:
+    image: linuxserver/prowlarr:latest
+    # ...
+```
 
 ```toml
-# prod/stacks/arr-suite.toml
+# prod/arr-suite/arr-suite.toml
 [[stack]]
 name = "arr-suite"
 description = "Media automation stack"
@@ -175,15 +164,15 @@ tags = ["media", "prod"]
 
 [stack.config]
 server = "prod-docker-01"
-file_paths = ["../../_stacks/arr-suite/compose.yaml"]
+file_paths = ["compose.yaml"]
 deploy = true
 auto_update = true
 ```
 
-**Individual app example:**
+**Simple app example (single container, no compose — flat file):**
 
 ```toml
-# prod/apps/homepage.toml
+# prod/homepage.toml
 [[deployment]]
 name = "homepage"
 description = "Dashboard"
@@ -218,21 +207,21 @@ value = "1000"
 
 ## Promotion Flow
 
-Moving apps between environments is a file operation:
+Moving apps between environments is a folder operation:
 
 ```
-dev/apps/new-app.toml
+dev/new-app/
         │
         ▼ (validate in dev)
-test/apps/new-app.toml
+test/new-app/
         │
         ▼ (validate in test)
-prod/apps/new-app.toml
+prod/new-app/
 ```
 
-**To promote:** Copy or move the TOML file to the next environment's directory. Update the `server` field to point to the correct host.
+**To promote:** Copy or move the app's folder to the next environment's directory. Update the `server` field in the TOML to point to the correct host.
 
-**To deploy to multiple environments:** Copy the file to each environment (don't move). Each copy points to its respective server.
+**To deploy to multiple environments:** Copy the folder to each environment. Each copy can have environment-specific tweaks (different compose settings, config values, etc.).
 
 ---
 
