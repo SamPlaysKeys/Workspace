@@ -35,3 +35,5 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 - [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type
 - [ ] Auto-load working_style for CLI agents — explore how to automatically load `workstyle/working_style.md` when launching CLI agents (Cursor, Gemini, OpenCode, Copilot) in this repo; consider AGENTS.md, CLAUDE.md, repo-level configs, wrapper scripts
+- [ ] "Scratch Pad" writing concept — write up this workspace approach as a shareable concept for others who want a collaborative AI workspace; frame it as a "scratch pad" for brainstorming, troubleshooting, and building with AI as a supporting tool
+- [ ] Journal in docs — create a `docs/journal/` area for capturing ideas, observations, and thoughts while working; less structured than Storm Sessions, more persistent than scratch files

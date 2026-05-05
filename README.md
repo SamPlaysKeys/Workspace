@@ -1,31 +1,59 @@
-# ⚠️ WORK IN PROGRESS - DO NOT USE ⚠️
+# Workspace
 
-> **DISCLAIMER:** This repository is currently under active development and is **not** ready for production use, implementation, or reference. All workflows, rules, and structures are experimental and subject to drastic changes without notice.
+A personal workspace for brainstorming, planning, troubleshooting, and building — with AI collaboration conventions baked in.
+
+## What's Here
+
+- **Project planning and documentation** — Architecture designs, decision logs, technical docs
+- **Work-in-progress sessions** — Brainstorming, debugging investigations, scratch work
+- **Reusable artifacts** — Scripts, playbooks, and configs that can be applied across projects
+- **Persistent context** — Session handoffs and state that survives across working sessions
+
+## Structure
+
+```
+.
+├── docs/                   # Finished documentation and guides
+│   └── homelab/            # Homelab infrastructure planning
+├── wip/                    # Active brainstorming and investigations
+├── planning/               # Session state and tracking
+├── artifacts/              # Reusable scripts and configs
+├── workstyle/              # AI collaboration conventions
+└── roadmap/                # Strategic planning
+```
+
+## AI Collaboration
+
+This workspace includes conventions for working with AI assistants — structured behaviors for brainstorming ("Storm Sessions"), debugging ("Troubleshoot"), and session handoffs ("Dead Drops"). These patterns help maintain continuity across sessions and capture knowledge as work happens.
+
+### Loading the Working Style
+
+To start a session with an AI assistant, ask it to load the conventions:
+
+> "Load `workstyle/working_style.md` as your working style, and validate the behaviors and conventions you now have."
+
+The agent should read the document and confirm:
+- The behaviors it can invoke (Storm Session, Pre-Mortem, Dead Drop, etc.)
+- The conventions it will follow (Progressive Bookkeeping, Isolation, etc.)
+- Any Smooth Brain observations about the current context
+
+This ensures the agent is operating with the right patterns before diving into work.
+
+See `workstyle/working_style.md` for the full conventions.
+
+## Current Work
+
+| Project | Location | Status |
+|---------|----------|--------|
+| Homelab rebuild | `docs/homelab/` | Architecture defined |
+
+Check `planning/whats-next.md` for recent session activity.
 
 ---
 
-## Overview
+<details>
+<summary>Development Status</summary>
 
-This repository serves as a **Centralized AI Coding Assistant Workspace**. It is designed to be the "brain" and "vault" for working with AI agents across various projects and technology stacks.
+This workspace is under active development. The collaboration patterns are functional and in daily use, but conventions may evolve.
 
-### Core Objectives
-- **Centralized Knowledge:** A single source of truth for backlog tracking, activity logs, AI-specific rules, and specialized skill definitions.
-- **Artifact Management:** A structured home for reusable artifacts including GitHub Actions, Ansible plays/roles, OpenShift automation scripts (Bash/Python), and more.
-- **Security-First Integration:** Embedded workflows to prevent secret leakage and strictly govern AI interactions.
-- **Dynamic Documentation:** Workflows capable of generating documentation for external repositories by leveraging this workspace as a reference.
-
----
-
-## Navigation
-
-- [Planning and Strategy](planning/README.md)
-- [Project Roadmap](planning/ROADMAP.md)
-
----
-
-## Inspiration
-
-This project is heavily inspired by [hhellbusch/my-ai-workspace](https://github.com/hhellbusch/my-ai-workspace).
-
----
-*Stay tuned for updates as the framework matures.*
+</details>
