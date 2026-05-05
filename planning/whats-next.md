@@ -152,3 +152,7 @@ Tracking active tasks being carried out and their associated commits.
 - Storage strategy undecided (Unraid vs Synology roles)
 - Specific workloads not fully enumerated
 - Storm session `wip/homelab-rebuild/` can be deleted (Plex examples remain as reference)
+
+---
+
+> 2026-05-04 23:56 — Refined homelab repo structure: renamed `komodo-configs/` → `komodo/`, removed `_stacks/` (compose files inline with app), apps use subdirectories when they have multiple files (compose, Dockerfile), flat TOML when simple. Also: made `wip/` and `planning/` visible by default, added Sneaky behavior to hide under `.workspace/`. Overhauled READMEs for readability. Next: network topology or storage strategy decisions.
