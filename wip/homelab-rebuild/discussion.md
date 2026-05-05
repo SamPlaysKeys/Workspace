@@ -91,7 +91,7 @@ After comparing Komodo vs ArgoCD/K8s, decision is to use **Komodo**.
                           │
               ┌───────────┴───────────┐
               │   infrastructure/     │
-              │   └── komodo-configs/ │
+              │   └── komodo/ │
               │       ├── prod/       │
               │       └── test/       │
               └───────────────────────┘

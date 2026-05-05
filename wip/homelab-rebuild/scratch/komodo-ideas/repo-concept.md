@@ -36,32 +36,24 @@ infrastructure/
 │   │   └── ...
 │   └── roles/
 │
-└── komodo-configs/
-    ├── _stacks/                   # Compose files for grouped apps
-    │   ├── arr-suite/
-    │   │   └── compose.yaml       # Sonarr, Radarr, Prowlarr, etc.
-    │   ├── monitoring/
-    │   │   └── compose.yaml       # Grafana, Prometheus, etc.
-    │   └── ...
-    │
+└── komodo/
     ├── prod/
     │   ├── servers.toml           # Server definitions for prod
-    │   ├── stacks/
-    │   │   ├── arr-suite.toml     # Points to _stacks/arr-suite
-    │   │   └── plex.toml
-    │   └── apps/
-    │       ├── homepage.toml      # Individual app configs
-    │       └── ...
+    │   ├── arr-suite/
+    │   │   ├── arr-suite.toml
+    │   │   └── compose.yaml
+    │   ├── plex/
+    │   │   ├── plex.toml
+    │   │   └── compose.yaml
+    │   └── homepage.toml          # Simple apps can be flat
     │
     ├── test/
     │   ├── servers.toml
-    │   ├── stacks/
-    │   └── apps/
+    │   └── ...
     │
     ├── dev/
     │   ├── servers.toml           # DevDocker VM server definition
-    │   ├── stacks/
-    │   └── apps/
+    │   └── ...
     │
     └── shared/
         └── variables.toml         # Shared variables across envs
@@ -71,26 +63,35 @@ infrastructure/
 
 ## Key Concepts
 
-### Stacks (Grouped Apps)
-Compose files in `_stacks/` define groups of related containers.
-TOML files in `{env}/stacks/` reference them and set environment-specific config.
+### App Organization
+
+Each app gets its own subdirectory containing all related files:
+
+```
+prod/arr-suite/
+├── arr-suite.toml    # Komodo config
+└── compose.yaml      # Docker Compose definition
+```
+
+Subdirectories are for organization — Komodo scans recursively.
+
+### Stacks (Multi-container apps)
 
 ```toml
-# prod/stacks/arr-suite.toml
+# prod/arr-suite/arr-suite.toml
 [[stack]]
 name = "arr-suite"
 [stack.config]
 server = "prod-docker-01"
-file_paths = ["../../_stacks/arr-suite/compose.yaml"]
+file_paths = ["compose.yaml"]
 deploy = true
 auto_update = true
 ```
 
-### Individual Apps (ResourceSync)
-Single-app deployments managed as individual TOML files.
+### Simple Apps (Single container, flat file)
 
 ```toml
-# prod/apps/homepage.toml
+# prod/homepage.toml
 [[deployment]]
 name = "homepage"
 [deployment.config]
@@ -101,10 +102,12 @@ deploy = true
 
 ### Promotion Flow
 ```
-dev/apps/new-app.toml  →  (validate)  →  test/apps/new-app.toml  →  (validate)  →  prod/apps/new-app.toml
-       │                                        │                                         │
-       └── copy or move ────────────────────────┴── copy or move ─────────────────────────┘
+dev/new-app/  →  (validate)  →  test/new-app/  →  (validate)  →  prod/new-app/
+      │                              │                               │
+      └── copy or move folder ───────┴── copy or move folder ────────┘
 ```
+
+Each environment can have different compose settings or config values.
 
 ---
 
