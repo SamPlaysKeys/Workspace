@@ -93,6 +93,10 @@ LenovoMini 2 (Test)
 ---
 
 ## Future
-- Add `user` environment for Gaming PC
-- Expand VLANs for guest network
-- Integrate power/cooling monitoring
+- **Power/Cooling Monitoring**
+  - Raspberry Pi Pico + ESPHome for rack temperature/power sensors
+  - Grafana dashboard (via Prometheus) for visualization
+  - InfluxDB + Kapacitor for threshold-based alerts (temp/power draw)
+  - TP-Link smart plugs for per-device power monitoring
+- **Guest Network**: VLAN (10.0.20.0/24) on Unifi SSID `Guest`
+- **Tailscale SSH**: Secure remote CLI access to all nodes
