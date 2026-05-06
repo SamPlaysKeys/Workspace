@@ -1,0 +1,68 @@
+# Basic Komodo CI/CD Pipeline
+# Purpose: Template for a simple build-test-deploy pipeline
+# Features: GitOps (pull-based), validation, and secrets handling
+
+[repo]
+url = "{{ repo_url }}"  # Replace with Git URL
+branch = "main"          # Default branch
+path = ".komodo/{{ service_name }}"  # Path to configs in repo
+
+[service]
+name = "{{ service_name }}"  # Unique identifier
+description = "CI/CD pipeline for {{ service_name }}"
+
+[schedule]
+# Pull interval (default: 60s)
+interval = "60s"
+
+# --- Jobs ---
+[[job]]
+name = "build"
+description = "Build the application"
+
+# Build script (runs in the repo's context)
+script = """
+#!/bin/bash
+{{ build_script }}  # Replace with build commands
+"""
+
+# Validation: JSON schema for output
+[validation]
+schema = """{
+  "type": "object",
+  "properties": {
+    "success": { "type": "boolean" },
+    "artifact": { "type": "string" }
+  },
+  "required": ["success"]
+}"""
+
+[[job]]
+name = "test"
+description = "Run tests"
+
+script = """
+#!/bin/bash
+{{ test_script }}  # Replace with test commands
+"""
+
+[validation]
+schema = """{
+  "type": "object",
+  "properties": {
+    "success": { "type": "boolean" },
+    "coverage": { "type": "number" }
+  },
+  "required": ["success"]
+}"""
+
+# Example: Secrets handling via SOPS
+# [[secrets]]
+# name = "prod"
+# path = ".secrets/prod.sops.toml"
+# key = "password"
+
+# Example: Notifications (Slack)
+# [notification]
+# on_success = "{{ slack_webhook_url }}"
+# on_failure = "{{ slack_webhook_url }}"

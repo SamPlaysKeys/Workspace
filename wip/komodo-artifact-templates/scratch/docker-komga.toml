@@ -1,0 +1,35 @@
+# Komodo Service: Komga (Docker)
+# Purpose: Media server for comics/mangas
+# Docs: https://komga.org/docs
+
+[repo]
+url = "{{ repo_url }}"  # Git repo with configs
+branch = "main"
+path = ".komodo/komga"
+
+[service]
+name = "komga"
+description = "Komga media server"
+
+[schedule]
+interval = "300s"  # Check for updates every 5 minutes
+
+[[job]]
+name = "deploy"
+description = "Ensure Komga container is running"
+
+# Use Docker stack referenced in konfig.toml
+[stack]
+reference = "docker-komga"
+
+# Health check
+[health]
+endpoint = "http://localhost:25600"
+interval = "60s"
+retries = 3
+
+# Example: SOPS-encrypted credentials
+# [[secrets]]
+# name = "komga-creds"
+# path = ".secrets/komga.sops.toml"
+# key = "KOMGA_ADMIN_PASSWORD"
