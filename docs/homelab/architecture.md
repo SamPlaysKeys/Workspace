@@ -29,15 +29,15 @@ System diagrams and visual documentation for the homelab infrastructure.
 │  │  │ [Periphery]   │  │ │  │ [Periphery]   │  │ │  │ (on ProxMox)    │  │  │
 │  │  │               │  │ │  │               │  │ │  │ [Periphery]     │  │  │
 │  │  │ • Plex        │  │ │  │ • Plex (test) │  │ │  │                 │  │  │
-│  │  │ • *arr Suite  │  │ │  │ • Test Apps   │  │ │  │ • Arcane UI     │  │  │
-│  │  │ • Homepage    │  │ │  │               │  │ │  │ • Experimental  │  │  │
-│  │  │ • ...         │  │ │  │               │  │ │  │                 │  │  │
+│  │  │ • *arr Suite  │  │ │  │ • Test Apps   │  │ │  │ • Experimental  │  │  │
+│  │  │ • ...         │  │ │  │               │  │ │  │   containers    │  │  │
+│  │  │               │  │ │  │               │  │ │  │                 │  │  │
 │  │  └───────────────┘  │ │  └───────────────┘  │ │  └─────────────────┘  │  │
 │  │         ▲           │ │         ▲           │ │                       │  │
 │  │         │ NFS/SMB   │ │         │ NFS/SMB   │ │                       │  │
 │  │  ┌──────┴────────┐  │ │  ┌──────┴────────┐  │ │                       │  │
-│  │  │ Unraid Server │  │ │  │ Synology NAS  │  │ │                       │  │
-│  │  │ (Media)       │  │ │  │ (Test Data)   │  │ │                       │  │
+│  │  │  UnRaid NAS   │  │ │  │ Synology NAS  │  │ │                       │  │
+│  │  │   (Media)     │  │ │  │ (Test Data)   │  │ │                       │  │
 │  │  └───────────────┘  │ │  └───────────────┘  │ │                       │  │
 │  └─────────────────────┘ └─────────────────────┘ └───────────────────────┘  │
 │                                                                             │
@@ -65,12 +65,10 @@ System diagrams and visual documentation for the homelab infrastructure.
 ### Key Points
 
 - **Komodo Controller** sits outside the environment groups — it manages but is not part of workload infrastructure
-- **Managed environments** (Prod, Test, Dev) have Periphery agents and are GitOps-controlled
-- **Dev (DevDocker)** runs on ProxMox but is still Komodo-managed — promotion path to Test → Prod
-- **Unmanaged environments** are sandboxes — no Periphery agents, no GitOps
-- **DevNode** VMs on ProxMox are for ad-hoc testing (bugfixes, themes) — no container management
-- **DevOCP** is fully isolated — separate hardware (3x MiniPCs), no Komodo integration
-- **Storage** is accessed via network mounts from Unraid (Prod) and Synology (Test)
+- **Managed Docker hosts** (Prod, Test, DevDocker) have Periphery agents and are GitOps-controlled
+- **DevDocker VM** runs on ProxMox but is still Komodo-managed — promotion path to Test → Prod
+- **Unmanaged nodes in Dev** — DevNode VMs and OCP cluster have no Komodo integration
+- **Storage** is accessed via network mounts from UnRaid NAS (Prod) and Synology NAS (Test)
 
 ---
 
@@ -173,13 +171,13 @@ System diagrams and visual documentation for the homelab infrastructure.
 
 | Component | Role | Environment |
 |-----------|------|-------------|
-| **NUC** | Komodo Controller | Management plane |
+| **Intel NUC** | Komodo Controller | Prod (management plane) |
 | **MiniPC (Prod)** | Container host | Prod |
-| **Unraid Server** | Media storage | Prod |
+| **UnRaid NAS** | Media storage | Prod |
 | **MiniPC (Test)** | Container host | Test |
 | **Synology NAS** | Test storage | Test |
-| **ProxMox Server** | VM host | Dev, DevNode |
-| **3× MiniPC Cluster** | OpenShift | DevOCP |
+| **ProxMox Server** | VM host (DevDocker, DevNode) | Dev |
+| **3× MiniPC Cluster** | OpenShift | Dev |
 
 ---
 

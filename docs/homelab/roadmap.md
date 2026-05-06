@@ -10,16 +10,15 @@ These need to be resolved as the build progresses.
 
 ### Network Topology
 
-- [ ] Network segmentation between environments (VLANs?)
-- [ ] Firewall rules between Prod/Test/Dev
-- [ ] How does DevOCP get isolated? Separate physical network or VLAN?
+- [x] Network segmentation between environments (VLANs) — defined in homelab-map.md
+- [ ] Firewall rules between Prod/Test/Dev/IoT
 - [ ] DNS strategy (internal DNS, split-horizon?)
 - [ ] Reverse proxy / ingress strategy (Traefik, Caddy, nginx?)
 
 ### Storage Strategy
 
-- [ ] Unraid role in Prod — just media, or also app data?
-- [ ] Synology role in Test — mirror of Unraid structure, or different?
+- [ ] UnRaid NAS role in Prod — just media, or also app data?
+- [ ] Synology NAS role in Test — mirror of UnRaid structure, or different?
 - [ ] Backup strategy across environments
 - [ ] How does DevDocker access test data (if at all)?
 
@@ -53,7 +52,6 @@ Apps and stacks to deploy once infrastructure is ready.
 |----------|------|----------|
 | Plex | Stack | High |
 | *arr suite (Sonarr, Radarr, Prowlarr, etc.) | Stack | High |
-| Homepage | App | Medium |
 | Uptime Kuma | App | Medium |
 | *TBD* | — | — |
 
