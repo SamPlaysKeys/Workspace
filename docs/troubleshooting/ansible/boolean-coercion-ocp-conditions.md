@@ -1,5 +1,16 @@
 # Troubleshooting: Ansible Boolean Coercion with OCP/Kubernetes API Values
 
+## TL;DR
+
+Ansible coerces `"True"`/`"False"` strings from k8s condition fields to Python booleans. This breaks string concatenation and comparisons.
+
+**Fixes:**
+- Use `~` instead of `+` for string concatenation: `'Available=' ~ _available`
+- Compare against `true`/`false` (YAML booleans), not `'True'`/`'False'` (strings)
+- Handle `'Unknown'` as a string (it's not coerced)
+
+---
+
 ## Background
 
 The OpenShift and Kubernetes APIs represent condition status values as the **strings** `"True"` or
