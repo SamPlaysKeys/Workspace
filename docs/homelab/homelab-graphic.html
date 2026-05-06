@@ -264,11 +264,9 @@
             <div class="host-stack">
               <article class="host">
                 <div class="host-header"><div class="host-title"><div class="host-icon">📷</div><div><h3>Reolink Cameras</h3><small>Isolated devices</small></div></div></div>
-                <div class="services"><div class="svc"><div class="ph">RL</div><span>Reolink</span></div></div>
               </article>
               <article class="host">
                 <div class="host-header"><div class="host-title"><div class="host-icon">🏠</div><div><h3>Google Home</h3><small>Smart home control</small></div></div></div>
-                <div class="services"><div class="svc"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/googlehome.svg" alt="Google Home" width="32" height="32" loading="lazy"><span>Home</span></div></div>
               </article>
             </div>
           </section>
@@ -280,16 +278,16 @@
             <p>All nodes participate in the overlay, with docktail and uptime services on Docker hosts and Tailscale SSH planned for secure remote CLI access.</p>
           </div>
           <div class="overlay-badges">
-            <div class="pill"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/tailscale.svg" alt="Tailscale" width="18" height="18" loading="lazy">All Nodes</div>
-            <div class="pill"><div style="width:18px;height:18px;border-radius:6px;background:rgba(79,152,163,.22);display:grid;place-items:center;font-size:.65rem;font-weight:700;color:var(--prod)">DT</div>docktail</div>
-            <div class="pill"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/uptimekuma.svg" alt="Uptime Kuma" width="18" height="18" loading="lazy">uptimekuma</div>
+            <div class="pill"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/tailscale.svg" alt="Tailscale" width="18" height="18" loading="lazy">Tailscale</div>
+            <div class="pill"><div style="width:18px;height:18px;border-radius:6px;background:rgba(79,152,163,.22);display:grid;place-items:center;font-size:.65rem;font-weight:700;color:var(--prod)">DT</div>DockTail</div>
+            <div class="pill"><img src="https://cdn.jsdelivr.net/npm/simple-icons@v15/icons/uptimekuma.svg" alt="Uptime Kuma" width="18" height="18" loading="lazy">UptimeKuma</div>
           </div>
         </section>
 
         <section class="future">
           <article class="card"><h3>Power and Cooling</h3><p>Raspberry Pi Pico plus ESPHome sensors, with Grafana, Prometheus, InfluxDB, Kapacitor, and TP-Link smart plugs for telemetry and alerting.</p></article>
-          <article class="card"><h3>Guest Network</h3><p>Future guest VLAN on 10.0.20.0/24 with a dedicated UniFi SSID.</p></article>
-          <article class="card"><h3>Tailscale SSH</h3><p>Planned secure shell access across the fleet.</p></article>
+          <article class="card"><h3>Guest Network</h3><p>Future guest VLAN with a dedicated UniFi SSID, using UniFi's default Guest VLAN behavior.</p></article>
+          <article class="card"><h3>Tailscale SSH</h3><p>Planned secure shell access tightly scoped to adhere to "least priviledge" methodology.</p></article>
         </section>
       </div>
     </section>
