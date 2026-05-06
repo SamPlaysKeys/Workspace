@@ -4,7 +4,7 @@
 
 | Environment | Purpose                          | Subnet      | Hardware & Services                                                  |
 |-------------|----------------------------------|-------------|-----------------------------------------------------------------------|
-| **Prod**    | Production services              | 10.0.1.0/24 | LenovoMini 1, JONSBO NAS, Intel NUC, Komodo, Docker workloads       |
+| **Prod**    | Production services              | 10.0.1.0/24 | LenovoMini 1, UnRaid NAS, Intel NUC, Komodo, Docker workloads       |
 | **Test**    | Staging and validation           | 10.0.2.0/24 | LenovoMini 2, Synology NAS, Komodo periphery                         |
 | **Dev**     | Development & experimentation    | 10.0.3.0/24 | ProxMox Host (DevDocker VM, DevNode VMs), LenovoMini 3–5 (OCP cluster), Tailscale Operator |
 | **User**    | Personal workstation             | 10.0.10.0/24 | Gaming PC                                                              |
@@ -28,7 +28,7 @@
 ```
 GFiber (1Gbps) → Unifi UDM → Unifi 16-port PoE Switch
 │
-├── LenovoMini 1 (Prod Docker) → JONSBO NAS
+├── LenovoMini 1 (Prod Docker) → UnRaid NAS
 ├── LenovoMini 2 (Test Docker) → Synology NAS
 ├── ProxMox Host (Dev) → DevDocker VM, DevNode VMs
 ├── LenovoMini 3–5 (Dev OCP cluster)
@@ -84,7 +84,7 @@ LenovoMini 1 (Prod)
 │   ├── docktail       ├── miniflux       └── audiobookshelf
 │   ├── Signal         ├── scaletail
 │   └── Vault/tsidp
-└── JONSBO NAS (mounted)
+└── UnRaid NAS (mounted)
 
 LenovoMini 2 (Test)
 ├── Periphery Agent

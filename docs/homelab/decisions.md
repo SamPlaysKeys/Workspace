@@ -31,21 +31,21 @@ Key architectural and tooling decisions, with rationale.
 **Trade-offs accepted:**
 - Komodo is a newer, smaller project than ArgoCD
 - Less community support and fewer integrations
-- If K8s skills are needed for work, DevOCP cluster provides that separately
+- If K8s skills are needed for work, the OCP cluster in Dev provides that separately
 
 ---
 
-## Three-Tier Managed Environments (Dev → Test → Prod)
+## Three-Tier Managed Docker Hosts (Dev → Test → Prod)
 
-**Decision:** DevDocker is Komodo-managed, not a sandbox.
+**Decision:** DevDocker VM is Komodo-managed, not a sandbox.
 
-**Context:** Initially considered all dev environments as unmanaged sandboxes. Reconsidered based on promotion path needs.
+**Context:** Initially considered all dev nodes as unmanaged sandboxes. Reconsidered based on promotion path needs.
 
 **Rationale:**
 - DevDocker is where container work starts before going to production
 - Having it in Komodo creates a consistent workflow: same TOML format, same tooling
 - Promotion is literally moving a file between directories
-- DevNode and DevOCP don't need this — they're for different purposes (VMs, OpenShift)
+- Other Dev nodes (VMs, OCP cluster) don't need this — they're for different purposes
 
 ---
 

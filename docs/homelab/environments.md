@@ -1,28 +1,30 @@
 # Environments
 
-Detailed breakdown of each environment in the homelab.
+Detailed breakdown of each environment (VLAN) in the homelab.
 
 ---
 
 ## Managed Environments (GitOps)
 
-These environments have Komodo Periphery agents installed and are managed via GitOps. Changes flow through Git → Komodo Core → Periphery Agent → Container.
+These environments have Komodo Periphery agents on Docker hosts, managed via GitOps. Changes flow through Git → Komodo Core → Periphery Agent → Container.
 
 ### Prod
 
 **Purpose:** Production workloads — services that need to be reliable and always available.
 
-**Hardware:**
-- **Compute:** MiniPC running Docker containers
-- **Storage:** Unraid server (media storage: movies, shows, anime)
+**VLAN:** 10.0.1.0/24
 
-**Workloads:** (planned)
+**Hardware:**
+- **Compute:** MiniPC (LenovoMini 1) running Docker containers
+- **Storage:** UnRaid NAS (media storage: movies, shows, anime)
+- **Management:** Intel NUC (Komodo Controller)
+
+**Workloads:**
 - Plex Media Server
 - *arr suite (Sonarr, Radarr, Prowlarr, etc.)
-- Homepage dashboard
-- Other production services
+- Other production services (see homelab-map.md for full list)
 
-**Network access:** Unraid provides NFS/SMB shares to the MiniPC for media access.
+**Network access:** UnRaid NAS provides NFS/SMB shares to the MiniPC for media access.
 
 ---
 
@@ -30,8 +32,10 @@ These environments have Komodo Periphery agents installed and are managed via Gi
 
 **Purpose:** Pre-production validation — test changes before promoting to Prod.
 
+**VLAN:** 10.0.2.0/24
+
 **Hardware:**
-- **Compute:** MiniPC running Docker containers
+- **Compute:** MiniPC (LenovoMini 2) running Docker containers
 - **Storage:** Synology NAS
 
 **Workloads:** Mirrors Prod where needed for testing. Not all Prod services need a Test instance.
@@ -40,66 +44,63 @@ These environments have Komodo Periphery agents installed and are managed via Gi
 
 ---
 
-### Dev (DevDocker)
+### Dev
 
-**Purpose:** Container development and experimentation with a promotion path.
+**Purpose:** Development, experimentation, and work-related projects.
+
+**VLAN:** 10.0.3.0/24
 
 **Hardware:**
-- **Compute:** VM on ProxMox server running Docker
-- **UI:** Arcane (Docker management interface)
+- **ProxMox Host** — Runs VMs for Docker and sandbox work
+  - DevDocker VM — Komodo-managed Docker containers (promotion path to Test → Prod)
+  - DevNode VMs — Unmanaged sandbox for testing bugfixes, themes, OS-level changes
+- **MiniPC cluster (LenovoMini 3–5)** — OpenShift cluster for work-related projects
 
-**Workloads:** Experimental containers, new apps being evaluated, development builds.
+**Managed vs Unmanaged:**
 
-**Promotion:** Validated apps move from Dev → Test → Prod.
+| Node | Komodo Managed | Purpose |
+|------|----------------|---------|
+| DevDocker VM | Yes | Container dev with promotion path |
+| DevNode VMs | No | Throwaway VM sandbox |
+| OCP Cluster | No | OpenShift for work projects |
 
-**Note:** This is the only dev environment with Komodo management. It's for container work that may eventually go to production.
+**Note:** The OCP cluster uses OpenShift's built-in GitOps (pulls from Git) but is not managed by Komodo.
 
 ---
 
-## Unmanaged Environments (Sandboxes)
+## Other Environments
 
-These environments have no Komodo integration. They're for experimentation that doesn't need GitOps or won't promote to production.
+These are network segments without Komodo-managed workloads.
 
-### DevNode
+### User
 
-**Purpose:** VM sandbox for testing bugfixes, themes, and other non-container work.
+**Purpose:** Personal workstation.
 
-**Hardware:**
-- VMs on ProxMox server
+**VLAN:** 10.0.10.0/24
 
-**Use cases:**
-- Testing OS-level changes
-- Theme development
-- Bugfix validation
-- Anything that needs a throwaway VM
+**Hardware:** Gaming PC
 
-**Management:** Fully manual. Spin up VMs as needed, destroy when done.
+**Isolation:** Isolated from Prod, Test, Dev, and IoT.
 
 ---
 
-### DevOCP
+### IoT
 
-**Purpose:** OpenShift development for work-related projects.
+**Purpose:** Smart home devices and cameras.
 
-**Hardware:**
-- 3× MiniPC cluster running OpenShift
+**VLAN:** 10.0.4.0/24
 
-**Architecture:**
-- 1 control plane node
-- 2 worker nodes
+**Hardware:** Reolink cameras, Google Home devices
 
-**Isolation:** Fully isolated from the rest of the homelab. Separate network, no Komodo integration. This is for work projects, not personal homelab workloads.
-
-**Management:** OpenShift's built-in GitOps (pulls from Git, but not managed by Komodo).
+**Isolation:** Fully isolated from all other VLANs. Cannot reach Prod, Test, or Dev.
 
 ---
 
 ## Environment Comparison
 
-| Aspect | Prod | Test | Dev | DevNode | DevOCP |
-|--------|------|------|-----|---------|--------|
-| **Komodo managed** | Yes | Yes | Yes | No | No |
-| **Promotion path** | — | → Prod | → Test | None | None |
-| **Hardware** | MiniPC + Unraid | MiniPC + Synology | ProxMox VM | ProxMox VMs | 3× MiniPC |
-| **Runtime** | Docker | Docker | Docker | VMs | OpenShift |
-| **Purpose** | Reliability | Validation | Experimentation | Sandbox | Work projects |
+| Aspect | Prod | Test | Dev | User | IoT |
+|--------|------|------|-----|------|-----|
+| **VLAN** | 10.0.1.0/24 | 10.0.2.0/24 | 10.0.3.0/24 | 10.0.10.0/24 | 10.0.4.0/24 |
+| **Komodo managed** | Yes | Yes | Partial | No | No |
+| **Promotion path** | — | → Prod | → Test | — | — |
+| **Primary runtime** | Docker | Docker | Docker, VMs, OCP | Desktop | Embedded |

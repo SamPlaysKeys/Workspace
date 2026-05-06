@@ -130,8 +130,6 @@ Treat partner's access as **adversarial by default** — not because of distrust
 | Prod | Limited (specific apps only) |
 | Test | No |
 | Dev | No |
-| DevOCP | No |
-| DevNode | No |
 
 Prod services exposed to partner are explicitly whitelisted. Everything else is deny-by-default.
 
@@ -211,7 +209,7 @@ Direct Tailscale installation. Exposes:
 - SSH access to host
 - Access to VM consoles
 
-### OCP Cluster (DevOCP)
+### OCP Cluster (Dev)
 
 Uses the [Tailscale Kubernetes Operator](https://tailscale.com/kb/1236/kubernetes-operator). This integrates with Kubernetes-native concepts:
 - Ingress via Tailscale

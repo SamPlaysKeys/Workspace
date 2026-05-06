@@ -4,17 +4,17 @@ This documentation covers the design, architecture, and operational strategy for
 
 ## Overview
 
-The homelab is organized into **five logical environments** with different purposes and management approaches:
+The homelab is organized into **five logical environments** (VLANs) with different purposes:
 
 | Environment | Purpose | Management |
 |-------------|---------|------------|
 | **Prod** | Production workloads | GitOps (Komodo) |
 | **Test** | Pre-production validation | GitOps (Komodo) |
-| **Dev** | Container development/testing | GitOps (Komodo) |
-| **DevNode** | VM sandbox (bugfixes, themes) | Unmanaged |
-| **DevOCP** | OpenShift projects (work-related) | Unmanaged, isolated |
+| **Dev** | Development, experimentation, OCP cluster | Mixed (Komodo for Docker, unmanaged for VMs/OCP) |
+| **User** | Personal workstation | N/A |
+| **IoT** | Smart home, cameras | Isolated |
 
-Three environments (Prod, Test, Dev) form a **promotion path** managed by Komodo. Two environments (DevNode, DevOCP) are intentionally unmanaged sandboxes.
+Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Komodo. Dev also contains unmanaged nodes (VMs, OCP cluster) for experimentation.
 
 ## Documentation
 
@@ -22,6 +22,7 @@ Three environments (Prod, Test, Dev) form a **promotion path** managed by Komodo
 |----------|----------|
 | [Architecture](architecture.md) | System diagrams, environment map, GitOps flow |
 | [Environments](environments.md) | Detailed breakdown of each environment |
+| [Homelab Map](homelab-map.md) | Hardware, VLANs, services, and network topology |
 | [Decisions](decisions.md) | Key decisions and rationale |
 | [Repository Structure](repo-structure.md) | Infrastructure-as-code repo layout |
 | [Tailscale](tailscale.md) | Network connectivity, remote access, shared access model |
