@@ -5,8 +5,8 @@
 | Environment | Purpose                          | Subnet      | Hardware & Services                                                  |
 |-------------|----------------------------------|-------------|-----------------------------------------------------------------------|
 | **Prod**    | Production services              | 10.0.1.0/24 | LenovoMini 1, JONSBO NAS, Intel NUC, Komodo, Docker workloads       |
-| **Test**    | Staging and validation           | 10.0.2.0/24 | LenovoMini 2, Synology NAS, Docker VM (ProxMox), Komodo periphery   |
-| **Dev**     | Development & experimentation    | 10.0.3.0/24 | LenovoMini 3–5 (OCP cluster), Tailscale Operator                     |
+| **Test**    | Staging and validation           | 10.0.2.0/24 | LenovoMini 2, Synology NAS, Komodo periphery                         |
+| **Dev**     | Development & experimentation    | 10.0.3.0/24 | ProxMox Host (DevDocker VM, DevNode VMs), LenovoMini 3–5 (OCP cluster), Tailscale Operator |
 | **User**    | Personal workstation             | 10.0.10.0/24 | Gaming PC                                                              |
 | **IoT**     | Smart home & cameras             | 10.0.4.0/24 | Reolink cameras, Google Home                                          |
 
@@ -30,9 +30,9 @@ GFiber (1Gbps) → Unifi UDM → Unifi 16-port PoE Switch
 │
 ├── LenovoMini 1 (Prod Docker) → JONSBO NAS
 ├── LenovoMini 2 (Test Docker) → Synology NAS
+├── ProxMox Host (Dev) → DevDocker VM, DevNode VMs
 ├── LenovoMini 3–5 (Dev OCP cluster)
-├── Intel NUC (Prod management)
-├── ProxMox Host → VMs
+├── Intel NUC (Prod management / Komodo Controller)
 ├── Gaming PC (User)
 └── IoT VLAN (Reolink, Google Home)
 
@@ -47,9 +47,12 @@ Tailscale Overlay: All nodes
 - docktail (logging)
 - uptimekuma (monitoring)
 
-**Prod & Dev Services** (LenovoMini 1 & ProxMox Docker VM):
+**Dev Services** (ProxMox DevDocker VM):
 - Forgejo (Git)
 - tsflow (CI/CD)
+- Experimental containers
+
+**Prod Services shared with Dev** (LenovoMini 1 & ProxMox DevDocker VM):
 - komga (media)
 
 **Test & Prod Services** (LenovoMini 1 & LenovoMini 2):
@@ -68,26 +71,37 @@ Tailscale Overlay: All nodes
 - audiobookshelf (audiobook management)
 
 ```
-Intel NUC (10.0.1.0/24)
-├── Komodo (orchestrates)
+Intel NUC (10.0.1.0/24) - Komodo Controller
+├── Komodo Core (orchestrates)
 ├── GitHub Runner (executes)
-└── → Ansible/Terraform → LenovoMini 1, ProxMox, etc.
+└── → Ansible/Terraform → LenovoMini 1, LenovoMini 2, ProxMox
 
 LenovoMini 1 (Prod)
+├── Periphery Agent
 ├── Docker services
 │   ├── komga          ├── transmission   ├── plex
 │   ├── uptimekuma     ├── mongodb        ├── sonarr/radarr
 │   ├── docktail       ├── miniflux       └── audiobookshelf
-│   ├── Forgejo        ├── scaletail
-│   ├── Signal         └── Vault/tsidp
+│   ├── Signal         ├── scaletail
+│   └── Vault/tsidp
 └── JONSBO NAS (mounted)
 
 LenovoMini 2 (Test)
+├── Periphery Agent
 ├── Docker services
 │   ├── komga          ├── transmission   ├── Signal
 │   ├── uptimekuma     ├── mongodb        ├── Vault/tsidp
 │   ├── docktail       ├── miniflux       ├── syncthing
 │   └── scaletail
+└── Synology NAS (mounted)
+
+ProxMox Host (Dev)
+├── DevDocker VM
+│   ├── Periphery Agent
+│   ├── Forgejo (Git)
+│   ├── tsflow (CI/CD)
+│   └── Experimental containers
+└── DevNode VMs (unmanaged sandbox)
 ```
 
 ---
