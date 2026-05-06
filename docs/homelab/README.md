@@ -18,10 +18,13 @@ Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Kom
 
 ## Documentation
 
+[**Visual Overview (HTML)**](homelab-graphic.html) — Interactive graphic of the homelab layout
+
 | Document | Contents |
 |----------|----------|
 | [Architecture](architecture.md) | System diagrams, environment map, GitOps flow |
 | [Environments](environments.md) | Detailed breakdown of each environment |
+| [Hardware](hardware.md) | Physical hardware inventory and specs |
 | [Homelab Map](homelab-map.md) | Hardware, VLANs, services, and network topology |
 | [Decisions](decisions.md) | Key decisions and rationale |
 | [Repository Structure](repo-structure.md) | Infrastructure-as-code repo layout |
