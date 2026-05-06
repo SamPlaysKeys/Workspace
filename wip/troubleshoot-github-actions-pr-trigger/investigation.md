@@ -1,6 +1,6 @@
 # GitHub Actions: Auto-PR Not Triggering Test Workflow
 
-**Status:** investigating
+**Status:** resolved
 
 **Environment:** GitHub Actions
 
@@ -101,6 +101,16 @@ After implementing fix:
 
 ---
 
+## Resolution
+
+Chose **Option C (`workflow_run` trigger)** for enterprise compatibility — no PAT or GitHub App required.
+
+Full guide written: `docs/guides/github-actions/chaining-workflows-without-pat.md`
+
+---
+
 ## Prevention
 
-Document in repo that auto-PR workflows need non-default tokens to trigger downstream workflows.
+Document in repo that auto-PR workflows need either:
+- Non-default tokens (PAT or GitHub App), OR
+- `workflow_run` trigger pattern for downstream workflows
