@@ -14,13 +14,13 @@
 
 ## VLANs & Subnets
 
-| VLAN | Description               | Subnet      | Firewall Rules                          | Notes                                      |
-|------|---------------------------|-------------|------------------------------------------|--------------------------------------------|
-| 1    | Prod                      | 10.0.1.0/24 | Allow all internal; restrict IoT → Prod | Default VLAN                               |
-| 2    | Test                      | 10.0.2.0/24 | Allow all internal; restrict IoT → Test |                                            |
-| 3    | Dev                       | 10.0.3.0/24 | Allow all internal                       | OCP cluster only                           |
-| 4    | IoT                       | 10.0.4.0/24 | Isolate from prod/test/dev               | Reolink & Google Home                      |
-| 10   | User                      | 10.0.10.0/24| Isolate from prod/test/dev/IoT           | Gaming PC, future laptops                  |
+| VLAN | Description               | Subnet      | Firewall Rules                          | Unifi SSID / Notes               |
+|------|---------------------------|-------------|------------------------------------------|-----------------------------------|
+| 1    | Prod                      | 10.0.1.0/24 | Allow all internal; restrict IoT → Prod | Wired only                          |
+| 2    | Test                      | 10.0.2.0/24 | Allow all internal; restrict IoT → Test | Wired only                          |
+| 3    | Dev                       | 10.0.3.0/24 | Allow all internal                       | Wired only                          |
+| 4    | IoT                       | 10.0.4.0/24 | Isolate from prod/test/dev               | `IoT` (WPA2)                     |
+| 10   | User                      | 10.0.10.0/24| Isolate from prod/test/dev/IoT           | `Home` (WPA3)                      |
 
 ---
 
