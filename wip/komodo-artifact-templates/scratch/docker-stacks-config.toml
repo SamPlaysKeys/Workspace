@@ -1,0 +1,48 @@
+# Komodo: Docker Stacks Configuration
+# Purpose: Centralized Docker Compose definitions for Komodo
+# Usage: Referenced by other TOML files via `stack.reference`
+
+# Shared Docker network for all services
+[network]
+name = "komodo-net"
+driver = "bridge"
+
+# --- Stack Definitions ---
+
+# Komga
+[stack.docker-komga]
+compose = """
+version: '3'
+services:
+  komga:
+    image: gotson/komga:latest
+    container_name: komga
+    environment:
+      - TZ=Etc/UTC
+      - KOMGA_CONFIGDIR=/config
+    volumes:
+      - /path/to/config:/config
+      - /path/to/data:/data
+    ports:
+      - "25600:25600"
+    restart: unless-stopped
+    networks:
+      - komodo-net
+"""
+
+# Uptime Kuma
+[stack.docker-uptimekuma]
+compose = """
+version: '3'
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    volumes:
+      - /path/to/data:/app/data
+    ports:
+      - "3001:3001"
+    restart: unless-stopped
+    networks:
+      - komodo-net
+"""
