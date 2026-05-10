@@ -18,7 +18,7 @@ Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Kom
 
 ## Documentation
 
-[**Visual Overview (HTML)**](homelab-graphic.html) — Interactive graphic of the homelab layout
+[**Visual Overview (HTML)**](https://samplayskeys.com/docs/homelab.html) — Interactive graphic of the homelab layout
 
 | Document | Contents |
 |----------|----------|
