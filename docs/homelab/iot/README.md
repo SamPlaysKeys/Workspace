@@ -8,14 +8,16 @@ Overview and project plan for IoT deployment at the new house.
 
 ## Platform Stack
 
-| Layer | Choice | Notes |
-|-------|--------|-------|
-| **Hub** | Home Assistant OS | Running on Raspberry Pi 4 (migrate to homelab later) |
-| **Primary Protocol** | Zigbee | Via Sonoff Zigbee 3.0 coordinator |
-| **Voice** | Google Home | Existing ecosystem, TTS announcements via HA |
-| **Network** | Unifi Network | Already deployed |
-| **Cameras** | Unifi Protect + Tapo | 3x Tapo (garage, living room, study) + existing Protect |
-| **Thermostats** | Sensi (2 zones) | Cloud integration via HA (acceptable trade-off) |
+| Layer | Choice | Status | Notes |
+|-------|--------|--------|-------|
+| **Hub** | Home Assistant | Planned | Phase 1: RPi 4, Phase 2: Container on Prod Docker |
+| **Primary Protocol** | Zigbee | Planned | Via Sonoff Zigbee 3.0 coordinator |
+| **Voice** | Google Home | Existing | TTS announcements via HA |
+| **Network** | Unifi Network | On order | UDM + switches, foundation for VLANs |
+| **Cameras** | Unifi Protect + Tapo | On order / Existing | Protect on UDM, 3x Tapo (existing) |
+| **Thermostats** | Sensi (2 zones) | Existing | Cloud integration via HA (acceptable trade-off) |
+
+See [decisions/home-assistant-deployment.md](decisions/home-assistant-deployment.md) for deployment architecture.
 
 ---
 
@@ -57,9 +59,12 @@ Overview and project plan for IoT deployment at the new house.
 **Already owned:**
 - Raspberry Pi 4 (for Home Assistant)
 - Tapo cameras (3x)
-- Unifi Protect + cameras
 - Sensi thermostats (2x)
 - LiftMaster garage door openers (2x, staying on myQ for now)
+
+**On order:**
+- Unifi Network equipment
+- Unifi Protect + cameras
 
 ### Switch Notes
 
@@ -84,14 +89,14 @@ See [decisions/](decisions/) for detailed rationale.
 
 ## Integrations
 
-| System | Integration Method | Local? |
-|--------|-------------------|--------|
-| Zigbee devices | ZHA or Zigbee2MQTT | Yes |
-| Google Home | Google Cast integration | TTS only (cloud) |
-| Tapo cameras | Tapo integration or RTSP | RTSP is local |
-| Unifi Protect | Native HA integration | Yes |
-| Sensi thermostats | Emerson Sensi integration | No (cloud API) |
-| LiftMaster (myQ) | Not integrated | N/A (deferred) |
+| System | Integration Method | Local? | Notes |
+|--------|-------------------|--------|-------|
+| Zigbee devices | ZHA or Zigbee2MQTT | Yes | USB coordinator on HA host |
+| Google Home | Google Cast integration | TTS only (cloud) | Requires Prod → IoT firewall rule |
+| Tapo cameras | Tapo integration or RTSP | RTSP is local | On IoT VLAN |
+| Unifi Protect | Native HA integration | Yes | Runs on UDM, HA needs access to UDM management |
+| Sensi thermostats | Emerson Sensi integration | No (cloud API) | Acceptable trade-off |
+| LiftMaster (myQ) | Not integrated | N/A | Deferred |
 
 ---
 
@@ -115,6 +120,23 @@ See [automations.md](automations.md) for full workflow definitions.
 - Zigbee coordinator should be central in house (or use USB extension cable to avoid USB 3.0 interference)
 - Each mains-powered Zigbee device (switches) extends the mesh
 - Consider IoT VLAN for Tapo cameras and other cloud-dependent devices
+
+---
+
+## Stretch Goals
+
+### Automated HA Failover
+
+**Status:** Future (Phase 3)  
+**Hardware:** Second Zigbee coordinator (~$25)
+
+Cold/warm spare HA instance on Test environment (LenovoMini 2) with single-click failover:
+- Second Zigbee coordinator on Test host
+- Config sync from Prod → Test (rsync or NAS)
+- Ansible playbooks to flip firewall rules (Test ↔ IoT instead of Prod ↔ IoT)
+- Zigbee2MQTT for portable network config (coordinator backup)
+
+See [decisions/home-assistant-deployment.md](decisions/home-assistant-deployment.md#phase-3-automated-failover-stretch-goal) for full design.
 
 ---
 
