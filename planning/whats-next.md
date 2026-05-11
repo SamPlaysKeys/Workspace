@@ -172,3 +172,33 @@ Tracking active tasks being carried out and their associated commits.
 **Open threads:**
 - Confirm naming convention for `artifacts/komodo/` subdirectories (proposed: `docker/`, `cicd/`, `services/`)
 - Draft `README.md` for `artifacts/komodo/`
+
+---
+
+# Dead Drop — 2026-05-11
+
+**In progress:** IoT planning for new house — **GRADUATED** to `docs/homelab/iot/`
+
+**Just completed:**
+- Storm Session: Full IoT architecture planning for new house
+- Decided Zigbee (Inovelli Blue switches) over Z-Wave — ecosystem breadth, cheaper accessories
+- Deferred door locks (detection over prevention philosophy) and garage door integration (ratgdo)
+- Documented Home Assistant deployment strategy — Phase 1 (RPi bootstrap), Phase 2 (Prod Docker migration)
+- Added Phase 3 stretch goal: automated failover to Test with Ansible/firewall automation
+- Created decision records: smart-switch-protocol, door-locks, home-assistant-deployment (ADR)
+- Documented HA workflows (door alerts, scenes, presence automation)
+- Shopping list finalized (~$270-275 for Phase 1)
+
+**Next step:** Order hardware (Zigbee coordinator, Inovelli switches, door sensors). When Unifi equipment arrives, configure VLANs and firewall rules for HA → IoT access.
+
+**Key decisions:**
+- Zigbee over Z-Wave — accessory ecosystem wins at scale
+- HA on Prod VLAN with firewall rules to IoT — proper network segmentation
+- Zigbee2MQTT over ZHA — enables coordinator backup portability for failover
+- USB passthrough to Docker container — privileged mode accepted
+
+**Git state:** db27540 — Add Home Assistant ADR
+
+**Open threads:**
+- Unifi equipment on order — network setup blocked until arrival
+- Phase 3 failover requires second Zigbee coordinator (~$25) — purchase when ready to implement
