@@ -27,7 +27,7 @@ Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Kom
 | [Hardware](hardware.md) | Physical hardware inventory and specs |
 | [Homelab Map](homelab-map.md) | Hardware, VLANs, services, and network topology |
 | [Decisions](decisions.md) | Key decisions and rationale |
-| [Repository Structure](repo-structure.md) | Infrastructure-as-code repo layout |
+| [Repository Structure](planned-repo-structure.md) | Infrastructure-as-code repo layout |
 | [Tailscale](tailscale.md) | Network connectivity, remote access, shared access model |
 | [Roadmap](roadmap.md) | Open questions and future work |
 
