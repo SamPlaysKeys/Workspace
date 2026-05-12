@@ -29,13 +29,13 @@ width:95%;
 
 .card{
 background:white;
-border:0 4px solid #2e4a54;
-<!-- use 0 directly after the : to set to false and show no border -->
+border:4px solid #2e4a54;
+/* use 0 directly after the : to set to false and show no border */
 border-radius: 0px;
 padding:24px;
 flex:1;
 box-shadow:0 4px 8px rgba(0,0,0,.1);
-<!-- use 0 directly after the : to set to false and show no shadow -->
+/* use 0 directly after the : to set to false and show no shadow */
 }
 
 h2{
@@ -258,6 +258,7 @@ backgroundColor:colors
 },
 
 options:{
+animation: false,
 plugins:{
 legend:{display:false},
 tooltip:{
@@ -495,25 +496,40 @@ slider.step=1
 }
 
 async function exportPDF(){
-
+try {
 const {jsPDF}=window.jspdf
+const exportArea = document.getElementById("exportArea")
 
-const canvas=await html2canvas(document.getElementById("exportArea"))
+const canvas=await html2canvas(exportArea, {
+scale: 2,
+useCORS: true,
+logging: false
+})
 
 const img=canvas.toDataURL("image/png")
-
 const pdf=new jsPDF({
-orientation:"landscape"
+orientation:"landscape",
+unit: "px",
+format: [canvas.width / 2, canvas.height / 2]
 })
 
 const width=pdf.internal.pageSize.getWidth()
-
-const height=(canvas.height*width)/canvas.width
+const height=pdf.internal.pageSize.getHeight()
 
 pdf.addImage(img,"PNG",0,0,width,height)
 
-pdf.save("time-visualization.pdf")
+// Use Blob and window.open to bypass iframe download restrictions
+const blob = pdf.output('blob')
+const url = URL.createObjectURL(blob)
+const newTab = window.open(url, '_blank')
 
+if (!newTab || newTab.closed || typeof newTab.closed === 'undefined') {
+alert('PDF export failed. Please ensure pop-ups are allowed for this site.')
+}
+} catch (error) {
+console.error('Export Error:', error)
+alert('An error occurred during PDF export: ' + error.message)
+}
 }
 
 
