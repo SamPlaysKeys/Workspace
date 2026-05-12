@@ -38,7 +38,7 @@ Key concepts:
 
 ## Use Cases
 
-### Remote Application Access (Actual Budget)
+### Remote Application Access Example: Actual Budget
 
 Actual Budget (self-hosted budgeting app) can be accessed remotely via Tailscale without exposing it to the internet.
 
@@ -98,31 +98,6 @@ Treat partner's access as **adversarial by default** — not because of distrust
 | SSH/RDP to servers | No | No need for direct machine access |
 | Dev environments | No | Personal work tools |
 
-### Implementation (Tailscale ACLs)
-
-```json
-{
-  "acls": [
-    // Partner can access specific services
-    {
-      "action": "accept",
-      "src": ["group:partner"],
-      "dst": [
-        "actual-budget:5006",
-        "plex:32400",
-        "nas:445"  // SMB, limited shares via Samba config
-      ]
-    },
-    // Partner cannot access management
-    {
-      "action": "deny",
-      "src": ["group:partner"],
-      "dst": ["tag:management"]
-    }
-  ]
-}
-```
-
 ### Environment-Based Protections
 
 | Environment | Partner Access |
@@ -137,7 +112,7 @@ Prod services exposed to partner are explicitly whitelisted. Everything else is 
 
 ## Docktail: Container Exposure via Docker Labels
 
-[Docktail](https://github.com/docktail/docktail) runs as a sidecar container and exposes other containers to Tailscale based on Docker labels. This avoids installing Tailscale directly in every container.
+[Docktail](https://github.com/docktail/docktail) runs as an independent container and serves other containers as Tailscale Services based on Docker labels. This avoids installing Tailscale directly in every container.
 
 ### How It Works
 
@@ -147,7 +122,7 @@ Prod services exposed to partner are explicitly whitelisted. Everything else is 
 │                                         │
 │  ┌─────────────┐    ┌─────────────┐     │
 │  │  Docktail   │    │  App        │     │
-│  │  (sidecar)  │◀───│  Container  │     │
+│  │             │◀───│  Container  │     │
 │  │             │    │             │     │
 │  │ tailscale   │    │ label:      │     │
 │  │ connected   │    │ ts.enable   │     │
@@ -184,12 +159,12 @@ Docktail picks up the labels and exposes the service at `actual.tailnet.ts.net:5
 
 ## Installation Strategy by Node Type
 
-| Node | Tailscale Installation | Service Exposure |
-|------|------------------------|------------------|
-| **Komodo Controller** | Direct install | Direct (management access) |
-| **ProxMox Host** | Direct install | Direct (VM management, SSH) |
-| **OCP Cluster** | Tailscale Operator | Kubernetes-native exposure |
-| **Docker Hosts (Prod/Test/Dev)** | Host has Tailscale | Services via Docktail |
+| Node                             | Tailscale Installation | Service Exposure            |
+| -------------------------------- | ---------------------- | --------------------------- |
+| **Komodo Controller**            | Direct install         | Direct (management access)  |
+| **ProxMox Host**                 | Direct install         | Direct (VM management, SSH) |
+| **OCP Cluster**                  | Tailscale Operator     | Kubernetes-native exposure  |
+| **Docker Hosts (Prod/Test/Dev)** | Host has Tailscale     | Services via Docktail       |
 
 ### Komodo Controller (NUC)
 
@@ -248,6 +223,6 @@ services:
 ## Open Questions
 
 - [ ] Docktail vs Tailscale sidecar containers — which is more maintainable?
-- [ ] Funnel for truly public services (e.g., public blog) or keep everything behind Tailscale?
 - [ ] Subnet routing for accessing non-Tailscale devices on home network?
+	- [ ] Potentially opening this up only for the admin account.
 - [ ] Exit node for routing all traffic through homelab when traveling?

@@ -3,9 +3,11 @@
 
 JONSBO NAS - 6th Gen i7, 16 GB RAM, NVIDIA GPU, 10TB of storage (8 usable)
 
+Synology NAS - 4GB RAM, 6TB storage
+
 Intel NUC - Celeron CPU, 8GB of RAM
 
-Synology NAS - 4GB RAM, 6TB storage
+Raspberry Pi 4 - 4GB RAM
 
 LenovoMini 1 - 8th gen i7, NVIDIA GPU, 16GB RAM
 LenovoMini 2 - 7th gen i5, NVIDIA GPU, 16GB RAM
