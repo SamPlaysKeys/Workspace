@@ -8,9 +8,10 @@ Reusable code, scripts, and configurations that can be applied across projects.
 
 ```
 artifacts/
-├── ansible/      # Ansible playbooks, roles, and inventory templates
-├── bash/         # Shell scripts and utilities
-└── openshift/    # OpenShift automation (Python, Bash, YAML)
+├── ansible/              # Ansible playbooks, roles, and inventory templates
+├── articulate-storyline/ # Web Objects for Articulate Storyline courses
+├── bash/                 # Shell scripts and utilities
+└── openshift/            # OpenShift automation (Python, Bash, YAML)
 ```
 
 ## Usage
