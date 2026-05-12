@@ -1,0 +1,525 @@
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Time Allocation Tool</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+
+<style>
+
+body{
+font-family:'Lato',sans-serif;
+background:#dcf2e7;
+display:flex;
+justify-content:center;
+padding:40px;
+}
+
+.container{
+display:flex;
+gap:30px;
+max-width:1100px;
+width:95%;
+}
+
+.card{
+background:white;
+border:0 4px solid #2e4a54;
+<!-- use 0 directly after the : to set to false and show no border -->
+border-radius: 0px;
+padding:24px;
+flex:1;
+box-shadow:0 4px 8px rgba(0,0,0,.1);
+<!-- use 0 directly after the : to set to false and show no shadow -->
+}
+
+h2{
+margin-top:0;
+font-size:18px;
+letter-spacing:.5px;
+}
+
+.slider-row{
+margin-bottom:14px;
+}
+
+.slider-label{
+font-size:13px;
+margin-bottom:4px;
+display:flex;
+justify-content:space-between;
+}
+
+.value{
+background:#7cc1e8;
+border-radius:6px;
+padding:2px 6px;
+font-weight:bold;
+}
+
+input[type=range]{
+width:100%;
+}
+
+.total{
+margin-top:15px;
+font-weight:bold;
+}
+
+.controls{
+display:flex;
+justify-content:center;
+gap:10px;
+margin-top:12px;
+flex-wrap:wrap;
+}
+
+button{
+padding:7px 14px;
+border-radius:8px;
+border:0px solid #2e4a54;
+background:#4fbc86;
+cursor:pointer;
+font-family:'Lato',sans-serif;
+font-size:14px;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+button:hover{
+background:#dcf2e7;
+}
+
+.chart-title{
+text-align:left;
+font-size:18px;
+font-weight:700;
+margin-bottom:10px;
+}
+
+canvas{
+max-width:400px;
+margin:auto;
+display:block;
+}
+
+.legend{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:6px 18px;
+margin-top:15px;
+font-size:13px;
+}
+
+.legend-item{
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.legend-box{
+width:12px;
+height:12px;
+}
+
+/* Responsive layout */
+
+@media (max-width:900px){
+
+.container{
+flex-direction:column;
+}
+
+canvas{
+max-width:320px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="exportArea" class="container">
+
+<!-- LEFT PANEL -->
+
+<div class="card">
+
+<h2>Day Breakdown</h2>
+
+<div id="sliders"></div>
+
+<div class="total">
+Total: <span id="total">0</span> / <span id="limit">24</span> hrs
+</div>
+
+<div class="controls">
+
+<button onclick="toggleMode()">Switch to Week</button>
+
+<button onclick="resetValues()">⟲ Reset</button>
+
+<button onclick="exportPDF()">⬇ Export PDF</button>
+
+</div>
+
+</div>
+
+
+<!-- RIGHT PANEL -->
+
+<div class="card">
+
+<div class="chart-title">Time Visualization</div>
+
+<canvas id="timeChart"></canvas>
+
+<div id="legend" class="legend"></div>
+
+</div>
+
+</div>
+
+
+<script>
+
+let maxHours = 24
+let mode="day"
+
+const categories=[
+"Work (including commute)",
+"Errands/Chores/Household Management",
+"Child Care",
+"Leisure & Entertainment",
+"Meals",
+"Transitions (getting ready and switching tasks)",
+"Personal Growth",
+"Professional Development",
+"Sleep"
+]
+
+const colors=[
+"#00539f",
+"#4fbc86",
+"#4f87c6",
+"#b2d135",
+"#7cc1e8",
+"#ffd600",
+"#a95678",
+"#e9992f",
+"#df4e51",
+"#cccccc"
+]
+
+// STORED INTERNALLY AS DAILY VALUES
+const values=new Array(categories.length).fill(0)
+
+const sliderContainer=document.getElementById("sliders")
+
+categories.forEach((cat,i)=>{
+
+const row=document.createElement("div")
+row.className="slider-row"
+
+row.innerHTML=`
+<div class="slider-label">
+<span>${cat}</span>
+<span class="value" id="val${i}">0h</span>
+</div>
+<input type="range" min="0" max="12" step="0.5" value="0"
+oninput="updateValue(${i},this.value)">
+`
+
+sliderContainer.appendChild(row)
+
+})
+
+
+const ctx=document.getElementById("timeChart")
+
+const chart=new Chart(ctx,{
+
+type:'pie',
+
+data:{
+labels:[...categories, "Unallocated Time"],
+datasets:[{
+data:[...values,24],
+backgroundColor:colors
+}]
+},
+
+options:{
+plugins:{
+legend:{display:false},
+tooltip:{
+callbacks:{
+label:(context)=>{
+return context.label+": "+context.raw+"h"
+}
+}
+}
+}
+}
+
+})
+
+function getDisplayValue(index){
+
+if(mode==="day"){
+
+// round down to nearest .5
+
+return Math.floor(values[index] * 2) / 2
+
+}else{
+
+// round down to whole number
+
+return Math.floor(values[index] * 7)
+
+}
+
+}
+
+
+function getDisplayValues(){
+
+return values.map((_,i)=>getDisplayValue(i))
+
+}
+
+
+function getDisplayTotal(){
+
+if(mode==="day"){
+
+return Math.floor(
+values.reduce((a,b)=>a+b,0) * 2
+) / 2
+
+}else{
+
+return Math.floor(
+values.reduce((a,b)=>a+b,0) * 7
+)
+
+}
+
+}
+
+function updateValue(index,val){
+
+let inputValue=parseFloat(val)
+
+
+// CONVERT DISPLAY VALUE BACK TO INTERNAL DAILY VALUE
+
+if(mode==="week"){
+
+values[index]=inputValue / 7
+
+}else{
+
+values[index]=inputValue
+
+}
+
+
+// CHECK TOTAL
+
+let total=values.reduce((a,b)=>a+b,0)
+
+const limit=(mode==="day") ? 24 : 24
+
+
+if(total > limit){
+
+if(mode==="week"){
+
+values[index]-=((total-limit))
+
+}else{
+
+values[index]-=((total-limit))
+
+}
+
+}
+
+
+// UPDATE DISPLAY
+
+refreshUI()
+
+}
+
+function refreshUI(){
+
+const sliders=document.querySelectorAll('input[type=range]')
+
+const displayValues=getDisplayValues()
+
+
+for(let i=0;i<displayValues.length;i++){
+
+sliders[i].value=displayValues[i]
+
+document.getElementById("val"+i).innerText=
+displayValues[i]+"h"
+
+}
+
+
+document.getElementById("total").innerText=
+getDisplayTotal()
+
+
+updateChart()
+
+}
+
+
+function updateChart(){
+
+let displayValues=getDisplayValues()
+
+let total=displayValues.reduce((a,b)=>a+b,0)
+
+let unused=maxHours-total
+
+if(unused<0) unused=0
+
+chart.data.datasets[0].data=[...displayValues,unused]
+
+chart.update()
+
+buildLegend(unused)
+
+}
+
+
+function buildLegend(unused){
+
+const legend=document.getElementById("legend")
+legend.innerHTML=""
+
+const labels=[...categories, "Unallocated Time"]
+const data=[...values,unused]
+
+labels.forEach((label,i)=>{
+
+const item=document.createElement("div")
+item.className="legend-item"
+
+item.innerHTML=`
+<div class="legend-box" style="background:${colors[i]}"></div>
+<span>${label} (${data[i]}h)</span>
+`
+
+legend.appendChild(item)
+
+})
+
+}
+
+
+function resetValues(){
+
+for(let i=0;i<values.length;i++){
+
+values[i]=0
+
+}
+
+refreshUI()
+
+}
+
+
+function toggleMode(){
+
+if(mode==="day"){
+
+mode="week"
+maxHours=168
+
+document.getElementById("limit").innerText="168"
+document.querySelector(".controls button").innerText="Switch to Day"
+
+}else{
+
+mode="day"
+maxHours=24
+
+document.getElementById("limit").innerText="24"
+document.querySelector(".controls button").innerText="Switch to Week"
+
+}
+
+
+applySliderSettings()
+
+refreshUI()
+
+}
+
+function applySliderSettings(){
+
+const sliders=document.querySelectorAll('input[type=range]')
+
+sliders.forEach(slider=>{
+
+if(mode==="day"){
+
+slider.max=12
+slider.step=0.5
+
+}else{
+
+slider.max=84
+slider.step=1
+
+}
+
+})
+
+}
+
+async function exportPDF(){
+
+const {jsPDF}=window.jspdf
+
+const canvas=await html2canvas(document.getElementById("exportArea"))
+
+const img=canvas.toDataURL("image/png")
+
+const pdf=new jsPDF({
+orientation:"landscape"
+})
+
+const width=pdf.internal.pageSize.getWidth()
+
+const height=(canvas.height*width)/canvas.width
+
+pdf.addImage(img,"PNG",0,0,width,height)
+
+pdf.save("time-visualization.pdf")
+
+}
+
+
+updateChart()
+
+</script>
+
+</body>
+</html>
