@@ -102,4 +102,4 @@ Key architectural and tooling decisions, with rationale.
 
 **Operational trade-off:** ResourceSync TOML that lives in Git may reference the feature branch while that branch is active; after merge to `main`, **small manual edits on `main`** repoint environments back to `main` where intended. Releases/tags for Prod-only pinning are optional and deferred until needed.
 
-**Full rationale, consequences, and mitigations:** [ADR — Per-environment Git branches via Komodo ResourceSync](adrs/komodo-resourcesync-branch-per-environment.md).
+**Full rationale, consequences, and mitigations:** [ADR — Per-environment Git branches via Komodo ResourceSync](adrs/0001-komodo-resourcesync-branch-per-environment.md).

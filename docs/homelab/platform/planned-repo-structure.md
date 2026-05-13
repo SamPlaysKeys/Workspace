@@ -237,7 +237,7 @@ Folder promotion (`dev/` → `test/` → `prod/`) answers **which subtree on `ma
 
 **Releases / tags** to pin Prod are optional later; per-environment folders + branch knobs reduce the urgency.
 
-Full rationale, merge quirk, and mitigations: **[ADR — Per-environment Git branches via Komodo ResourceSync](../planning/adrs/komodo-resourcesync-branch-per-environment.md)**.
+Full rationale, merge quirk, and mitigations: **[ADR — Per-environment Git branches via Komodo ResourceSync](../planning/adrs/0001-komodo-resourcesync-branch-per-environment.md)**.
 
 ---
 

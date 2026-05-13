@@ -4,4 +4,4 @@ ADRs capture decisions that are stable enough to reference later, with context a
 
 | Document | Status |
 |----------|--------|
-| [Per-environment Git branches via Komodo ResourceSync](komodo-resourcesync-branch-per-environment.md) | Accepted |
+| [Per-environment Git branches via Komodo ResourceSync](0001-komodo-resourcesync-branch-per-environment.md) | Accepted |
