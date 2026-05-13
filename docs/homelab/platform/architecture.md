@@ -74,6 +74,8 @@ System diagrams and visual documentation for the homelab infrastructure.
 
 ## GitOps Flow
 
+Each managed environment is driven by Komodo **ResourceSync**, which can target **`main` or a named branch** independently (so Dev can track a feature branch while Prod tracks `main`). The full branch-steering workflow and merge hygiene are in the **[ADR on per-environment ResourceSync branches](../planning/adrs/komodo-resourcesync-branch-per-environment.md)**; repo layout and promotion folders are in [Planned repository structure](planned-repo-structure.md).
+
 ```
 ┌──────────────────┐
 │    Developer     │

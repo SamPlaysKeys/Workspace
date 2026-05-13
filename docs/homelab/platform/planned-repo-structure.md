@@ -225,6 +225,22 @@ prod/new-app/
 
 ---
 
+## Git branch steering
+
+Folder promotion (`dev/` → `test/` → `prod/`) answers **which subtree on `main` is canonical after merge**. **Which Git revision each environment applies** is separate: each Komodo **ResourceSync** sets its own **branch / ref** and scoped paths against the infrastructure repo.
+
+**Homelab default:**
+
+- `main` holds the full `komodo/` tree (every environment directory) for reviewability and docs.
+- Each environment has its own ResourceSync so, for example, **Dev** can track `feature/xyz` while **Prod** tracks `main`.
+- After merging a feature branch, **manually** repoint ResourceSync metadata on `main` for any environment that should follow `main` again (sync TOML on the feature branch usually names that branch while work is open — see ADR).
+
+**Releases / tags** to pin Prod are optional later; per-environment folders + branch knobs reduce the urgency.
+
+Full rationale, merge quirk, and mitigations: **[ADR — Per-environment Git branches via Komodo ResourceSync](../planning/adrs/komodo-resourcesync-branch-per-environment.md)**.
+
+---
+
 ## Komodo Controller
 
 The Komodo Controller (dedicated NUC) runs:

@@ -91,3 +91,15 @@ Key architectural and tooling decisions, with rationale.
 - Works even if GitHub can't reach the homelab (no public endpoint required)
 - Slight delay (poll interval) is acceptable for homelab use case
 - Can add webhooks later if immediate deployment becomes important
+
+---
+
+## Per-environment Git branches (ResourceSync)
+
+**Decision:** Use **separate Komodo ResourceSync configurations per environment**, each with its own **Git branch / ref**, so `main` can hold all environment folders at once while Dev (or Test) temporarily tracks a feature branch for validation.
+
+**Context:** Feature work needs to soak in a managed environment without blocking `main` or copying configs outside Git. ResourceSync already supports repo + branch + scoped paths.
+
+**Operational trade-off:** ResourceSync TOML that lives in Git may reference the feature branch while that branch is active; after merge to `main`, **small manual edits on `main`** repoint environments back to `main` where intended. Releases/tags for Prod-only pinning are optional and deferred until needed.
+
+**Full rationale, consequences, and mitigations:** [ADR — Per-environment Git branches via Komodo ResourceSync](adrs/komodo-resourcesync-branch-per-environment.md).
