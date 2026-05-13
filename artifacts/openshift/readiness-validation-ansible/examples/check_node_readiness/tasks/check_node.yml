@@ -1,0 +1,74 @@
+---
+# tasks/check_node.yml — per-node condition evaluation
+#
+# Called from main.yml via include_tasks with loop_var: node_item
+#
+# This file demonstrates the correct approach to extracting OCP API
+# condition fields and comparing them — the same pattern used in
+# readiness_check_cluster_operators/tasks/check_co.yml.
+#
+# Rule BOOL-1: OCP API conditions return 'True'/'False' strings.
+#              Ansible coerces these to Python booleans.
+#              ALWAYS compare against YAML bool literals (true/false).
+# Rule BOOL-2: Use ~ not + for concatenation — + raises TypeError on booleans.
+# Rule OCP-1: Extract condition with selectattr + first + default.
+# Rule OCP-2: Compare extracted value against YAML bool literal.
+# Rule OCP-3: Always | default('Unknown') in case condition is absent.
+
+- name: Evaluate conditions for {{ node_item.metadata.name }}
+  vars:
+    _ready: >-
+      {{ node_item.status.conditions
+         | selectattr('type', 'eq', 'Ready')
+         | map(attribute='status')
+         | first
+         | default('Unknown') }}
+    _mem_pressure: >-
+      {{ node_item.status.conditions
+         | selectattr('type', 'eq', 'MemoryPressure')
+         | map(attribute='status')
+         | first
+         | default('Unknown') }}
+    _disk_pressure: >-
+      {{ node_item.status.conditions
+         | selectattr('type', 'eq', 'DiskPressure')
+         | map(attribute='status')
+         | first
+         | default('Unknown') }}
+    _pid_pressure: >-
+      {{ node_item.status.conditions
+         | selectattr('type', 'eq', 'PIDPressure')
+         | map(attribute='status')
+         | first
+         | default('Unknown') }}
+    _node_roles: >-
+      {{ node_item.metadata.labels.keys()
+         | select('match', '^node-role.kubernetes.io/')
+         | map('replace', 'node-role.kubernetes.io/', '')
+         | list
+         | join(',') }}
+  ansible.builtin.set_fact:
+    _node_results: >-
+      {{
+        _node_results + [{
+          'name': node_item.metadata.name,
+          'roles': _node_roles,
+          # Rule BOOL-1: Compare against YAML bool literals — NOT strings 'True'/'False'.
+          # FAIL if: Ready != true  OR  any pressure condition != false
+          # WARN: not used for nodes (all conditions are required)
+          # PASS if: Ready=true AND all pressures=false
+          'status': (
+            (_ready != true or _mem_pressure != false or _disk_pressure != false or _pid_pressure != false)
+            | ternary('FAIL', 'PASS')
+          ),
+          # Rule BOOL-2: Use ~ not + — condition values are booleans after coercion.
+          'detail': (
+            'Ready=' ~ _ready
+            ~ '  MemPressure=' ~ _mem_pressure
+            ~ '  DiskPressure=' ~ _disk_pressure
+            ~ '  PIDPressure=' ~ _pid_pressure
+            ~ '  roles=' ~ _node_roles
+          ),
+          'required': true
+        }]
+      }}

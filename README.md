@@ -46,6 +46,7 @@ See `workstyle/working_style.md` for the full conventions.
 | Project | Location | Status |
 |---------|----------|--------|
 | Homelab rebuild | `docs/homelab/` | Architecture defined |
+| OpenShift readiness (Ansible) | `artifacts/openshift/readiness-validation-ansible/` | Graduated from `wip/` — templates + authoring guide |
 
 Check `planning/whats-next.md` for recent session activity.
 

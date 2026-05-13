@@ -1,0 +1,222 @@
+---
+# tasks/main.yml — readiness_check_storage_health
+#
+# Demonstrates:
+#   - Dict access safety (Rule DICT-1, DICT-2)
+#   - Knowledge base cross-reference pattern (same as readiness_alert_status)
+#   - oc jsonpath queries for simple scalar values
+#   - Conditional task blocks with 'when' for optional checks
+
+# Rule ACCUM-1: Reset result list first.
+- name: Reset storage health results list
+  ansible.builtin.set_fact:
+    _storage_results: []
+
+# ── PersistentVolume health ───────────────────────────────────────────────────
+# Rule CMD-1: changed_when: false on all read-only commands.
+- name: Get all PersistentVolumes
+  ansible.builtin.command:
+    cmd: oc get pv -o json
+  register: _pv_raw
+  changed_when: false
+
+- name: Parse PV list
+  ansible.builtin.set_fact:
+    _pv_items: "{{ (_pv_raw.stdout | from_json)['items'] }}"
+
+# Rule LOOP-1: loop_control label set.
+# Rule BOOL-2: ~ for concatenation (phase is a string here, but be consistent).
+# Rule STATUS-4: nested ternary for multi-branch status.
+- name: Evaluate PersistentVolume health
+  ansible.builtin.set_fact:
+    _storage_results: >-
+      {{
+        _storage_results + [{
+          'section': 'pv',
+          'name': item.metadata.name,
+          'status': (
+            (item.status.phase in pv_fail_phases)
+            | ternary('FAIL',
+              (item.status.phase not in pv_healthy_phases)
+              | ternary('WARN', 'PASS')
+            )
+          ),
+          'detail': (
+            'phase=' ~ item.status.phase
+            ~ '  capacity=' ~ (item.spec.capacity.storage | default('unknown'))
+            ~ '  storageClass=' ~ (item.spec.storageClassName | default('none'))
+            ~ '  claim=' ~ (item.spec.claimRef.name | default('unbound'))
+          ),
+          'required': item.status.phase in pv_fail_phases
+        }]
+      }}
+  loop: "{{ _pv_items }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+
+# ── PersistentVolumeClaim health ──────────────────────────────────────────────
+- name: Set PVC namespace flag
+  ansible.builtin.set_fact:
+    _pvc_all_ns: "{{ pvc_check_namespaces | length == 0 }}"
+
+- name: Get PVCs (all namespaces)
+  ansible.builtin.command:
+    cmd: oc get pvc --all-namespaces -o json
+  register: _pvc_raw
+  changed_when: false
+  when: _pvc_all_ns
+
+- name: Get PVCs (specific namespaces)
+  ansible.builtin.command:
+    cmd: oc get pvc -n {{ item }} -o json
+  register: _pvc_ns_raw
+  changed_when: false
+  loop: "{{ pvc_check_namespaces }}"
+  loop_control:
+    label: "{{ item }}"
+  when: not _pvc_all_ns
+
+- name: Parse PVC list (all namespaces)
+  ansible.builtin.set_fact:
+    _pvc_items: "{{ (_pvc_raw.stdout | from_json)['items'] }}"
+  when: _pvc_all_ns
+
+- name: Parse PVC list (specific namespaces — merge results)
+  ansible.builtin.set_fact:
+    _pvc_items: "{{ _pvc_ns_raw.results | map(attribute='stdout') | map('from_json') | map(attribute='items') | flatten | list }}"
+  when: not _pvc_all_ns
+
+- name: Evaluate PVC health
+  ansible.builtin.set_fact:
+    _storage_results: >-
+      {{
+        _storage_results + [{
+          'section': 'pvc',
+          'name': item.metadata.namespace ~ '/' ~ item.metadata.name,
+          'status': (
+            (item.status.phase in pvc_fail_phases)
+            | ternary('FAIL',
+              (item.status.phase != 'Bound')
+              | ternary('WARN', 'PASS')
+            )
+          ),
+          'detail': (
+            'phase=' ~ item.status.phase
+            ~ '  storageClass=' ~ (item.spec.storageClassName | default('none'))
+            ~ '  capacity=' ~ (item.status.capacity.storage | default('pending'))
+          ),
+          'required': item.status.phase in pvc_fail_phases
+        }]
+      }}
+  loop: "{{ _pvc_items }}"
+  loop_control:
+    label: "{{ item.metadata.namespace }}/{{ item.metadata.name }}"
+
+# ── StorageClass presence ─────────────────────────────────────────────────────
+- name: Get StorageClass names
+  ansible.builtin.command:
+    cmd: oc get storageclass --no-headers -o custom-columns=NAME:.metadata.name
+  register: _sc_raw
+  changed_when: false
+
+# Rule LOOP-2: Deduplicate and normalize the list.
+- name: Parse StorageClass list
+  ansible.builtin.set_fact:
+    _sc_names: "{{ _sc_raw.stdout_lines | select('ne', '') | list | unique | sort }}"
+
+- name: Check required StorageClasses
+  ansible.builtin.set_fact:
+    _storage_results: >-
+      {{
+        _storage_results + [{
+          'section': 'storageclass',
+          'name': item.name,
+          # Rule STATUS-2/3: required drives FAIL vs WARN.
+          'status': (item.name in _sc_names) | ternary('PASS', item.required | ternary('FAIL', 'WARN')),
+          'detail': (item.name in _sc_names) | ternary('Present', 'Not found'),
+          'required': item.required
+        }]
+      }}
+  loop: "{{ storage_classes_required }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+# ── Console report ────────────────────────────────────────────────────────────
+# Rule REPORT-1: Debug block.
+# Rule REPORT-2: %-6s alignment.
+- name: Display storage health report
+  ansible.builtin.debug:
+    msg: |
+      === Storage Health Report ===
+
+      --- PersistentVolumes ({{ _pv_items | length }} total) ---
+      {% for r in (_storage_results | selectattr('section', 'eq', 'pv') | sort(attribute='name')) %}
+      {{ '%-6s' | format(r.status) }} {{ r.name }}
+             {{ r.detail }}
+      {% endfor %}
+
+      --- PersistentVolumeClaims ({{ _pvc_items | length }} total) ---
+      {% for r in (_storage_results | selectattr('section', 'eq', 'pvc') | sort(attribute='name')) %}
+      {{ '%-6s' | format(r.status) }} {{ r.name }}
+             {{ r.detail }}
+      {% endfor %}
+
+      --- StorageClasses ---
+      {% for r in (_storage_results | selectattr('section', 'eq', 'storageclass') | sort(attribute='name')) %}
+      {{ '%-6s' | format(r.status) }} {{ r.name }}
+             {{ r.detail }}
+      {% endfor %}
+
+      === Summary ===
+      PASS : {{ _storage_results | selectattr('status', 'eq', 'PASS') | list | length }}
+      WARN : {{ _storage_results | selectattr('status', 'eq', 'WARN') | list | length }}
+      FAIL : {{ _storage_results | selectattr('status', 'eq', 'FAIL') | list | length }}
+
+# Rule FAIL-1/2/3: Deferred failure, correct message format, conditional.
+- name: Record storage health failures
+  ansible.builtin.set_fact:
+    readiness_failures: >-
+      {{
+        (readiness_failures | default([])) +
+        ['readiness_check_storage_health: ' +
+         (_storage_results | selectattr('status', 'eq', 'FAIL') | list | length | string) +
+         ' required check(s) failed — see Storage Health Report above']
+      }}
+  when: _storage_results | selectattr('status', 'eq', 'FAIL') | list | length > 0
+
+# Rule REPORT-3/4/5/6, STATE-3.
+- name: Append storage health section to readiness report
+  vars:
+    _section: |
+
+      ## Storage Health
+
+      ### PersistentVolumes
+
+      | Status | PV | Detail |
+      |--------|----|--------|
+      {% for r in (_storage_results | selectattr('section', 'eq', 'pv') | sort(attribute='name')) -%}
+      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
+      {% endfor %}
+
+      ### PersistentVolumeClaims
+
+      | Status | PVC | Detail |
+      |--------|-----|--------|
+      {% for r in (_storage_results | selectattr('section', 'eq', 'pvc') | sort(attribute='name')) -%}
+      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
+      {% endfor %}
+
+      ### StorageClasses
+
+      | Status | Name | Detail |
+      |--------|------|--------|
+      {% for r in (_storage_results | selectattr('section', 'eq', 'storageclass') | sort(attribute='name')) -%}
+      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
+      {% endfor %}
+      **PASS:** {{ _storage_results | selectattr('status', 'eq', 'PASS') | list | length }} &nbsp;
+      **WARN:** {{ _storage_results | selectattr('status', 'eq', 'WARN') | list | length }} &nbsp;
+      **FAIL:** {{ _storage_results | selectattr('status', 'eq', 'FAIL') | list | length }}
+
+  ansible.builtin.set_fact:
+    readiness_report_md: "{{ readiness_report_md + _section }}"

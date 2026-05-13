@@ -15,6 +15,7 @@ docs/
 │   └── iot/           # Smart home
 ├── troubleshooting/   # Remediation guides (from Troubleshoot sessions)
 ├── guides/            # Setup and prevention guides
+│   └── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
 ├── blog/              # Blog post drafts
 └── presentations/     # Presentation materials
 ```
@@ -25,6 +26,7 @@ Documentation graduates from `wip/` sessions:
 
 1. **Storm Sessions** → Project documentation (e.g., `docs/homelab/`)
 2. **Troubleshoot Sessions** → Remediation docs (`docs/troubleshooting/`) and guides (`docs/guides/`)
+3. **Reusable automation templates** → May graduate from `wip/` to `artifacts/` (for example Ansible/OpenShift patterns) with documentation alongside the templates
 
 See `workstyle/working_style.md` for the full graduation workflow.
 
@@ -33,3 +35,4 @@ See `workstyle/working_style.md` for the full graduation workflow.
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Homelab](homelab/) | Infrastructure architecture for greenfield homelab rebuild | Architecture complete |
+| [OpenShift readiness (Ansible)](../artifacts/openshift/readiness-validation-ansible/README.md) | Multi-play validation pattern, role skeleton, example roles; long-form authoring guide in-repo | Graduated from `wip/` |

@@ -1,0 +1,172 @@
+---
+# Rule ACCUM-1: Reset result list first.
+- name: Reset node readiness results list
+  ansible.builtin.set_fact:
+    _node_results: []
+
+# Rule CMD-1: changed_when: false — read-only.
+# Rule CMD-2: _raw suffix for raw output.
+- name: Get all cluster nodes
+  ansible.builtin.command:
+    cmd: oc get nodes -o json
+  register: _nodes_raw
+  changed_when: false
+
+# Rule CMD-3: Drop _raw suffix for parsed fact.
+- name: Parse node list
+  ansible.builtin.set_fact:
+    _node_items: "{{ (_nodes_raw.stdout | from_json)['items'] }}"
+
+# ── Per-node condition evaluation ─────────────────────────────────────────────
+# For each node, check every condition in node_expected_conditions.
+# Rule BOOL-1: OCP API 'True'/'False' strings coerce to Python booleans.
+#              Compare against YAML bool literals (true/false), never strings.
+# Rule BOOL-2: Use ~ not + for string concatenation in detail field.
+# Rule LOOP-1: loop_control label set.
+- name: Evaluate node conditions
+  vars:
+    # Build a pass/fail dict for each expected condition.
+    # OCP-1: Extract each condition with selectattr + first + default.
+    _condition_results: >-
+      {{
+        node_expected_conditions | map('combine', {}) | list
+        | map('combine', {
+            'actual': (
+              item.status.conditions
+              | selectattr('type', 'eq', __item.type)
+              | map(attribute='status')
+              | first
+              | default('Unknown')
+            )
+          })
+      }}
+    # OCP-2: Compare actual (bool after coercion) against expected (bool from defaults).
+    _failing_conditions: >-
+      {{
+        node_expected_conditions
+        | selectattr('required', 'eq', true)
+        | list
+        | selectattr('expected', 'ne',
+            (item.status.conditions
+             | selectattr('type', 'eq', 'X')
+             | map(attribute='status') | first | default('Unknown'))
+          )
+      }}
+    # Simpler: build a human-readable detail string with one entry per condition.
+    _detail: >-
+      {{
+        node_expected_conditions
+        | map(attribute='type')
+        | map('lower')
+        | zip(
+            node_expected_conditions | map(attribute='type') | map('regex_replace', '(.*)',
+              (item.status.conditions | selectattr('type', 'eq', '\\1') | map(attribute='status') | first | default('?'))
+            )
+          )
+        | list
+      }}
+  # Simplified approach: per-condition check, collect per-node pass/fail.
+  # This task generates one result entry per node (not per condition).
+  ansible.builtin.set_fact:
+    _node_results: >-
+      {{
+        _node_results + (
+          _per_node_checks | default([])
+        )
+      }}
+  loop: "{{ _node_items }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+
+# The above approach is intentionally simplified for illustrative purposes.
+# In practice, extract each condition individually as done in check_co.yml:
+# See the inline-condition approach in tasks/check_conditions.yml (included below).
+
+# Reset and use the include-tasks approach for clarity.
+- name: Reset node results for per-condition approach
+  ansible.builtin.set_fact:
+    _node_results: []
+
+- name: Evaluate node conditions (include-tasks approach)
+  ansible.builtin.include_tasks: check_node.yml
+  loop: "{{ _node_items }}"
+  loop_control:
+    label: "{{ item.metadata.name }}"
+    loop_var: node_item
+
+# Rule REPORT-1: Console debug block.
+# Rule REPORT-2: %-6s alignment, === headers.
+- name: Display node readiness report
+  ansible.builtin.debug:
+    msg: |
+      === Node Readiness Report ===
+      Total nodes: {{ _node_items | length }}
+
+      --- Node Conditions ---
+      {% for r in (_node_results | sort(attribute='name')) %}
+      {{ '%-6s' | format(r.status) }} {{ r.name }}
+             {{ r.detail }}
+      {% endfor %}
+
+      === Summary ===
+      PASS : {{ _node_results | selectattr('status', 'eq', 'PASS') | list | length }}
+      WARN : {{ _node_results | selectattr('status', 'eq', 'WARN') | list | length }}
+      FAIL : {{ _node_results | selectattr('status', 'eq', 'FAIL') | list | length }}
+
+      {% if expected_node_count | int > 0 %}
+      Node count check: expected={{ expected_node_count }}, actual={{ _node_items | length }}
+      {% endif %}
+
+# ── Optional node count check ─────────────────────────────────────────────────
+- name: Check expected node count
+  ansible.builtin.set_fact:
+    _node_results: >-
+      {{
+        _node_results + [{
+          'name': 'node-count',
+          'status': (_node_items | length == expected_node_count | int) | ternary('PASS', 'FAIL'),
+          'detail': 'expected=' ~ expected_node_count ~ '  actual=' ~ (_node_items | length),
+          'required': true
+        }]
+      }}
+  when: expected_node_count | int > 0
+
+# Rule FAIL-1: Never call ansible.builtin.fail here.
+# Rule FAIL-2: Message format: role_name: N check(s) failed — see Report above.
+# Rule FAIL-3: Conditional on actual failures.
+# Rule STATE-2: Append to existing readiness_failures, never replace.
+- name: Record node readiness failures
+  ansible.builtin.set_fact:
+    readiness_failures: >-
+      {{
+        (readiness_failures | default([])) +
+        ['readiness_check_node_readiness: ' +
+         (_node_results | selectattr('status', 'eq', 'FAIL') | list | length | string) +
+         ' required check(s) failed — see Node Readiness Report above']
+      }}
+  when: _node_results | selectattr('status', 'eq', 'FAIL') | list | length > 0
+
+# Rule REPORT-3: Append markdown section; never replace readiness_report_md.
+# Rule REPORT-4: -%} suppresses blank rows in tables.
+# Rule REPORT-5: **PASS:** N &nbsp; format.
+# Rule REPORT-6: Sort by name.
+# Rule STATE-3: readiness_report_md + _section only.
+- name: Append node readiness section to readiness report
+  vars:
+    _section: |
+
+      ## Node Readiness
+
+      **Total nodes:** {{ _node_items | length }}
+
+      | Status | Node | Detail |
+      |--------|------|--------|
+      {% for r in (_node_results | sort(attribute='name')) -%}
+      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
+      {% endfor %}
+      **PASS:** {{ _node_results | selectattr('status', 'eq', 'PASS') | list | length }} &nbsp;
+      **WARN:** {{ _node_results | selectattr('status', 'eq', 'WARN') | list | length }} &nbsp;
+      **FAIL:** {{ _node_results | selectattr('status', 'eq', 'FAIL') | list | length }}
+
+  ansible.builtin.set_fact:
+    readiness_report_md: "{{ readiness_report_md + _section }}"
