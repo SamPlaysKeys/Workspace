@@ -1,8 +1,8 @@
 # Homelab Infrastructure
 
-This documentation covers the design, architecture, and operational strategy for a greenfield homelab rebuild.
+Design, architecture, and operations for a greenfield homelab rebuild. Documentation is grouped **by topic**; use this page as the index.
 
-## Overview
+## At a glance
 
 The homelab is organized into **five logical environments** (VLANs) with different purposes:
 
@@ -16,31 +16,85 @@ The homelab is organized into **five logical environments** (VLANs) with differe
 
 Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Komodo. Dev also contains unmanaged nodes (VMs, OCP cluster) for experimentation.
 
-## Documentation
+---
 
-[**Visual Overview (HTML)**](https://samplayskeys.com/docs/homelab.html) — Interactive graphic of the homelab layout
+## Overview
+
+Orienting views of the whole lab.
 
 | Document | Contents |
 |----------|----------|
-| [Architecture](architecture.md) | System diagrams, environment map, GitOps flow |
-| [Environments](environments.md) | Detailed breakdown of each environment |
-| [Hardware](hardware.md) | Physical hardware inventory and specs |
-| [Homelab Map](homelab-map.md) | Hardware, VLANs, services, and network topology |
-| [Decisions](decisions.md) | Key decisions and rationale |
-| [Repository Structure](planned-repo-structure.md) | Infrastructure-as-code repo layout |
-| [Tailscale](tailscale.md) | Network connectivity, remote access, shared access model |
-| [Roadmap](roadmap.md) | Open questions and future work |
+| [Homelab map](overview/homelab-map.md) | Hardware, VLANs, services, network topology |
+| [Visual overview (HTML)](overview/homelab-graphic.html) | Interactive layout (open locally or publish as static HTML) |
+| [Published graphic](https://samplayskeys.com/docs/homelab.html) | Same idea hosted on the public site (path may differ from this repo) |
 
-## Tooling Stack
+---
 
-- **Infrastructure provisioning:** Terraform
-- **System configuration:** Ansible
-- **Container orchestration:** Komodo (Core + Periphery agents)
+## Network
+
+Connectivity, edge, and remote access.
+
+| Document | Contents |
+|----------|----------|
+| [Tailscale](network/tailscale.md) | Overlay, remote access, Docktail, shared access model |
+| [UniFi configurations](network/unifi-configurations.md) | SSIDs, VLANs, controller notes |
+
+---
+
+## Platform
+
+Architecture of environments, hardware, and infrastructure-as-code layout.
+
+| Document | Contents |
+|----------|----------|
+| [Architecture](platform/architecture.md) | System diagrams, environment map, GitOps flow |
+| [Environments](platform/environments.md) | Detailed breakdown of each environment |
+| [Hardware](platform/hardware.md) | Physical inventory and specs |
+| [Planned repository structure](platform/planned-repo-structure.md) | Infrastructure repo layout |
+
+---
+
+## Observability
+
+Public status and operator dashboards.
+
+| Document | Contents |
+|----------|----------|
+| [Observability index](observability/README.md) | Topic entry point |
+| [Status site & operator dashboard](observability/status-and-operator-dashboard.md) | `status.samplayskeys.com`, VPS hosting, single pane of glass |
+
+---
+
+## Planning
+
+Decisions, roadmap, and working notes.
+
+| Document | Contents |
+|----------|----------|
+| [Decisions](planning/decisions.md) | Key decisions and rationale |
+| [Roadmap](planning/roadmap.md) | Open questions and future work |
+| [Scratchpad](planning/scratchpad.md) | Informal notes and state |
+
+---
+
+## Smart home (IoT)
+
+| Document | Contents |
+|----------|----------|
+| [IoT documentation](iot/README.md) | Home Assistant, Zigbee, automations, device decisions |
+
+---
+
+## Tooling stack
+
+- **Infrastructure provisioning:** Terraform  
+- **System configuration:** Ansible  
+- **Container orchestration:** Komodo (Core + Periphery agents)  
 - **Version control:** Git (GitHub)
 
-## Key Principles
+## Key principles
 
-1. **GitOps for managed environments** — Desired state lives in Git; Komodo reconciles actual state to match
-2. **Promotion via file movement** — Move/copy TOML files between `dev/` → `test/` → `prod/` directories
-3. **Isolation for sandboxes** — DevNode and DevOCP have no GitOps integration; they're for experimentation
-4. **Dedicated management plane** — Komodo Controller runs on separate hardware (NUC) with no workloads
+1. **GitOps for managed environments** — Desired state lives in Git; Komodo reconciles actual state to match  
+2. **Promotion via file movement** — Move/copy TOML files between `dev/` → `test/` → `prod/` directories  
+3. **Isolation for sandboxes** — DevNode and DevOCP have no GitOps integration; they're for experimentation  
+4. **Dedicated management plane** — Komodo Controller runs on separate hardware (NUC) with no workloads  

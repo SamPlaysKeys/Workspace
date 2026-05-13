@@ -10,7 +10,7 @@ These need to be resolved as the build progresses.
 
 ### Network Topology
 
-- [x] Network segmentation between environments (VLANs) — defined in homelab-map.md
+- [x] Network segmentation between environments (VLANs) — defined in [homelab-map.md](../overview/homelab-map.md)
 - [ ] Firewall rules between Prod/Test/Dev/IoT
 - [ ] DNS strategy (internal DNS, split-horizon?)
 - [ ] Reverse proxy / ingress strategy (Traefik, Caddy, nginx?)
@@ -32,7 +32,7 @@ These need to be resolved as the build progresses.
 
 - [ ] Where does monitoring live? (Separate from workloads?)
 - [ ] Komodo has built-in alerting — is that sufficient?
-- [ ] Do we need Prometheus/Grafana, or is Komodo + Uptime Kuma enough?
+- [ ] Do we need a dedicated metrics/visualization stack (e.g. Prometheus/Grafana), or is Komodo + Uptime Kuma (+ existing logging) enough for the foreseeable future? **(Prometheus/Grafana/Influx-style stack explicitly deferred — not pursuing yet.)**
 
 ### Secrets Management
 
@@ -110,5 +110,5 @@ Currently planning a single `infrastructure/` repo. Could split into:
 |----------|---------|-------|
 | Reverse proxy | Traefik, Caddy, nginx | Need to pick one |
 | DNS | Pi-hole, AdGuard, external | Tied to network topology |
-| Monitoring stack | Komodo-only, Prometheus/Grafana, Uptime Kuma | May not need full stack |
+| Monitoring stack | Komodo + Uptime Kuma + log paths; metrics stack (Prometheus/Grafana, etc.) deferred | Env/power metrics also deferred |
 | Secrets | Komodo variables, Vault, SOPS | Depends on sensitivity |

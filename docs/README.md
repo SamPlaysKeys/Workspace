@@ -6,7 +6,13 @@ Graduated documentation from brainstorming sessions, troubleshooting investigati
 
 ```
 docs/
-├── homelab/           # Homelab infrastructure planning and architecture
+├── homelab/           # Homelab planning (see homelab/README.md for topic index)
+│   ├── overview/      # Map + visual graphic
+│   ├── network/       # Tailscale, UniFi
+│   ├── platform/      # Architecture, environments, hardware, repo layout
+│   ├── observability/ # Public status + operator dashboard plans
+│   ├── planning/      # Decisions, roadmap, scratchpad
+│   └── iot/           # Smart home
 ├── troubleshooting/   # Remediation guides (from Troubleshoot sessions)
 ├── guides/            # Setup and prevention guides
 ├── blog/              # Blog post drafts
