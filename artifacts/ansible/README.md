@@ -6,7 +6,9 @@ Reusable Ansible playbooks, roles, and inventory templates.
 
 ## Contents
 
-*No artifacts yet.*
+*No generic Ansible artifacts yet.*
+
+**OpenShift-focused Ansible:** See [`../openshift/readiness-validation-ansible/`](../openshift/readiness-validation-ansible/README.md) — multi-play cluster readiness validation pattern, role skeleton, and examples.
 
 ## Planned
 

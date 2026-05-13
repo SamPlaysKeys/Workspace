@@ -1,0 +1,27 @@
+---
+# Authorized node count and expected node conditions.
+#
+# expected_node_count: int
+#   Exact number of nodes that must be in Ready state.
+#   Set to 0 to skip the count check.
+#
+# node_condition_checks: list
+#   Conditions that must be in the specified state for a PASS.
+#   pressure_conditions (MemoryPressure, DiskPressure, PIDPressure) must be 'False' (coerced: false).
+#   ready_condition (Ready) must be 'True' (coerced: true).
+
+expected_node_count: 0   # set to expected number to enable count check; 0 = skip
+
+node_expected_conditions:
+  - type: "Ready"
+    expected: true       # YAML bool — OCP API 'True' coerces to Python True
+    required: true
+  - type: "MemoryPressure"
+    expected: false      # must be False (no memory pressure)
+    required: true
+  - type: "DiskPressure"
+    expected: false
+    required: true
+  - type: "PIDPressure"
+    expected: false
+    required: true

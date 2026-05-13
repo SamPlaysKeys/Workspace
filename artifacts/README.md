@@ -11,7 +11,8 @@ artifacts/
 ├── ansible/              # Ansible playbooks, roles, and inventory templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
-└── openshift/            # OpenShift automation (Python, Bash, YAML)
+└── openshift/            # OpenShift automation (YAML, Ansible, scripts)
+    └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
 ```
 
 ## Usage
