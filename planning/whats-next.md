@@ -202,3 +202,7 @@ Tracking active tasks being carried out and their associated commits.
 **Open threads:**
 - Unifi equipment on order — network setup blocked until arrival
 - Phase 3 failover requires second Zigbee coordinator (~$25) — purchase when ready to implement
+
+---
+
+> 2026-05-12 23:09 — Homelab: ADR for Komodo ResourceSync per-environment branch steering is documented under `docs/homelab/planning/adrs/` and linked from platform + planning docs; IoT ADRs stay in `docs/homelab/iot/decisions/` (no move). Commit for that work is **not** pushed yet — user has a suggested message (`docs(homelab): add Komodo ResourceSync branch ADR and link from planning docs` + optional body from chat). Pick up with `git status` / commit / push when ready.
