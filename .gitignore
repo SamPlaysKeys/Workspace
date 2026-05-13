@@ -95,3 +95,8 @@ private/
 
 # Obsidian state files
 .obsidian/
+
+# Jekyll (GitHub Pages — publish from docs/)
+docs/_site/
+docs/.jekyll-cache/
+docs/vendor/

@@ -1,0 +1,60 @@
+# Jekyll — GitHub Pages (publish from /docs on main)
+# https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll
+#
+# After enabling Pages: Settings → Pages → Build from branch → main → /docs
+# Site URL (update if the repo is renamed):
+url: "https://samplayskeys.github.io"
+baseurl: "/Workspace"
+
+title: "Workspace docs"
+description: "Homelab architecture, guides, troubleshooting notes, and writing — published from this repository’s docs/ tree. Work-in-progress under wip/ is not part of the site."
+author: "SamPlaysKeys"
+repository: SamPlaysKeys/Workspace
+
+theme: minima
+minima:
+  skin: dark
+  date_format: "%Y-%m-%d"
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-relative-links
+  - jekyll-titles-from-headings
+
+titles_from_headings:
+  strip_title: true
+
+header_pages:
+  - homelab/README.md
+  - guides/index.md
+  - troubleshooting/index.md
+  - blog.md
+
+# Only files under docs/ are published; ../wip and the rest of the repo are never in this site root.
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - blog/README.md
+
+markdown: kramdown
+permalink: pretty
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: "homelab/overview/homelab-graphic.html"
+    values:
+      layout: null
+  - scope:
+      path: ""
+    values:
+      layout: "page"

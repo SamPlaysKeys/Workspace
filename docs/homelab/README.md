@@ -1,4 +1,7 @@
-# Homelab Infrastructure
+---
+title: Homelab Infrastructure
+permalink: /homelab/
+---
 
 Design, architecture, and operations for a greenfield homelab rebuild. Documentation is grouped **by topic**; use this page as the index.
 
@@ -25,7 +28,7 @@ Orienting views of the whole lab.
 | Document | Contents |
 |----------|----------|
 | [Homelab map](overview/homelab-map.md) | Hardware, VLANs, services, network topology |
-| [Visual overview (HTML)](overview/homelab-graphic.html) | Interactive layout (open locally or publish as static HTML) |
+| [Visual overview (HTML)](overview/homelab-graphic/) | Interactive layout (open locally or publish as static HTML) |
 | [Published graphic](https://samplayskeys.com/docs/homelab.html) | Same idea hosted on the public site (path may differ from this repo) |
 
 ---

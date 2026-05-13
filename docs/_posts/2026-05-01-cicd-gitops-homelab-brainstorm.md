@@ -1,6 +1,13 @@
-# Blog Brainstorm: CI/CD, GitOps, and Homelab Decisions
+---
+layout: post
+title: "CI/CD, GitOps, and homelab decisions (brainstorm)"
+date: 2026-05-01
+categories:
+  - blog
+  - homelab
+---
 
-*This is a brainstorming document, not a finished post. Captures ideas for a future write-up on CI/CD philosophy and homelab tooling decisions.*
+*Brainstorming document, not a finished post. Captures ideas for a future write-up on CI/CD philosophy and homelab tooling decisions.*
 
 ---
 

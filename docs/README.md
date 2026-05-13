@@ -30,6 +30,12 @@ Documentation graduates from `wip/` sessions:
 
 See `workstyle/working_style.md` for the full graduation workflow.
 
+## GitHub Pages
+
+This `docs/` tree is a **Jekyll** site (Minima + small typography tweaks). Enable it in the repo: **Settings → Pages → Build and deployment → Deploy from a branch**, branch **main**, folder **`/docs`**. The published site includes only what lives under `docs/`; `wip/` and the rest of the repository are not deployed.
+
+Local preview (Ruby **≥ 3.0** recommended): `cd docs && bundle install && bundle exec jekyll serve`, then open the URL Jekyll prints (use `baseurl` from `_config.yml` when browsing).
+
 ## Current Projects
 
 | Project | Description | Status |

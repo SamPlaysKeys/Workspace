@@ -1,0 +1,47 @@
+@charset "utf-8";
+
+.site-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.02em;
+}
+
+.site-title,
+.post-link,
+.page-link {
+  font-family: $code-font-family;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.post-list-heading,
+h1, h2, h3 {
+  letter-spacing: -0.02em;
+}
+
+.post-content,
+.page-content {
+  h2 {
+    margin-top: 2rem;
+    padding-top: 0.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  blockquote {
+    border-left: 3px solid rgba(79, 152, 163, 0.55);
+    padding-left: 1rem;
+    color: mix(#e8e6e1, #6f6c65, 70%);
+  }
+
+  code,
+  pre {
+    border-radius: 4px;
+  }
+}
+
+.footer-heading {
+  font-family: $code-font-family;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.75;
+}

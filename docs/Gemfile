@@ -1,0 +1,4 @@
+source "https://rubygems.org"
+
+# Pin to GitHub Pages so local builds match Pages.
+gem "github-pages", group: :jekyll_plugins
