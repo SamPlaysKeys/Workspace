@@ -206,3 +206,22 @@ Tracking active tasks being carried out and their associated commits.
 ---
 
 > 2026-05-12 23:09 — Homelab: ADR for Komodo ResourceSync per-environment branch steering is documented under `docs/homelab/planning/adrs/` and linked from platform + planning docs; IoT ADRs stay in `docs/homelab/iot/decisions/` (no move). Commit for that work is **not** pushed yet — user has a suggested message (`docs(homelab): add Komodo ResourceSync branch ADR and link from planning docs` + optional body from chat). Pick up with `git status` / commit / push when ready.
+
+---
+
+# Dead Drop — 2026-05-13
+
+**In progress:** OpenShift **vGPU + MTV** combined program (`wip/troubleshoot-openshift-vgpu-passthrough/investigation.md`) — host prep, VDDK/Quay tagging, ClusterPolicy; resume with next cluster change or teammate sync.
+
+**Just completed:**
+- **Homelab ADR:** Renamed Komodo ResourceSync ADR to `docs/homelab/planning/adrs/0001-komodo-resourcesync-branch-per-environment.md`; updated links across homelab docs, komodo scratch, AI ADR references (`faa02aa`, `ce19cd3`).
+- **AI remote stack (`wip/ai-remote-webview/`):** Collapsed planning to `README.md` + `handbook.md` + `evolution.md`; added **Proposed** ADR `adr/0001-self-hosted-ai-bookkeeping-stack.md` (risks + mitigations); `scratch.md` points at the split layout; committed as `ecf9168`.
+- **Same push series (recent):** OpenShift GPU/MTV guides + investigation log (`777263f`); graduated Ansible readiness kit to `artifacts/openshift/readiness-validation-ansible/`; `latest`-tag pitfalls doc; integrated-registry + vGPU Manager guides under `docs/guides/openshift/`.
+
+**Next step:** OpenShift—continue ClusterPolicy / registry image work against NVIDIA doc. AI stack—spike AIonUI WebUI on a target host, or set ADR `0001` to **Accepted** when direction is firm.
+
+**Key decision:** ADR numbering is **per stream** (`planning/adrs/0001-…` vs `wip/ai-remote-webview/adr/0001-…`), not one global repo sequence.
+
+**Git state:** `ecf9168` — Add Self-hosted AI bookkeeping stack concepts (clean working tree at drop time)
+
+**Open threads:** MTV VDDK migration off `latest` to `9.0.0.0` before deleting `latest`; NeMo Guardrails stays optional until base stack is boring; IoT still blocked on Unifi delivery per 2026-05-11 drop.
