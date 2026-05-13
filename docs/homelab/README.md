@@ -67,11 +67,12 @@ Public status and operator dashboards.
 
 ## Planning
 
-Decisions, roadmap, and working notes.
+Decisions, roadmap, ADRs, and working notes.
 
 | Document | Contents |
 |----------|----------|
 | [Decisions](planning/decisions.md) | Key decisions and rationale |
+| [ADRs](planning/adrs/README.md) | Architecture decision records (detailed, reference-friendly) |
 | [Roadmap](planning/roadmap.md) | Open questions and future work |
 | [Scratchpad](planning/scratchpad.md) | Informal notes and state |
 
