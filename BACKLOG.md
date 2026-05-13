@@ -8,6 +8,8 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
+- [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
 - [ ] Populate `artifacts/` with reusable automation components
 - [ ] Create initial skills in `workstyle/skills/`
 - [ ] Set up pre-commit hooks for secret scanning

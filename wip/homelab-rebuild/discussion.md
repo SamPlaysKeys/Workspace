@@ -6,11 +6,11 @@ Storm session started and graduated in same day. Documentation moved to `docs/ho
 
 **Graduated artifacts:**
 - `docs/homelab/README.md` — Overview and entry point
-- `docs/homelab/architecture.md` — Diagrams and environment map
-- `docs/homelab/environments.md` — Detailed environment breakdown
-- `docs/homelab/decisions.md` — Key decisions with rationale
-- `docs/homelab/repo-structure.md` — Infrastructure repo layout
-- `docs/homelab/roadmap.md` — Open questions and future work
+- `docs/homelab/platform/architecture.md` — Diagrams and environment map
+- `docs/homelab/platform/environments.md` — Detailed environment breakdown
+- `docs/homelab/planning/decisions.md` — Key decisions with rationale
+- `docs/homelab/platform/planned-repo-structure.md` — Infrastructure repo layout
+- `docs/homelab/planning/roadmap.md` — Open questions and future work
 
 **Remaining in wip/:**
 - `scratch/komodo-plex/` — Example Plex configs (Komodo and ArgoCD for comparison)

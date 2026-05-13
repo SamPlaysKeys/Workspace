@@ -107,10 +107,16 @@ ProxMox Host (Dev)
 ---
 
 ## Future
-- **Power/Cooling Monitoring**
-  - Raspberry Pi Pico + ESPHome for rack temperature/power sensors
-  - Grafana dashboard (via Prometheus) for visualization
-  - InfluxDB + Kapacitor for threshold-based alerts (temp/power draw)
-  - TP-Link smart plugs for per-device power monitoring
 - **Guest Network**: VLAN (10.0.20.0/24) on Unifi SSID `Guest`
 - **Tailscale SSH**: Secure remote CLI access to all nodes
+
+---
+
+## Observability (in progress)
+
+Goals and acceptance criteria: [observability/status-and-operator-dashboard.md](../observability/status-and-operator-dashboard.md) (see also [observability/README.md](../observability/README.md)).
+
+| Initiative | Purpose |
+|------------|---------|
+| **Public status** | `status.samplayskeys.com` on a VPS — user-facing service health (non-admin), available during local outages. |
+| **Operator dashboard** | Single pane (e.g. Glances ± link portal) with lab overview and links to Uptime Kuma, Komodo, and management UIs. |

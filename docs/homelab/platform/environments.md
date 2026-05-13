@@ -22,7 +22,7 @@ These environments have Komodo Periphery agents on Docker hosts, managed via Git
 **Workloads:**
 - Plex Media Server
 - *arr suite (Sonarr, Radarr, Prowlarr, etc.)
-- Other production services (see homelab-map.md for full list)
+- Other production services (see [homelab-map.md](../overview/homelab-map.md) for full list)
 
 **Network access:** UnRaid NAS provides NFS/SMB shares to the MiniPC for media access.
 
