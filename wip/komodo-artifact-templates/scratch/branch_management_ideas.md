@@ -1,6 +1,6 @@
 # Home Lab Deployment Plan: Komodo & GitOps
 
-> **Normative doc:** This scratch note is superseded for architecture and workflow by the **[ADR — Per-environment Git branches via Komodo ResourceSync](../../../docs/homelab/planning/adrs/komodo-resourcesync-branch-per-environment.md)** and the **Git branch steering** section of [Planned repository structure](../../../docs/homelab/platform/planned-repo-structure.md). Keep this file for informal history only.
+> **Normative doc:** This scratch note is superseded for architecture and workflow by the **[ADR — Per-environment Git branches via Komodo ResourceSync](../../../docs/homelab/planning/adrs/0001-komodo-resourcesync-branch-per-environment.md)** and the **Git branch steering** section of [Planned repository structure](../../../docs/homelab/platform/planned-repo-structure.md). Keep this file for informal history only.
 
 ## 1. Repository Strategy
 * **Source of Truth:** The `main` branch serves as the primary source of truth for the entire lab.
