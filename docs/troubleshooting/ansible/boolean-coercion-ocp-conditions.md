@@ -38,8 +38,10 @@ was originally defined in the source data.
 The most direct symptom. You will see this in the failed task's `msg`:
 
 ```
+{% raw %}
 Unexpected templating type error occurred on ({{ ... }}):
 can only concatenate str (not "bool") to str.
+{% endraw %}
 ```
 
 This happens when a Jinja2 expression uses `+` to build a string and one of the variables
@@ -69,10 +71,12 @@ This is more dangerous than the crash case because it produces wrong results wit
 The pattern at risk:
 
 ```yaml
+{% raw %}
 _available: >-
   {{ item.status.conditions
      | selectattr('type', 'eq', 'Available')
      | map(attribute='status') | first | default('Unknown') }}
+{% endraw %}
 ```
 
 Any time the above resolves to the bare strings `"True"` or `"False"`, Ansible coerces them.
@@ -84,7 +88,7 @@ that uses the standard condition schema.
 ## Why It Happens
 
 Ansible processes variable values through its type-coercion layer after Jinja2 evaluation.
-When a template expression like `{{ ... | first }}` returns the string `"True"` and that is
+When a template expression like {% raw %}`{{ ... | first }}`{% endraw %} returns the string `"True"` and that is
 the **entire value** of the variable (no surrounding text), Ansible recognises it as a YAML
 boolean and converts it to the Python object `True`.
 
@@ -137,8 +141,10 @@ you can prevent coercion by embedding the value inside a larger string expressio
 never resolves to a bare boolean:
 
 ```yaml
+{% raw %}
 # Wrap in a format string — Ansible will not coerce a multi-token string
 _available: "status={{ item.status.conditions | ... | first | default('Unknown') }}"
+{% endraw %}
 ```
 
 This is more of a workaround than a fix; prefer Fix 1 + Fix 2 for clarity.
@@ -164,6 +170,7 @@ This is more of a workaround than a fix; prefer Fix 1 + Fix 2 for clarity.
 ## Example: Full Corrected Pattern
 
 ```yaml
+{% raw %}
 - name: Evaluate each ClusterOperator
   vars:
     _available: >-
@@ -198,6 +205,7 @@ This is more of a workaround than a fix; prefer Fix 1 + Fix 2 for clarity.
         }]
       }}
   loop: "{{ _items }}"
+{% endraw %}
 ```
 
 ---

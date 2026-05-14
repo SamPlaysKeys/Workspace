@@ -1,4 +1,27 @@
-@charset "utf-8";
+---
+# Jekyll requires front matter on the main Sass entrypoint.
+---
+
+$content-width: 720px;
+$base-font-size: 17px;
+$base-line-height: 1.65;
+$base-font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+$code-font-family: "IBM Plex Mono", ui-monospace, "Menlo", "Consolas", monospace;
+
+$text-color: #e8e6e1;
+$background-color: #121312;
+$brand-color: #4f98a3;
+$grey-color: #a4a09a;
+$grey-color-light: #3a3d3c;
+$grey-color-dark: #6f6c65;
+
+@import "minima";
+
+pre,
+code {
+  background-color: #222523;
+  border-color: rgba(255, 255, 255, 0.12);
+}
 
 .site-header {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -14,7 +37,9 @@
 }
 
 .post-list-heading,
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   letter-spacing: -0.02em;
 }
 

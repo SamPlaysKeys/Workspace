@@ -13,7 +13,6 @@ repository: SamPlaysKeys/Workspace
 
 theme: minima
 minima:
-  skin: dark
   date_format: "%Y-%m-%d"
 
 plugins:

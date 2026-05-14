@@ -11,6 +11,7 @@ Workflow definitions for IoT automations. Copy/adapt these for Home Assistant.
 Announces via Google Home when a door has been open for 5 minutes.
 
 ```yaml
+{% raw %}
 alias: "Alert - Door Left Open"
 description: "Announce when a door has been open too long"
 trigger:
@@ -30,6 +31,7 @@ action:
     data:
       message: "{{ trigger.to_state.attributes.friendly_name }} has been open for 5 minutes."
 mode: parallel
+{% endraw %}
 ```
 
 ---
@@ -39,6 +41,7 @@ mode: parallel
 Repeats announcement every 5 minutes while an exterior door remains open.
 
 ```yaml
+{% raw %}
 alias: "Alert - Door Still Open Reminder"
 description: "Repeat reminder every 5 minutes while door is open"
 trigger:
@@ -64,6 +67,7 @@ action:
         - delay:
             minutes: 5
 mode: parallel
+{% endraw %}
 ```
 
 ---
@@ -73,6 +77,7 @@ mode: parallel
 Alerts when garage entry door opens at night, with camera snapshot.
 
 ```yaml
+{% raw %}
 alias: "Alert - Garage Entry Night"
 description: "Alert when garage entry opens at night"
 trigger:
@@ -95,6 +100,7 @@ action:
     data:
       filename: "/config/www/snapshots/garage_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
 mode: single
+{% endraw %}
 ```
 
 ---

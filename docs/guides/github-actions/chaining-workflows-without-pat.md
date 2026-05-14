@@ -70,6 +70,7 @@ Instead of Workflow B listening for `pull_request` events (which won't fire), ha
 #### Workflow A: Auto-Create PR
 
 ```yaml
+{% raw %}
 # .github/workflows/auto-pr.yml
 name: Auto Create PR
 
@@ -104,11 +105,13 @@ jobs:
         run: |
           echo "Created PR #${{ steps.create-pr.outputs.pull-request-number }}"
           echo "URL: ${{ steps.create-pr.outputs.pull-request-url }}"
+{% endraw %}
 ```
 
 #### Workflow B: Run Tests on Workflow A Completion
 
 ```yaml
+{% raw %}
 # .github/workflows/pr-tests.yml
 name: PR Tests
 
@@ -189,6 +192,7 @@ jobs:
               context: 'PR Tests (via workflow_run)',
               description: 'Tests passed'
             });
+{% endraw %}
 ```
 
 ### Key Points
