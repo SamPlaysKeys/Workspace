@@ -17,7 +17,7 @@ docs/
 ├── guides/            # Setup and prevention guides
 │   └── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
 ├── blog/              # Blog post drafts
-└── presentations/     # Presentation materials
+└── notes/             # Personal notes (events, etc.)
 ```
 
 ## How Documentation Gets Here

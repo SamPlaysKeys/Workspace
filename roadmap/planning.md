@@ -47,7 +47,7 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 │   └── openshift/
 ├── docs/                   # Documentation hub
 │   ├── blog/
-│   └── presentations/
+│   └── notes/
 ├── roadmap/                # Strategic planning and long-term roadmaps
 │   └── ideas/
 ├── research/               # Research and experimentation
