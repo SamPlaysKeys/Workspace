@@ -1,5 +1,11 @@
 # 26CKC Session Resources
 
+## Survey Link
+
+Event feedback: https://forms.gle/Qz6EZY2zwiPyNxp87
+
+---
+
 CackalackyCon 2026 — slides, repos, and links shared by speakers.
 
 Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
@@ -20,7 +26,7 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 12 | nixith | Hack the Badge! | TBD |
 | 13 | c4m0ufl4g3 | Build-Your-Own-Adventure: Hardware Implants | TBD |
 | 14 | sq33k 🐭 | Opening Ceremony | TBD |
-| 15 | hostbuster | CTF | TBD |
+| 15 | hostbuster | CTF | https://github.com/EverSecCTF/eversec-challenge-graveyard |
 | 16 | emwav | Career Village Drop In Q&A and Resume Review (Session 2) | TBD |
 | 17 | Xenia Mountrouidou | From LLM Apps to Agentic Workflows for Security: Evaluation is All You Need | TBD |
 | 18 | Nicole Mendolera | Why Even Smart Security Leaders Miss the Biggest Risks | TBD |
@@ -30,8 +36,8 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 22 | Eric Baldwin | So, You Think You’re Ready for Incident Response? | TBD |
 | 23 | Soldier of FORTRAN | Throwing the Mainframe out the window: DeFeNeStRaTe.C | TBD |
 | 24 | Joseph Parzel | Hack Your Guitar Tone II | TBD |
-| 25 | Soldier of FORTRAN | Friends of Phil Presents: Karaoke Night | TBD |
-| 26 | Carlota Sage | First, Fly the Plane: Leadership and Security Lessons from Youtube Commercial Pilots | TBD |
+| 25 | Soldier of FORTRAN | Friends of Phil Presents: Karaoke Night | https://friendsofphil.xyz/ |
+| 26 | Carlota Sage | First, Fly the Plane: Leadership and Security Lessons from Youtube Commercial Pilots | [First, Fly the Plane.pptx](assets/First,%20Fly%20the%20Plane.pptx) |
 | 27 | Deral Heiland | Hands-on hardware hacking Village | TBD |
 | 28 | James Berthoty | What is reachability anyways? | TBD |
 | 29 | Diptendu Kar | npm should-i-install: Malicious npm packages - Anatomy, Detection gaps and AI's role | TBD |
@@ -45,15 +51,15 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 37 | Deral Heiland | Weaponization of Cellular Based IoT Technology | TBD |
 | 38 | Xenia Mountrouidou | AI Security Panel, Q & A | TBD |
 | 39 | Thomas Strömberg | Vibecoding the Apocalypse: From Payload to Pipeline | TBD |
-| 40 | Sam Fleming | How to Talk About MFA (Without Sounding Like a D*ck) | TBD |
+| 40 | Sam Fleming | How to Talk About MFA (Without Sounding Like a D*ck) | https://github.com/SamPlaysKeys/FromBurdenToSolution |
 | 41 | Casey Wilson, Justen Lane | Tom Riddle's Password Diary | TBD |
 | 42 | NeuralNotwerk (Garrett), Vince Ovando | Agent from Scratch - Hands-on Coding | TBD |
 | 43 | Will Alexander | Turning Keys and Opening Doors: Leveraging AI Hype to Hack Everything | TBD |
-| 44 | Gh057x | Ctrl+Alt+Del…ivery: Hacking Autonomous Mobile Robots | TBD |
+| 44 | Gh057x | Ctrl+Alt+Del…ivery: Hacking Autonomous Mobile Robots | https://r3tr0xctf.github.io/ |
 | 45 | Brooks McMillin | Poisoning the Safety Net: Attacking AI-Powered Code Review Pipelines | TBD |
 | 46 | Patrick McNeil | Hacker Trivia | TBD |
 | 47 | Bace 16 | Hacker Swan Party | TBD |
-| 48 | p80n-sec | From CTFs to CVEs | TBD |
+| 48 | p80n-sec | From CTFs to CVEs | https://github.com/p80n-sec/nextjs-Stack-Frame-Extractor |
 | 49 | DataDancer | Responsible AI in Practice: Data Security and Hallucination Management | TBD |
 | 50 | Brad Naylor | Vibe Check Failed: Agents, Access, and the Aftermath | TBD |
 | 51 | Kevin, Dickson Kwong | Modernize context clues through Vectorize & Visualize cyberops data Threat Intel with Qdrant Vector | TBD |
@@ -62,7 +68,8 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 54 | Kasimir Schulz | The Prompter's Guide to the AI Guardrail Bypass: The Answer is '= coffee'?!? | TBD |
 | 55 | Mauddib28 | BLEEP D-Bus and Unix ALSA | TBD |
 | 56 | sq33k 🐭 | Closing Ceremony | TBD |
+| 57 | curbob | Cackalackycon MUD | https://ckcmud.hackerlabs.dev/map, https://github.com/GoMudEngine/GoMud |
 
 ---
 
-*56 unique sessions (66 schedule slots on the official program).*
+*57 entries (56 from the official program + Cackalackycon MUD).*
