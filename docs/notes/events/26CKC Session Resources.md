@@ -40,7 +40,7 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 26 | Diptendu Kar | npm should-i-install: Malicious npm packages - Anatomy, Detection gaps and AI's role | TBD |
 | 27 | Aqeel Yaseen | How to talk more goodlier. (Or how to cultivate compassionate communication at work and at home) | TBD |
 | 28 | Professor Farnsworth | The Pack Animals of Fraud: Understanding the Risk Factors of Money Muling in the US | TBD |
-| 29 | hostbuster | Ten Years of Flags, Fires, and Failures | TBD |
+| 29 | hostbuster | Ten Years of Flags, Fires, and Failures | https://github.com/stevemyrick/ctf-manifest, [EverSecCTF - Slides](assets/EverSec_Slides.pptx) |
 | 30 | emwav | Career Village Drop In Q&A and Resume Review (Session 3) | TBD |
 | 31 | Carl Hurd | Glass-Box Security: Operationalizing Mechanistic Interpretability for Defending AI Agents | TBD |
 | 32 | Xenia Mountrouidou, Leo Szalkowski | Build Your Own Security Agent | TBD |
