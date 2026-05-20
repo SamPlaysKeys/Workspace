@@ -29,7 +29,7 @@ Companion: [2026-cackalackycon.md](2026-cackalackycon.md)
 | 15 | Nicole Mendolera | Why Even Smart Security Leaders Miss the Biggest Risks | TBD |
 | 16 | The Foe, Tim | I Know What You LoRa'd Last Summer: Introducing LoRecon | TBD |
 | 17 | Steven Walton | Life is a CTF: Figure, Play, and Exploit the Career Game | TBD |
-| 18 | Anthea Gonzalez-Santiago | Hidden in Plain Sight: A Playful Look at Everyday Security Risks | TBD |
+| 18 | Anthea Gonzalez-Santiago | Hidden in Plain Sight: A Playful Look at Everyday Security Risks | [Presentation Slides](assets/Hidden-in-plain-sight.pdf) |
 | 19 | Eric Baldwin | So, You Think You’re Ready for Incident Response? | TBD |
 | 20 | Soldier of FORTRAN | Throwing the Mainframe out the window: DeFeNeStRaTe.C | TBD |
 | 21 | Joseph Parzel | Hack Your Guitar Tone II | TBD |
