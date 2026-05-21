@@ -225,3 +225,41 @@ Tracking active tasks being carried out and their associated commits.
 **Git state:** `ecf9168` — Add Self-hosted AI bookkeeping stack concepts (clean working tree at drop time)
 
 **Open threads:** MTV VDDK migration off `latest` to `9.0.0.0` before deleting `latest`; NeMo Guardrails stays optional until base stack is boring; IoT still blocked on Unifi delivery per 2026-05-11 drop.
+
+---
+
+# Dead Drop — 2026-05-14
+
+**In progress:** OpenShift **vGPU + MTV** combined program (`wip/troubleshoot-openshift-vgpu-passthrough/investigation.md`) — ClusterPolicy configuration and operand verification.
+
+**Just completed:**
+- **NVIDIA GPU Operator:** Defined `ClusterPolicy` essentials for KubeVirt + vGPU (Step 5); verified `sandboxWorkloads` and `vgpuManager` field mappings.
+- **VDDK Strategy:** Finalized decision to pin MTV VDDK image to `9.0.0.0` in private Quay; identified `latest` tag as a risk and documented migration path to versioned tags.
+
+**Next step:** Checklist Step 6 (vGPU config node labels for profiles) or M2 (VMware provider + storage/network mappings for MTV).
+
+**Key decision:** `ClusterPolicy` field `sandboxWorkloads.enabled` is the master switch required for the operator to honor `vm-vgpu` node labels.
+
+**Git state:** clean working tree (branch `Test/Tolaria_Testing`)
+
+**Open threads:** Same as 2026-05-13 — VDDK `latest` removal pending cluster updates; IoT blocked on hardware delivery.
+
+---
+
+# Dead Drop — 2026-05-20
+
+**In progress:** None — task completed.
+
+**Just completed:**
+- Aligned `AGENTS.md` with workspace co-creation conventions by adding a "Working Styles & Behaviors" section.
+- Mandated adherence to behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping, Dead Drop, Troubleshoot, Sneaky) and conventions (Isolation, Append-Don't-Replace, Documentation Structure).
+- Updated `BACKLOG.md` to mark "Auto-load working_style for CLI agents" as complete.
+- Logged meta-change in `planning/ACTIVITY.md` under 2026-05-20.
+
+**Next step:** Follow the newly codified behaviors in future sessions! Next planned task in backlog is "Journal in docs" creation.
+
+**Key decision:** `AGENTS.md` is the authoritative location for directing agent behavior across different tools (Gemini, Claude, Cursor), ensuring the `working_style.md` conventions are always active.
+
+**Git state:** clean working tree (changes applied via file edit tools)
+
+**Open threads:** None
