@@ -1,3 +1,7 @@
+---
+type: ADR
+---
+
 # ADR: Per-environment Git branches via Komodo ResourceSync
 
 **Status:** Accepted  

@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Environments
 
 Detailed breakdown of each environment (VLAN) in the homelab.

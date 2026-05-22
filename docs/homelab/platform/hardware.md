@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Homelab Hardware
 
 ## Overview

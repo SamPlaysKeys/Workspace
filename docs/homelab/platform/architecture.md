@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Architecture
 
 System diagrams and visual documentation for the homelab infrastructure.

@@ -1,3 +1,7 @@
+---
+type: README_Note
+---
+
 # Homelab Infrastructure
 
 Design, architecture, and operations for a greenfield homelab rebuild. Documentation is grouped **by topic**; use this page as the index.
