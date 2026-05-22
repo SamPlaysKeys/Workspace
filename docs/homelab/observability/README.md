@@ -1,5 +1,5 @@
 ---
-type: README_Note
+type: README-Note
 ---
 
 # Observability
