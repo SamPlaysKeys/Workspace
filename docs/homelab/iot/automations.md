@@ -1,3 +1,7 @@
+---
+type: Note
+---
+
 # Home Assistant Automations
 
 Workflow definitions for IoT automations. Copy/adapt these for Home Assistant.
