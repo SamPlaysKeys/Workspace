@@ -1,4 +1,8 @@
 
+---
+type: Idea
+---
+
 ## Machine List
 
 JONSBO NAS - 6th Gen i7, 16 GB RAM, NVIDIA GPU, 10TB of storage (8 usable)

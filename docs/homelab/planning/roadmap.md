@@ -1,3 +1,7 @@
+---
+type: Idea
+---
+
 # Roadmap
 
 Open questions, future work, and ideas for the homelab.

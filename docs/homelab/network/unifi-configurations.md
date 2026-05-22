@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Unifi Network Configurations
 
 ## Firewall Rules

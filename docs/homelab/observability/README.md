@@ -1,3 +1,7 @@
+---
+type: README_Note
+---
+
 # Observability
 
 Plans for **public** user-facing status and **private** operator dashboards (metrics, deep links, navigation to Komodo and Uptime Kuma).
