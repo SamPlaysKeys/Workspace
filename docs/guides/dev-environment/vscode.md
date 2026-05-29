@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # VSCode Setup for Enterprise Development
 
 This guide covers setting up Visual Studio Code (VSCode) as your primary development environment on enterprise devices for working with OpenShift, Ansible, Python, YAML, and Bash.

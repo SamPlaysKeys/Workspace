@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # CackalackyCon 2026
 
 | Field | Value |

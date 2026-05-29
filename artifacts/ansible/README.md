@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # Ansible Artifacts
 
 Reusable Ansible playbooks, roles, and inventory templates.

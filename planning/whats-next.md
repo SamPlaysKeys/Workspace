@@ -4,6 +4,7 @@ type: Note
 # What's Next
 
 ## Recent Progress
+- Standardized Tolaria frontmatter (assigning types like Note, Reference, README-Note) across all Markdown files in `docs/` and `artifacts/` to ensure accurate vault rendering.
 - Overhauled UniFi firewall architecture from legacy LAN In/Out linear rules to the new Zone-Based Firewall (ZBF) matrix.
 - Designed custom zones (Prod, Test, Dev, IoT, User) to map perfectly to existing VLANs to ensure the visual policy matrix remains meaningful.
 - Identified and configured the correct built-in zones (External, Gateway, and Hotspot for the Guest network isolation).

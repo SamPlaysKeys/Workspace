@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # Artifacts
 
 Reusable code, scripts, and configurations that can be applied across projects.
