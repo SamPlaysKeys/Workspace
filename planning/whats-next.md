@@ -21,3 +21,4 @@ type: Note
 - Verify Home Assistant can still reach IoT devices.
 - Verify phones on the `User` VLAN can cast to Chromecasts on the `IoT` VLAN.
 - Verify Tailscale remains the primary overlay for administrative routing in without conflict.
+- Pull in notes on API and Ingress certificate checks and turn them into a full guide.
