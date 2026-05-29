@@ -6,6 +6,22 @@ Tracking **meta changes** to the workspace structure, conventions, and planning 
 
 ---
 
+### VSCode Setup Guide Storm Session (Enterprise Pivot)
+
+Pivoted the VSCode setup guide from homelab to enterprise context. Added instructions for `git-scm`, `python3`, `ansible-lint`, and Personal Access Tokens (PAT).
+
+**Files updated:**
+- `docs/guides/dev-environment/vscode.md`
+- `wip/vscode-setup/context.md`
+- `wip/vscode-setup/discussion.md`
+
+**Goal:**
+Provide a comprehensive setup guide suitable for enterprise devices, ensuring all core dependencies and authentication methods are covered.
+
+---
+
+## 2026-05-29
+
 ## 2026-04-22
 
 ### Co-Creation Behaviors Framework
