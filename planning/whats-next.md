@@ -26,13 +26,51 @@ Tracking active tasks being carried out and their associated commits.
 
 ## Recently Completed
 
-- Reorganized planning/tracking file locations
-- Added purpose documentation to BACKLOG, ACTIVITY, whats-next
-- Defined co-creation behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping)
-- Created `wip/` directory and `workstyle/working_style.md`
-- Created `.cursor/rules/co-creation.mdc`
-- Added Dead Drop behavior, Close-out compound behavior, and Conventions (Isolation, Append-Don't-Replace)
-- Added Troubleshoot behavior for structured debugging and knowledge capture
+- VSCode Setup Guide for Enterprise Development (Pivot: git-scm, python3, ansible-lint, PATs)
+- Created `docs/guides/dev-environment/vscode.md` with comprehensive VSCode setup instructions.
+- Created `docs/guides/dev-environment/README.md` as an index for environment guides.
+- Updated `docs/README.md` and `BACKLOG.md` to reflect new documentation.
+- Completed Storm Session `wip/vscode-setup/`.
+
+---
+
+# Dead Drop — 2026-05-29 (Session 2: Enterprise Pivot)
+
+**In progress:** None.
+
+**Just completed:**
+- Pivoted VSCode Setup Guide to focus on **enterprise devices**.
+- Added prerequisites: `git-scm`, `python3`, and `ansible-lint`.
+- Added **Authentication** section covering Personal Access Tokens (PAT).
+- Updated Storm Session `wip/vscode-setup/` (context and discussion) to reflect the pivot.
+- Updated `BACKLOG.md` and `planning/ACTIVITY.md`.
+
+**Next step:** The guide is graduated. User can now use it to onboard team members or configure new enterprise devices.
+
+**Key decision:** Explicitly included `ansible-lint` as a prerequisite to ensure the Ansible extension's validation features work out of the box.
+
+**Git state:** uncommitted changes
+
+**Open threads:** None.
+
+---
+
+# Dead Drop — 2026-05-29 (Session 1)
+
+**In progress:** None.
+
+**Just completed:**
+- Created initial `docs/guides/dev-environment/vscode.md` (homelab focus).
+- Created `docs/guides/dev-environment/README.md`.
+- Completed Storm Session `wip/vscode-setup/`.
+
+**Next step:** Pivot requested by user (Session 2).
+
+**Key decision:** Established `docs/guides/dev-environment/` as the home for local tooling and setup guides.
+
+**Git state:** uncommitted changes
+
+**Open threads:** None.
 
 ---
 
