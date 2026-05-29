@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Troubleshooting: Ansible Boolean Coercion with OCP/Kubernetes API Values
 
 ## TL;DR

@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)
 
 This note validates a common on-cluster workflow against NVIDIA’s published steps, then records that workflow when **Quay (or another external registry) is not used** and images land in the **integrated OpenShift image registry** instead.

@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Fixing PDF Export in Articulate Storyline Web Objects
 
 When embedding interactive HTML (with jsPDF/html2canvas) in Articulate Storyline as a Web Object, PDF export via `jsPDF.save()` fails silently due to iframe sandbox restrictions.

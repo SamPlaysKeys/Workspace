@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # Documentation
 
 Graduated documentation from brainstorming sessions, troubleshooting investigations, and project work.

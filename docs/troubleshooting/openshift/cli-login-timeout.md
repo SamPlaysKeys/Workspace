@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # oc login Timeout (Web Console Works)
 
 ## Symptoms

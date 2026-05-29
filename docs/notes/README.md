@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Notes
 
 Personal notes and consolidated captures — not project documentation or troubleshooting guides.

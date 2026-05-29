@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # OpenShift guides (documentation)
 
 Prose guides for OpenShift Container Platform workflows used in this workspace. Executable templates and Ansible patterns live under **`artifacts/openshift/`** instead of here.
