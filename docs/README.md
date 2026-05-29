@@ -15,7 +15,8 @@ docs/
 │   └── iot/           # Smart home
 ├── troubleshooting/   # Remediation guides (from Troubleshoot sessions)
 ├── guides/            # Setup and prevention guides
-│   └── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
+│   ├── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
+│   └── dev-environment/ # VSCode setup, local tools, etc.
 ├── blog/              # Blog post drafts
 └── notes/             # Personal notes (events, etc.)
 ```

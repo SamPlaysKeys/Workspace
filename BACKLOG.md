@@ -19,6 +19,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).
 - [x] Initial repository structure planning
 - [x] Reorganize directory structure to match revised plan
 - [x] Establish `planning/` directory for workstream management
