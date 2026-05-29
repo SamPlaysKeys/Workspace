@@ -1,3 +1,10 @@
+---
+type: Note
+related_to: 
+  - "[[tailscale]]"
+status: Active
+---
+
 # Unifi Zone-Based Firewall (ZBF) Guide
 
 ## Overview

@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 
 # readiness_check_node_readiness
 
