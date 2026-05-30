@@ -1,3 +1,11 @@
+---
+title: "Working Style: Co-Creation Conventions"
+type: Note
+review:
+  status: direction-reviewed
+  notes: "Author-reviewed draft. Documents the co-creation conventions for the workspace, 2026-05-21."
+---
+
 # Working Style: Co-Creation Conventions
 
 This document defines how AI agents should collaborate in this workspace. These conventions are agent and model agnostic — any AI assistant working here should follow them.

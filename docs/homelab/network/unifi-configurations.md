@@ -1,53 +1,115 @@
-# Unifi Network Configurations
-
-## Firewall Rules
-
-| Rule Name               | Type   | Source               | Destination          | Action | Notes                                  |
-|-------------------------|--------|----------------------|-----------------------|--------|----------------------------------------|
-| **IoT → Prod Block**   | LAN In | IoT (10.0.4.0/24)    | Prod (10.0.1.0/24)    | Drop   | Block cameras/devices → prod services  |
-| **IoT → Test Block**   | LAN In | IoT (10.0.4.0/24)    | Test (10.0.2.0/24)    | Drop   | Block IoT → test services              |
-| **IoT → Dev Block**    | LAN In | IoT (10.0.4.0/24)    | Dev (10.0.3.0/24)     | Drop   | Block IoT → OCP cluster               |
-| **User → Prod Block**  | LAN In | User (10.0.10.0/24)  | Prod (10.0.1.0/24)    | Drop   | Isolate personal devices               |
-| **User → Test Block**  | LAN In | User (10.0.10.0/24)  | Test (10.0.2.0/24)    | Drop   | Isolate personal devices               |
-| **User → Dev Block**   | LAN In | User (10.0.10.0/24)  | Dev (10.0.3.0/24)     | Drop   | Isolate personal devices               |
-| **Prod → Test Permit** | LAN In | Prod (10.0.1.0/24)   | Test (10.0.2.0/24)    | Accept | Allow prod → test syncs                |
-| **Test → Dev Permit**  | LAN In | Test (10.0.2.0/24)   | Dev (10.0.3.0/24)     | Accept | Allow test → dev validations           |
-
+---
+type: Note
+related_to: 
+  - "[[tailscale]]"
+status: Active
 ---
 
-## WiFi Networks
+# Unifi Zone-Based Firewall (ZBF) Guide
 
-| SSID      | VLAN | Security       | Band Steering | Fast Roaming | Client Isolation |
-|-----------|------|----------------|----------------|--------------|-----------------|
-| **Home**  | 10   | WPA3           | Prefer 5GHz    | Enabled      | Disabled          |
-| **IoT**   | 4    | WPA2           | Band Steer     | Disabled     | Enabled           |
-| **Guest** | 20   | WPA2 (future)  | Prefer 5GHz    | Disabled     | Enabled           |
+## Overview
+This guide walks through configuring the homelab network using UniFi's Zone-Based Firewalls (ZBF), available in UniFi Network 9.0+. 
 
----
+ZBF shifts away from traditional LAN In/Out rules by grouping networks into **Zones** and defining **Policies** that dictate traffic flow between those zones. This is visualized in the Zone Matrix and is vastly superior for environment segmentation.
 
-## Port Profiles
+## 1. Define Custom Zones
+By default, UniFi places all local networks into the built-in `Internal` zone. To segment our environments, we will create custom zones that perfectly map to our VLANs.
 
-| Profile Name          | Native Network | Tagged VLANs               | Notes                          |
-|-----------------------|----------------|----------------------------|--------------------------------|
-| **Docker Hosts**     | Prod (1)      | Test (2), Dev (3)          | LenovoMini 1–2, ProxMox Docker |
-| **OCP Nodes**        | Dev (3)       | —                          | LenovoMini 3–5                |
-| **Management**       | Prod (1)      | —                          | Intel NUC, ProxMox host       |
-| **IoT**             | IoT (4)       | —                          | Reolink, Google Home          |
+Go to **Settings > Security > Firewall > Zones** and create the following custom zones:
 
----
+| Zone Name | Assigned Network (VLAN) | Purpose |
+|-----------|--------------------------|---------|
+| **Prod**  | Prod (1)                 | Core services, Home Assistant |
+| **Test**  | Test (2)                 | Pre-production validation |
+| **Dev**   | Dev (3)                  | OCP and Sandbox nodes |
+| **IoT**   | IoT (4)                  | Cameras, smart plugs |
+| **User**  | User (10)                | Laptops, phones, trusted devices |
 
-## DHCP
+*(Note: Ensure each VLAN is moved out of the default `Internal` zone and into its respective custom zone.)*
 
-| VLAN          | DHCP Range       | Lease Time | DNS Servers          | Notes                          |
-|---------------|-------------------|------------|-----------------------|--------------------------------|
-| Prod (1)     | 10.0.1.100–200   | 24h        | 10.0.1.5, 1.1.1.1    | DHCP reservations for servers  |
-| Test (2)     | 10.0.2.100–200   | 24h        | 10.0.2.1, 1.1.1.1    |                                |
-| Dev (3)      | 10.0.3.100–200   | 24h        | 10.0.3.1, 1.1.1.1    |                                |
-| IoT (4)      | 10.0.4.100–150   | 12h        | 10.0.4.1, 1.1.1.1    | Static leases for cameras      |
-| User (10)    | 10.0.10.100–250  | 12h        | 10.0.10.1, 1.1.1.1   |                                |
+### Built-in Zones
+Alongside our custom zones, the following built-in UniFi zones remain actively used:
+- **Hotspot:** Contains the `Guest` network (VLAN 20). UniFi automatically isolates this zone (blocks access to all other zones) while allowing internet access, perfectly mapping to guest network needs.
+- **Gateway:** Represents the router itself. Essential for all zones to access DHCP, DNS, and Gateway functions.
+- **External:** Represents the Internet. 
 
----
+## 2. Configure the Zone Matrix (Policies)
 
-## Future
-- **Guest Network**: Enable when needed on 10.0.20.0/24
-- **SNMP Monitoring**: Configure UDM Pro for observability
+Instead of a linear list of "Drop" rules, ZBF uses a matrix (source zone on the Y-axis, destination zone on the X-axis). We define explicit policies for allowed paths and lock down the rest.
+
+Go to **Settings > Security > Firewall > Policy Table** (or click the cells in the Zone Matrix) and configure the following policies:
+
+### Policy 1: HA Control over IoT
+*Allows Home Assistant to reach and control IoT devices.*
+- **Name:** Allow HA to IoT
+- **Action:** Allow
+- **Source Zone:** Prod
+- **Destination Zone:** IoT
+- **Source Device/IP:** `10.0.1.X` (Home Assistant IP)
+- **Auto Allow Return Traffic:** Checked (Ensures IoT devices can respond to HA)
+
+### Policy 2: User Local Access to Prod (Optional for Latency)
+*Allows User VLAN devices fast local access to specific Prod services (bypassing Tailscale).*
+- **Name:** Allow User to Prod Apps
+- **Action:** Allow
+- **Source Zone:** User
+- **Destination Zone:** Prod
+- **Destination Port:** Select specific ports (e.g., `8123` for HA, `32400` for Plex)
+- **Auto Allow Return Traffic:** Checked 
+
+### Policy 3: Allow User to IoT (Chromecast/Casting)
+*Allows phones/laptops on User VLAN to cast media to Chromecasts and smart speakers on IoT VLAN.*
+- **Name:** Allow User to IoT Casting
+- **Action:** Allow
+- **Source Zone:** User
+- **Destination Zone:** IoT
+- **Destination Port:** `8008`, `8009` (TCP - Chromecast control ports)
+- **Auto Allow Return Traffic:** Checked
+
+### Policy 4: Prod to Test Synchronization
+*Allows Prod services to sync with Test.*
+- **Name:** Allow Prod to Test
+- **Action:** Allow
+- **Source Zone:** Prod
+- **Destination Zone:** Test
+- **Auto Allow Return Traffic:** Checked
+
+### Policy 5: Test to Dev Validation
+*Allows Test services to reach Dev.*
+- **Name:** Allow Test to Dev
+- **Action:** Allow
+- **Source Zone:** Test
+- **Destination Zone:** Dev
+- **Auto Allow Return Traffic:** Checked
+
+## 3. Enable Multicast DNS (mDNS) for Discovery
+
+For casting to work across VLANs, devices on the `User` VLAN must be able to discover the Chromecasts on the `IoT` VLAN. UniFi handles this via a built-in mDNS reflector.
+
+Go to **Settings > Networks > Global Network Settings** (or the specific network settings) and ensure **Multicast DNS** is enabled for the `User` and `IoT` networks.
+
+*(Note: The UniFi Gateway automatically permits mDNS discovery traffic under the hood when this feature is turned on, so no explicit ZBF policy is needed for the discovery phase—only for the streaming connection, which Policy 3 handles).*
+
+## 4. Enforce Default Deny Between Custom Zones
+
+To complete the segmentation, we must ensure that all other inter-zone traffic is blocked. UniFi's matrix allows you to set the baseline interaction between zones.
+
+For any zone pair that shouldn't communicate (e.g., `IoT` to `User`, `User` to `Dev`), create a catch-all block policy:
+
+- **Name:** Block Inter-Zone Traffic
+- **Action:** Block
+- **Source Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User`)
+- **Destination Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User`)
+- *Note: Place this policy at the very bottom of the Policy Table so our explicit "Allow" rules above take precedence. (The built-in `Hotspot` zone is natively blocked from other zones by UniFi, so it does not need to be included in this block list).*
+
+## 5. Internet Access (External Zone)
+
+The `External` zone represents the Internet. 
+
+- **User, Prod, Test, Dev to External:** Generally allowed by default so containers can pull images and devices can update.
+- **IoT to External:** 
+  - To block IoT devices from "phoning home", create a policy: **Block IoT to Internet**.
+  - **Source Zone:** IoT
+  - **Destination Zone:** External
+  - **Action:** Block
+  - *(Optional: Create a higher-priority Allow rule for specific IoT devices that require cloud connectivity, like a smart vacuum).*

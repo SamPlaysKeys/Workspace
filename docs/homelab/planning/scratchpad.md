@@ -1,3 +1,10 @@
+---
+type: Idea
+---
+
+---
+type: Idea
+---
 
 ## Machine List
 

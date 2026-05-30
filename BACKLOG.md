@@ -10,6 +10,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
+- [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [ ] Populate `artifacts/` with reusable automation components
 - [ ] Create initial skills in `workstyle/skills/`
 - [ ] Set up pre-commit hooks for secret scanning
@@ -18,6 +19,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).
 - [x] Initial repository structure planning
 - [x] Reorganize directory structure to match revised plan
 - [x] Establish `planning/` directory for workstream management
@@ -38,7 +40,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [ ] Review recovery environment — audit current backup/restore strategy, identify gaps, document recovery procedures
 - [ ] ScaleTail + Vault example — create a ScaleTail sidecar container example for HashiCorp Vault deployment; demonstrate secure secrets access over Tailscale without advertising a service
 - [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type
-- [ ] Auto-load working_style for CLI agents — explore how to automatically load `workstyle/working_style.md` when launching CLI agents (Cursor, Gemini, OpenCode, Copilot) in this repo; consider AGENTS.md, CLAUDE.md, repo-level configs, wrapper scripts
+- [x] Auto-load working_style for CLI agents — Updated AGENTS.md to direct agents to follow [[working_style]] conventions.
 - [ ] Journal in docs — create a `docs/journal/` area for capturing ideas, observations, and thoughts while working; less structured than Storm Sessions, more persistent than scratch files
 
 ---

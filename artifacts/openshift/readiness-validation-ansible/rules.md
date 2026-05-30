@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 
 # Readiness Check Role — Authoring Rules
 

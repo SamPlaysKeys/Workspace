@@ -1,3 +1,7 @@
+---
+type: ADR
+---
+
 # ADR: Home Assistant Deployment
 
 **Date:** 2026-05-11  

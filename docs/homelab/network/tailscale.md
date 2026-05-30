@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Tailscale
 
 Network connectivity strategy for the homelab using Tailscale mesh VPN.

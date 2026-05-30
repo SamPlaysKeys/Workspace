@@ -1,3 +1,7 @@
+---
+type: ADR
+---
+
 # Decision: Smart Switch Protocol
 
 **Date:** 2026-05-11  

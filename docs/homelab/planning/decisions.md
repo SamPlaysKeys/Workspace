@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Decisions
 
 Key architectural and tooling decisions, with rationale.

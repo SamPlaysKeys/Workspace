@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # readiness_check_storage_health
 
 Validates the health of storage resources on a running OpenShift cluster:

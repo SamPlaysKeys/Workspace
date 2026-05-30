@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # Articulate Storyline Artifacts
 
 Web Objects and interactive HTML designed for embedding in Articulate Storyline courses.
