@@ -38,6 +38,21 @@ Tracking active tasks being carried out and their associated commits.
 
 ---
 
+# Dead Drop — 2026-05-30
+
+**In progress:** Nothing active.
+
+**Just completed:**
+- Audited & fixed `docs/homelab/network/tailscale.md` (6 issues: Docktail URL, labels, image; ScaleTail rewrite; diagram label; decisions split)
+- Created `docs/homelab/network/tailscale-grants.md` with full ACL → Grants migration
+- Removed `tag:host` and `tag:storage` from all grant rules per user directive — kept as informational-only tags for sorting
+
+**Open threads:**
+- IoT subnet (`10.0.50.0/24`) is still a placeholder — will change
+- `tailscale-grants.md` ready for initial Tailscale policy deployment
+
+---
+
 # Dead Drop — 2026-04-22
 
 **In progress:** Storm Session on workspace behaviors (`wip/workspace-behaviors/`) — session paused, not graduated
