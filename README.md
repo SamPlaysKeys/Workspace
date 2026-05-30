@@ -41,15 +41,6 @@ This ensures the agent is operating with the right patterns before diving into w
 
 See `workstyle/working_style.md` for the full conventions.
 
-## Current Work
-
-| Project | Location | Status |
-|---------|----------|--------|
-| Homelab rebuild | `docs/homelab/` | Architecture defined |
-| OpenShift readiness (Ansible) | `artifacts/openshift/readiness-validation-ansible/` | Graduated from `wip/` — templates + authoring guide |
-
-Check `planning/whats-next.md` for recent session activity.
-
 ---
 
 > [!WARNING]
