@@ -20,6 +20,46 @@ Provide a comprehensive setup guide suitable for enterprise devices, ensuring al
 
 ---
 
+## 2026-05-30
+
+### Tailscale ACL Plan
+
+Created `docs/homelab/network/tailscale-grants.md` — full grants policy document mapping 7 tags (Prod, Test, Dev, Host, App, Storage, Admin) to Tailscale Grants syntax. Covers:
+
+- Tag inventory with composite tag examples per node type
+- User groups (admin, manager, user) matching existing access tier model
+- 9 ACL rule groups with descriptions (admin full access, user web-only, manager app-only, app-to-storage, host-to-storage, SSH, environment isolation, subnet routes)
+- Complete ACL JSON policy
+- ACL tests for policy validation
+- SSH rules (admin-to-host only)
+- Auto-approvers for Docktail service advertisement
+- Tag assignment examples per node type
+- Open questions
+
+### Tailscale ACL → Grants Migration
+
+Migrated `docs/homelab/network/tailscale-acls.md` to Grants syntax:
+- Renamed to `tailscale-grants.md`
+- Converted all `acls` entries to `grants` — removed `action` field, separated `dst` into `dst` + `ip`, dropped `:port` from destinations
+- Updated title, headings, references throughout
+- Updated wikilinks in `tailscale.md` (`[[tailscale-acls]]` → `[[tailscale-grants]]`)
+
+### Tailscale Doc Audit & Fixes
+
+Reviewed `docs/homelab/network/tailscale.md` against actual Docktail project. Found 4 issues:
+
+- **Docktail URL** — `github.com/docktail/docktail` returned 404; corrected to `github.com/marvinvr/docktail`
+- **Docktail labels** — Used old flat format (`docktail.enable`, `docktail.hostname`, `docktail.port`); updated to `docktail.service.*` prefix
+- **Docktail image** — `docktail/docktail` → `marvinvr/docktail`
+- **ScaleTail** — Renamed outbound-only section to "Outbound-Only Sidecar", rewrote ScaleTail section to describe actual ScaleTail project (per-service sidecar for inbound exposure), added GitHub link
+- **Architecture diagram** — Fixed stale label reference (`ts.enable` → `docktail.*`)
+- **Decisions section** — Split stale "ScaleTail for outbound-only" into separate decisions for ScaleTail and Outbound-Only Sidecar
+
+Also verified working_style behaviors: Smooth Brain (auto), Progressive Bookkeeping (active), Isolation (active).
+
+**Files changed:**
+- `docs/homelab/network/tailscale.md` — 5 edits
+
 ## 2026-05-29
 
 ## 2026-04-22
