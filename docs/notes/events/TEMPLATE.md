@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Event: <!-- name -->
 
 | Field | Value |

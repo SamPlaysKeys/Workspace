@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # nvim-treesitter.configs Module Not Found
 
 ## Symptoms

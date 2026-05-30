@@ -1,3 +1,7 @@
+---
+type: README-Note
+---
+
 # IoT Plan — New House
 
 Overview and project plan for IoT deployment at the new house.

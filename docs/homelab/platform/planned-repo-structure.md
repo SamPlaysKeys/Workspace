@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Homelab Repository Structure
 
 Layout for the infrastructure-as-code repository that manages the homelab.

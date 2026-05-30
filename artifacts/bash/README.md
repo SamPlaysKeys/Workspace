@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # Bash Artifacts
 
 Reusable shell scripts and utilities.

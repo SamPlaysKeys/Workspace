@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # Chaining GitHub Actions Workflows Without a PAT or GitHub App
 
 How to trigger one workflow from another when you can't (or don't want to) use Personal Access Tokens or GitHub Apps.
