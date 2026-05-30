@@ -14,7 +14,7 @@ Uses Tailscale Grants syntax — the modern replacement for ACLs. Grants remove 
 
 ## Tag Inventory
 
-Seven tags organize the tailnet. Every device gets one or more tags. Tags define what a device *is*, which determines what it can reach and who can reach it.
+Seven tags organize the tailnet. Every device gets one or more tags. `tag:host` and `tag:storage` are informational only — applied for sorting/filtering in the admin console, not referenced in any grant rules.
 
 | Tag | Applied To | Purpose | Assigned By |
 |-----|------------|---------|-------------|
@@ -24,7 +24,7 @@ Seven tags organize the tailnet. Every device gets one or more tags. Tags define
 | `tag:prod` | Production nodes | Production environment | `autogroup:admin` |
 | `tag:test` | Test nodes | Test environment | `autogroup:admin` |
 | `tag:dev` | Development nodes | Dev/sandbox environment | `autogroup:admin` |
-| `tag:app` | Nodes advertising user-facing services | Application UIs exposed via Docktail | `tag:host`, `autogroup:admin` |
+| `tag:app` | Nodes advertising user-facing services | Application UIs exposed via Docktail | `autogroup:admin` |
 
 ### Composite Tags
 
@@ -38,15 +38,9 @@ Most devices carry multiple tags. Examples:
 - **NUC (Komodo Controller):** `tag:host,tag:admin`
 - **Exit node:** `tag:host` only (no services, no storage, no app exposure)
 
-### Environment Scoping
-
-`tag:host` and `tag:storage` are functional designations within an environment. A host in prod (`tag:host,tag:prod`) should not reach apps in test. Environment isolation grants (`tag:prod → tag:prod`, etc.) handle this for most traffic.
-
-However, the `app → storage` and `host → storage` grants use `tag:app` / `tag:host` without environment qualifiers. Tailscale grants don't support compound tag matching, so these grants allow cross-environment storage access (prod apps can reach test storage). For strict isolation, split `tag:storage` into per-environment tags (`tag:storage-prod`, `tag:storage-test`). For a homelab, accepting cross-environment storage access is practical — few storage devices, low risk.
-
 ### Tag Ownership Reasoning
 
-`tag:app` is owned by `tag:host` (not just `autogroup:admin`) so that Docker hosts can self-assign the app tag to services they advertise via Docktail without admin intervention for every new service. The host already earned trust by being admin-approved.
+`tag:app` is owned by `autogroup:admin`. New services go through admin approval.
 
 ---
 
@@ -100,36 +94,13 @@ This gives partner access to:
 It does **not** give access to:
 - App admin panels on non-standard ports
 - Infrastructure UIs (Komodo, ProxMox)
-- Storage (NFS, SMB)
 - SSH
 
-### 3. App-to-Storage
+### 3. SSH Access
 
-Application nodes need to reach storage for media, configs, backups.
+Admins can SSH into any tagged node. Covered by rule 1 (port 22 within `*:*`). Tailscale SSH handles key management — no separate SSH key infrastructure needed.
 
-```json
-{"src": ["tag:app"], "dst": ["tag:storage"], "ip": ["*:*"]}
-```
-
-### 4. Host-to-Storage
-
-Host nodes need full storage access for maintenance, backups, VM images.
-
-```json
-{"src": ["tag:host"], "dst": ["tag:storage"], "ip": ["*:*"]}
-```
-
-### 5. Admin-to-Host (SSH)
-
-Dedicated SSH access via Tailscale SSH for interactive admin work.
-
-```json
-{"src": ["group:admin"], "dst": ["tag:host"], "ip": ["22"]}
-```
-
-Tailscale SSH handles key management — no separate SSH key infrastructure needed.
-
-### 6. Environment Isolation
+### 4. Environment Isolation
 
 Prod, test, and dev environments cannot reach each other by default. Admins bypass this via rule 1.
 
@@ -141,7 +112,7 @@ Prod, test, and dev environments cannot reach each other by default. Admins bypa
 
 Cross-environment traffic must be explicitly added (e.g., test→prod DB replication) or use admin access.
 
-### 7. App-to-Admin (Optional)
+### 5. App-to-Admin (Optional)
 
 If apps need to reach admin interfaces (e.g., Komodo agent registration), uncomment:
 
@@ -149,7 +120,7 @@ If apps need to reach admin interfaces (e.g., Komodo agent registration), uncomm
 {"src": ["tag:app"], "dst": ["tag:admin"], "ip": ["443"]}
 ```
 
-### 8. Subnet Routes (Admin-Only)
+### 6. Subnet Routes (Admin-Only)
 
 Subnet routes exist for admin management of non-Tailscale devices (switches, APs, IoT). Only admins can reach them.
 
@@ -176,14 +147,11 @@ Regular users are denied by default — no explicit rule needed since Tailscale 
     "tag:prod": ["autogroup:admin"],
     "tag:test": ["autogroup:admin"],
     "tag:dev": ["autogroup:admin"],
-    "tag:app": ["tag:host", "autogroup:admin"]
+    "tag:app": ["autogroup:admin"]
   },
   "grants": [
     {"src": ["group:admin"], "dst": ["tag:*"], "ip": ["*:*"]},
     {"src": ["group:user"], "dst": ["tag:app"], "ip": ["80", "443"]},
-    {"src": ["tag:app"], "dst": ["tag:storage"], "ip": ["*:*"]},
-    {"src": ["tag:host"], "dst": ["tag:storage"], "ip": ["*:*"]},
-    {"src": ["group:admin"], "dst": ["tag:host"], "ip": ["22"]},
     {"src": ["tag:prod"], "dst": ["tag:prod"], "ip": ["*:*"]},
     {"src": ["tag:test"], "dst": ["tag:test"], "ip": ["*:*"]},
     {"src": ["tag:dev"], "dst": ["tag:dev"], "ip": ["*:*"]},
@@ -203,13 +171,13 @@ Tailscale policy tests validate rules before deployment. These should be added t
   "tests": [
     {
       "src": "you@domain.com",
-      "accept": ["tag:admin:443", "tag:host:22", "tag:app:443", "tag:storage:445"],
+      "accept": ["tag:admin:443", "tag:app:443", "10.0.50.1:443"],
       "deny": []
     },
     {
       "src": "partner@domain.com",
       "accept": ["tag:app:443"],
-      "deny": ["tag:admin:443", "tag:host:22", "tag:storage:445"]
+      "deny": ["tag:admin:443"]
     }
   ]
 }
@@ -219,7 +187,7 @@ Tailscale policy tests validate rules before deployment. These should be added t
 
 ## SSH Rules
 
-Tailscale SSH is enabled for admin-to-host access only.
+Tailscale SSH is enabled for admin access to any tagged node.
 
 ```json
 {
@@ -227,7 +195,7 @@ Tailscale SSH is enabled for admin-to-host access only.
     {
       "action": "check",
       "src": ["group:admin"],
-      "dst": ["tag:host"],
+      "dst": ["tag:*"],
       "users": ["root", "ubuntu", "sam"]
     }
   ]
@@ -244,7 +212,6 @@ Tailscale Grants are deny-by-default. Any access not explicitly allowed above is
 
 Implicitly denied:
 - Users accessing infra UIs (Komodo, ProxMox)
-- Users accessing storage
 - Users SSH
 - Cross-environment traffic (except via admin)
 - All traffic from untagged devices
@@ -259,13 +226,13 @@ Required for Docktail to automatically advertise services without manual approva
 {
   "autoApprovers": {
     "services": {
-      "tag:app": ["tag:host"]
+      "tag:app": ["autogroup:admin"]
     }
   }
 }
 ```
 
-Hosts tagged with `tag:host` can automatically advertise Tailscale Services tagged with `tag:app`. No admin approval needed per service.
+Admins can approve Tailscale Services tagged with `tag:app`.
 
 ---
 
