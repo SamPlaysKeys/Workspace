@@ -74,20 +74,29 @@ Examples:
 
 ## Container Exposure Patterns
 
-Two patterns for exposing containerized services to Tailscale:
+Three patterns for connecting containerized services to Tailscale:
 
 ### Docktail — Service Advertisement
 
-[Docktail](https://github.com/docktail/docktail) advertises containers as **Tailscale Services**. Use this when:
+[Docktail](https://github.com/marvinvr/docktail) advertises containers as **Tailscale Services**. Use this when:
 - The application needs to be reachable by name from the tailnet
 - Multiple users/devices will access the service
 - You want the service in MagicDNS
 
 Docktail watches for Docker labels and advertises matching containers as services.
 
-### ScaleTail — Sidecar for Outbound Access
+### ScaleTail — Per-Service Sidecar Exposure
 
-ScaleTail runs as a sidecar container that joins the tailnet but **does not advertise a service**. Use this when:
+[ScaleTail](https://github.com/2Tiny2Scale/ScaleTail) provides Docker Compose configurations using the **sidecar pattern** — each service gets its own Tailscale container via `network_mode: service:`. The sidecar can advertise the service to the tailnet with Tailscale Serve.
+
+Use this when:
+- You want per-service Tailscale instances (not centralized)
+- The container needs both inbound and outbound tailnet access
+- You want explicit control per service
+
+### Outbound-Only Sidecar
+
+A sidecar container that joins the tailnet but **does not advertise a service**. Use this when:
 - The container needs to reach other tailnet resources
 - The container should not be directly addressable
 - You need tailnet access for configuration pulls, secrets, etc.
@@ -98,9 +107,10 @@ Example: A container that pulls secrets from Vault over Tailscale but doesn't ne
 
 | Need | Pattern |
 |------|---------|
-| Users access this app | Docktail (advertise service) |
-| App needs tailnet access, no inbound | ScaleTail (sidecar) |
-| Both inbound and outbound | Docktail (service already has tailnet access) |
+| Users access this app, want centralized | Docktail (labels-based) |
+| Per-service control, inbound + outbound | ScaleTail (sidecar pattern) |
+| App needs tailnet access, no inbound | Outbound-Only Sidecar |
+| Both inbound and outbound (centralized) | Docktail (service already has tailnet access) |
 
 ---
 
@@ -170,7 +180,7 @@ ACLs enforce access tiers by:
 2. Tagging services by interface type
 3. Granting access based on role → tag mappings
 
-The specific ACL rules will be built separately — this section defines the model, not the implementation.
+See [[tailscale-grants]] for the full grants policy document — this section defines the model, not the implementation.
 
 ---
 
@@ -321,7 +331,7 @@ Prod services exposed to partner are explicitly whitelisted as user-tier service
 
 ## Docktail Implementation
 
-[Docktail](https://github.com/docktail/docktail) runs as an independent container and advertises other containers as Tailscale Services based on Docker labels.
+[Docktail](https://github.com/marvinvr/docktail) runs as an independent container and advertises other containers as Tailscale Services based on Docker labels.
 
 ### Architecture
 
@@ -334,7 +344,7 @@ Prod services exposed to partner are explicitly whitelisted as user-tier service
 │  │             │◀───│  Container  │     │
 │  │             │    │             │     │
 │  │ tailscale   │    │ label:      │     │
-│  │ connected   │    │ ts.enable   │     │
+ │  │  connected   │    │ docktail.*  │     │
 │  └──────┬──────┘    └─────────────┘     │
 │         │                               │
 └─────────┼───────────────────────────────┘
@@ -351,9 +361,9 @@ services:
   actual-budget:
     image: actualbudget/actual-server
     labels:
-      - "docktail.enable=true"
-      - "docktail.hostname=actual"
-      - "docktail.port=5006"
+      - "docktail.service.enable=true"
+      - "docktail.service.name=actual"
+      - "docktail.service.port=5006"
 ```
 
 Docktail advertises the service at `actual.tailnet.ts.net`.
@@ -413,7 +423,7 @@ Tailscale on the host for SSH, **Docktail for service advertisement**:
 ```yaml
 services:
   docktail:
-    image: docktail/docktail
+    image: marvinvr/docktail
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
@@ -433,7 +443,8 @@ A minimal node dedicated to exit node functionality:
 ## Decisions
 
 - **Docktail for service advertisement** — containers that need to be reachable get Docktail labels
-- **ScaleTail sidecars for outbound-only** — containers that need tailnet access but not inbound use sidecars
+- **ScaleTail sidecars** — per-service Tailscale sidecars for inbound and outbound tailnet access
+- **Outbound-only sidecars** — lightweight sidecars for containers that need tailnet access but not inbound
 - **Subnet routes are admin-only** — ACLs restrict subnet access to admin role
 - **Dedicated exit node** — isolate exit node from service/subnet exposure
 
@@ -444,4 +455,4 @@ A minimal node dedicated to exit node functionality:
 - [ ] Which node becomes the dedicated exit node? (Candidate: lightweight VM or spare device)
 - [ ] Tagging convention for services — how to tag user vs admin interfaces in Docktail labels?
 - [ ] HA service list — which services warrant multi-node advertisement?
-- [ ] ACL structure — build out specific rules (separate task)
+- [x] Grants policy — built as [[tailscale-grants]]
