@@ -1,3 +1,11 @@
+---
+title: "Working Style"
+type: Note
+review:
+  status: draft
+  notes: "Automated frontmatter addition, 2026-05-21."
+---
+
 # Working Style
 
 This directory defines how AI agents should collaborate in this workspace. The conventions are agent and model agnostic — any AI assistant working here should follow them.

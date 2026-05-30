@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 # OpenShift artifacts
 
 Reusable OpenShift-related automation: scripts, templates, and playbooks that are safe to copy into other repositories (no client-specific secrets).

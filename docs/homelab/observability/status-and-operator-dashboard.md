@@ -1,3 +1,7 @@
+---
+type: Reference
+---
+
 # Public status site and operator dashboard
 
 Plans for **user-facing** public status (`status.samplayskeys.com`) and a **private** operator “single pane of glass,” with acceptance criteria, sequencing, and open decisions.

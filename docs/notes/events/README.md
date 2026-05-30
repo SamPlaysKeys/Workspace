@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Event notes
 
 Consolidated notes from conferences, meetups, and internal events — speakers, sessions, takeaways, and follow-ups.

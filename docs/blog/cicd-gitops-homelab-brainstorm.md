@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Blog Brainstorm: CI/CD, GitOps, and Homelab Decisions
 
 *This is a brainstorming document, not a finished post. Captures ideas for a future write-up on CI/CD philosophy and homelab tooling decisions.*

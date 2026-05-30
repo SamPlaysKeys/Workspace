@@ -6,6 +6,22 @@ Tracking **meta changes** to the workspace structure, conventions, and planning 
 
 ---
 
+### VSCode Setup Guide Storm Session (Enterprise Pivot)
+
+Pivoted the VSCode setup guide from homelab to enterprise context. Added instructions for `git-scm`, `python3`, `ansible-lint`, and Personal Access Tokens (PAT).
+
+**Files updated:**
+- `docs/guides/dev-environment/vscode.md`
+- `wip/vscode-setup/context.md`
+- `wip/vscode-setup/discussion.md`
+
+**Goal:**
+Provide a comprehensive setup guide suitable for enterprise devices, ensuring all core dependencies and authentication methods are covered.
+
+---
+
+## 2026-05-29
+
 ## 2026-04-22
 
 ### Co-Creation Behaviors Framework
@@ -101,14 +117,32 @@ Added sixth behavior to the co-creation framework for structured troubleshooting
 - Lightweight session in `wip/troubleshoot-<system>-<issue>/` with single `investigation.md` file
 - Progressive logging: Symptoms → Investigation (hypothesis/tried/result) → Resolution
 - Two graduation outputs:
-  - Remediation doc (always) → `docs/troubleshooting/<system>/`
-  - Prevention/setup doc (conditional) → `docs/guides/<system>/`
-- Quick doc path for known fixes (skip session, write directly to docs/)
-- Agent prompts for prevention doc if unsure, never skips without user confirmation
+  - [x] Create remediation doc (always) → `docs/troubleshooting/<system>/`
+    - [x] Prevention/setup doc (conditional) → `docs/guides/<system>/`
+  - Quick doc path for known fixes (skip session, write directly to docs/)
+  - Agent prompts for prevention doc if unsure, never skips without user confirmation
 
-**Files updated:**
-- `workstyle/working_style.md` — Added Troubleshoot behavior section
-- `.cursor/rules/co-creation.mdc` — Added Troubleshoot to behaviors table and key points
+  **Files updated:**
+  - `workstyle/working_style.md` — Added Troubleshoot behavior section
+  - `.cursor/rules/co-creation.mdc` — Added Troubleshoot to behaviors table and key points
 
-**Source:**
-Workshopped in Storm Session `wip/workspace-behaviors/`
+  **Source:**
+  Workshopped in Storm Session `wip/workspace-behaviors/`
+
+  ---
+
+  ## 2026-05-20
+
+  ### Agent Instruction Alignment
+
+  Updated `AGENTS.md` to formally integrate the co-creation framework and working styles.
+
+  **Changes made:**
+  - Added "Working Styles & Behaviors" section to `AGENTS.md`.
+  - Explicitly mandated adherence to behaviors (Storm Session, Pre-Mortem, Smooth Brain, Progressive Bookkeeping, Dead Drop, Troubleshoot, Sneaky).
+  - Codified core conventions (Isolation, Append-Don't-Replace, Documentation Structure).
+  - Pointed to `[[working_style]]` as the authoritative implementation guide.
+
+  **Rationale:**
+  Ensures that all agents (Gemini, Claude, Cursor, etc.) are aware of and follow the established working styles of this workspace automatically upon loading. This completes the "Auto-load working_style for CLI agents" idea from the backlog.
+

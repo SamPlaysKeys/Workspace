@@ -1,3 +1,6 @@
+---
+type: README-Note
+---
 
 # Readiness Check Role Authoring Guide
 

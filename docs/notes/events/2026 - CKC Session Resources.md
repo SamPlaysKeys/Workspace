@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # 26CKC Session Resources
 
 ## Survey Link

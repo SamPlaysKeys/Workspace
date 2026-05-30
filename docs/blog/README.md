@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Blog
 
 Draft blog posts and writing projects.

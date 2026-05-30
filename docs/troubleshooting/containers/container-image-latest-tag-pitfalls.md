@@ -1,3 +1,6 @@
+---
+type: Note
+---
 # Container image tag `latest` vs a real version tag
 
 This guide explains why using the tag **`latest`** as the **only** tag (or as a stand-in for “whatever we built most recently”) causes operational and security problems, how that shows up on Kubernetes and OpenShift, and how to remediate. It is **not** arguing that the string `latest` is forbidden everywhere; the issue is **using `latest` instead of an immutable, meaningful identifier** for production and shared infrastructure.

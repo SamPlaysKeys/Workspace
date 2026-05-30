@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # Using the integrated OpenShift container image registry
 
 OpenShift ships with a **cluster-internal container registry** (the **Image Registry Operator**, namespace `openshift-image-registry`). You can push images there instead of an external registry (for example Quay.io), as long as workloads that need the image can **pull** from the namespace where the image lives.
