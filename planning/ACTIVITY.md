@@ -60,6 +60,21 @@ Also verified working_style behaviors: Smooth Brain (auto), Progressive Bookkeep
 **Files changed:**
 - `docs/homelab/network/tailscale.md` — 5 edits
 
+### Tailscale Grants: host/storage removal & cleanup
+
+Removed `tag:host` and `tag:storage` from all grant rules per user directive (informational only). Changes:
+
+- Tag inventory notes both as "not referenced in any grant rules"
+- Removed Environment Scoping section
+- `tag:app` ownership: `tag:host, autogroup:admin` → `autogroup:admin`
+- Removed app→storage and host→storage grants (renumbered to 6 rules)
+- SSH: `tag:host` → `tag:*` across grants, SSH rules, tests
+- Auto-approvers: `tag:host` → `autogroup:admin`
+- Fixed malformed auto-approver JSON (missing closing `}`)
+
+**Files changed:**
+- `docs/homelab/network/tailscale-grants.md` — major revisions
+
 ## 2026-05-29
 
 ## 2026-04-22
