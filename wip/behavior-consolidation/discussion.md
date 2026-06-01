@@ -1,11 +1,20 @@
-## 2026-06-01: Handoff / Breadcrumb Skill
+## 2026-06-01: Incorporating Templates (Start, Consolidate, Cross-link)
 
-**Action**: Converted the "Dead Drop" behavior into a `handoff` skill.
+**Action**: Drafted 3 new skills based on user feedback and the `my-ai-workspace` reference. The user prefers keeping massive projects in `wip/` rather than graduating them to `.planning/` via a "brief", so we adapted the concept into a `consolidate` skill.
 
-**Changes**:
-- **`handoff-skill.md`**: Created to handle session state capture.
-- **Triggers**: Explicitly mapped "drop a breadcrumb", "leave a breadcrumb", "dead drop", and "close out" to this skill so the agent knows exactly when to invoke it based on natural language.
-- **Templates**: Brought over the "Full Dead Drop" and "Quick Bread Crumb" templates from the original working style, instructing the agent to append them to `planning/whats-next.md`.
+**New Skill Drafts**:
+1. **`start-skill.md`**: Provides a strict, templated orientation at the beginning of a session ("Where Things Stand", "Handoff", "Suggested Focus"). Puts the user in control of what happens next.
+2. **`cross-link-skill.md`**: An anti-orphan convention. Forces the agent to link any newly created document into the appropriate `README.md` or index.
+3. **`consolidate-skill.md`**: Replaces the reference's `brief` skill. Instead of moving work, it tames messy `wip/<topic>/` folders by generating a `BRIEF.md` *inside* the WIP folder. This provides an Abstract, Scope limits, and a Table of Contents for the scattered scratch files.
+
+**Current Roster in `scratch/`**:
+- `ideate-skill.md`
+- `troubleshoot-skill.md`
+- `document-skill.md`
+- `handoff-skill.md`
+- `start-skill.md`
+- `cross-link-skill.md`
+- `consolidate-skill.md`
 
 **Next Steps**: 
-- Review the remaining behaviors: Storm Session, Pre-Mortem, Sneaky.
+Review this roster. Does `consolidate` hit the right note for managing large WIP folders? Are there any remaining pieces of the "running off" puzzle to solve?
