@@ -30,19 +30,19 @@ These are defined modes of interaction. When the user uses the **Trigger** phras
 | Behavior | Trigger Phrases | Purpose |
 |----------|-----------------|---------|
 | **Start** | "orient me", "what's next", "start" | Orient the session based on state files. |
-| **Ideate** | "storm session", "storm sesh", "brainstorm" | Quarantined rapid ideation in `wip/`. |
-| **Consolidate**| "organize this wip", "consolidate" | Tame a messy `wip/` folder with a BRIEF. |
+| **Ideate** | "storm session", "storm sesh", "brainstorm" | Quarantined rapid ideation in `.wip/`. |
+| **Consolidate**| "organize this wip", "consolidate" | Tame a messy `.wip/` folder with a BRIEF. |
 | **Troubleshoot**| "troubleshoot", "debug", *[error logs]* | Investigate and fix an issue. |
 | **Document** | "write this up", "document this" | Generate standardized docs/guides. |
 | **Cross-link**| "cross-link", *[after Documenting]* | Ensure new docs are linked in indexes. |
 | **Handoff** | "drop a breadcrumb", "dead drop", "close out"| Capture state for the next session. |
-| **Sneaky** | "go dark", "be sneaky" | Hide working folders in `.workspace/`. |
+| **Sneaky** | *(Default Behavior)* | Hide working folders in `.wip/`. |
 | **Install** | *Explicitly:* "install its behaviors" | Persist these behaviors into the target repo. |
 
 ---
 
 ### Start (Session Orientation)
-**Process**: Read the top of `BACKLOG.md` (or current task) and the most recent `planning/whats-next.md` or `wip/<topic>/context.md`. Present a snapshot to the user to let them decide what to do.
+**Process**: Read the top of `BACKLOG.md` (or current task) and the most recent `.wip/planning/whats-next.md` or `.wip/<topic>/context.md`. Present a snapshot to the user to let them decide what to do.
 
 **Output Template**:
 ```markdown
@@ -63,19 +63,19 @@ These are defined modes of interaction. When the user uses the **Trigger** phras
 ---
 
 ### Ideate (Storm Session)
-**Process**: The agent is **strictly quarantined** to the `wip/<topic>/` directory. You are forbidden from modifying existing source code or `docs/` until the user says "graduate this".
+**Process**: The agent is **strictly quarantined** to the `.wip/<topic>/` directory. You are forbidden from modifying existing source code or `docs/` until the user says "graduate this".
 
 **Structure**:
-1. Create `wip/<topic>/context.md` (Tracks Goal, Current State, Open Questions, Constraints).
-2. Create `wip/<topic>/discussion.md` (Running, append-only log of ideas and sketches).
-3. Draft all code/experiments in `wip/<topic>/scratch/`.
+1. Create `.wip/<topic>/context.md` (Tracks Goal, Current State, Open Questions, Constraints).
+2. Create `.wip/<topic>/discussion.md` (Running, append-only log of ideas and sketches).
+3. Draft all code/experiments in `.wip/<topic>/scratch/`.
 
 ---
 
 ### Consolidate (WIP Organization)
-**Process**: When a `wip/` folder gets messy (>5 files), synthesize the chaos without moving the files.
+**Process**: When a `.wip/` folder gets messy (>5 files), synthesize the chaos without moving the files.
 
-**Output Template (`wip/<topic>/BRIEF.md`)**:
+**Output Template (`.wip/<topic>/BRIEF.md`)**:
 ```markdown
 # [Topic Name] — WIP Brief
 > **Status:** Active
@@ -142,7 +142,7 @@ references: []
 ### Handoff (Breadcrumb / Dead Drop)
 **Process**: Capture session state explicitly so it can be resumed later.
 
-**Output Template (`planning/whats-next.md`)**:
+**Output Template (`.wip/planning/whats-next.md`)**:
 ```markdown
 # Dead Drop — YYYY-MM-DD
 **In progress:** [What's mid-flight right now]
@@ -157,7 +157,7 @@ references: []
 ---
 
 ### Sneaky
-**Process**: For external/public repos where `wip/` and `planning/` are noise. Move those directories into a hidden `.workspace/` folder. All subsequent working style behaviors use `.workspace/` as the root. (Deactivate with "go visible").
+**Process**: By default, this workspace uses "Sneaky" mode. All working directories (`wip/`, `planning/`) are consolidated into a single hidden `.wip/` directory to prevent them from cluttering the repository. All subsequent working style behaviors use `.wip/` as the root.
 
 ---
 
