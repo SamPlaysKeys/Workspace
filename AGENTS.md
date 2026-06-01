@@ -25,5 +25,6 @@ Complex or structured workflows are handled by dedicated Skills that the agent w
 
 ## What agents should do
 - Update `AGENTS.md` only when the user asks for workspace-level guidance changes.
+- **Maintain Portability:** If a core behavior or skill is updated in `.agents/skills/` or `AGENTS.md`, you MUST mirror that update in the portable `workstyle/working_style.md` document so it remains perfectly in sync.
 - Follow these rules for all interactive sessions.
-- Do not assume the workspace is for a specific project (like a homelab or a Tolaria vault) unless explicitly requested.
+- Do not assume the workspace is for a specific project unless explicitly requested.

@@ -1,20 +1,10 @@
-## 2026-06-01: Incorporating Templates (Start, Consolidate, Cross-link)
+## 2026-06-01: Removing Tolaria References
 
-**Action**: Drafted 3 new skills based on user feedback and the `my-ai-workspace` reference. The user prefers keeping massive projects in `wip/` rather than graduating them to `.planning/` via a "brief", so we adapted the concept into a `consolidate` skill.
+**Action**: Searched for and removed references to "Tolaria" from the workspace rules to ensure it remains clean and decoupled from local machine tools.
 
-**New Skill Drafts**:
-1. **`start-skill.md`**: Provides a strict, templated orientation at the beginning of a session ("Where Things Stand", "Handoff", "Suggested Focus"). Puts the user in control of what happens next.
-2. **`cross-link-skill.md`**: An anti-orphan convention. Forces the agent to link any newly created document into the appropriate `README.md` or index.
-3. **`consolidate-skill.md`**: Replaces the reference's `brief` skill. Instead of moving work, it tames messy `wip/<topic>/` folders by generating a `BRIEF.md` *inside* the WIP folder. This provides an Abstract, Scope limits, and a Table of Contents for the scattered scratch files.
+**Changes**:
+- **`workstyle/working_style.md`**: Verified this file is completely clean. The recent rewrite naturally stripped any legacy references.
+- **`AGENTS.md`**: Removed the reference to "Tolaria vault" in the "What agents should do" section.
 
-**Current Roster in `scratch/`**:
-- `ideate-skill.md`
-- `troubleshoot-skill.md`
-- `document-skill.md`
-- `handoff-skill.md`
-- `start-skill.md`
-- `cross-link-skill.md`
-- `consolidate-skill.md`
-
-**Next Steps**: 
-Review this roster. Does `consolidate` hit the right note for managing large WIP folders? Are there any remaining pieces of the "running off" puzzle to solve?
+**Current Status**: 
+The portable behaviors and the root `AGENTS.md` are now fully decoupled from Tolaria, ensuring that when the framework is ported to other repositories, no local tool context leaks over.
