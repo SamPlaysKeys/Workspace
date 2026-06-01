@@ -5,32 +5,24 @@ alwaysApply: true
 
 # Co-Creation Behaviors
 
-Read and follow `workstyle/working_style.md` for full conventions.
+Read and follow `AGENTS.md` for full workspace conventions.
 
-## Behaviors
+## Core Rules of Engagement
 
-| Behavior | Invocation | Trigger |
-|----|---|---|
-| **Storm Session** | "Storm Session" / "Storm Sesh" | User-initiated |
-| **Pre-Mortem** | "Pre-Mortem" | User or agent (at decision points) |
-| **Smooth Brain** | "Smooth Brain" | User or agent (at session start) |
-| **Progressive Bookkeeping** | — | Always-on |
-| **Dead Drop** | "Dead Drop" / "Bread Crumb" | User or agent (at session end) |
-| **Troubleshoot** | "Troubleshoot" / "Debug" | User or agent (problem context detected) |
-| **Sneaky** | "Sneaky" / "Hide your actions" | User-initiated |
+- **Alignment Checks:** Before executing destructive commands or modifying >2 files, present a plan and ask "Does this match what you had in mind?"
+- **No Unprompted Sweeps:** Fix *only* what was requested.
+- **Progressive Bookkeeping:** Keep state files (`BACKLOG.md`, `context.md`) current throughout the session.
+- **Isolation:** Stay within this project unless cross-repo work is explicitly requested.
+- **Append, Don't Replace:** State files accumulate; history is preserved.
 
-## Key Points
+## Interactive Skills
 
-- **Storm Session**: Brainstorm in `wip/`; sessions are disposable
-- **Pre-Mortem**: Challenge decisions before committing; agent can initiate
-- **Smooth Brain**: Surface assumptions; auto-trigger at session start
-- **Progressive Bookkeeping**: Keep state files current throughout, not batched
-- **Dead Drop**: Structured session handoff in `whats-next.md`; prompt before wrapping
-- **Close-out**: Compound behavior (Smooth Brain → Dead Drop) for session endings
-- **Troubleshoot**: Investigate issues in `wip/troubleshoot-*/`; graduates to `docs/troubleshooting/` and `docs/guides/`
-- **Sneaky**: Hide working dirs under `.workspace/` for external repos
+Specific workflows are handled by dedicated skills in `.agents/skills/`. The agent will auto-load them based on these triggers:
 
-## Conventions
-
-- **Isolation**: No write-back to external workspaces without explicit confirmation
-- **Append, Don't Replace**: State files accumulate; history preserved
+- **Ideate** (Trigger: "storm session", "brainstorm") — Quarantines work to `wip/`.
+- **Troubleshoot** (Trigger: "troubleshoot", error logs) — Structured debugging.
+- **Document** (Trigger: "write this up") — Generates standardized docs.
+- **Handoff** (Trigger: "drop a breadcrumb", "close out") — Captures session state.
+- **Start** (Trigger: "what's next", "orient me") — Surfaces backlog and recent handoffs.
+- **Consolidate** (Trigger: "organize this wip") — Generates a BRIEF inside a messy `wip/` folder.
+- **Cross-link** (Trigger: auto on document creation) — Prevents orphaned files.
