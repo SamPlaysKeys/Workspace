@@ -266,3 +266,21 @@ Tracking active tasks being carried out and their associated commits.
 - Verify phones on the `User` VLAN can cast to Chromecasts on the `IoT` VLAN.
 - Verify Tailscale remains the primary overlay for administrative routing in without conflict.
 - Pull in notes on API and Ingress certificate checks and turn them into a full guide.
+
+# Dead Drop — 2026-06-01
+
+**In progress:** Consolidating agent behaviors into a skill-based architecture and a portable working style.
+
+**Just completed:**
+- Graduated 7 core skills (`ideate`, `troubleshoot`, `document`, `handoff`, `start`, `consolidate`, `cross-link`) from `wip/` to `.agents/skills/`.
+- Created the "Portable Agent Working Style" in `workstyle/working_style.md` with a strict `Install` behavior guardrail.
+- Cleaned `AGENTS.md` to establish strict Rules of Engagement (Alignment Checks, No Sweeps) and removed Tolaria references.
+- Migrated `.cursor/rules/co-creation.mdc` to point to the new skill architecture.
+
+**Next step:** Test the new behaviors in a real task, or test deploying the portable installer to a new repository.
+
+**Key decision:** Switched from a list of loose behaviors to a strict, templated skill suite backed by an "Alignment Checks" rule to prevent the agent from "running off" without explicit permission.
+
+**Git state:** Uncommitted changes (new skills in `.agents/skills/`).
+
+**Open threads:** None.
