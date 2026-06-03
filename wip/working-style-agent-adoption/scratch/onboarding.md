@@ -51,7 +51,7 @@ During Storm Sessions:
 - `wip/<session>/discussion.md` — as ideas develop
 
 During any work:
-- `planning/whats-next.md` — if priorities shift
+- `BACKLOG.md` — if priorities shift
 - Relevant docs — as understanding evolves
 
 ## Self-Check

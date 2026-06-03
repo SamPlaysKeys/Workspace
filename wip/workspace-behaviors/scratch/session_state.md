@@ -3,7 +3,7 @@
 **Isolation:** All artifacts created during this session stay in this project. This document contains no references to any external workspace — artifacts here don't write back anywhere.
 
 **Where things go:**
-- Checkpoints and handoffs → `.planning/whats-next.md` (create `.planning/` if needed)
+- Checkpoints and handoffs → `BACKLOG.md` under `## Active Sessions`
 - If no `BACKLOG.md` exists: create one with `## In Progress`, `## Up Next`, `## Ideas` sections
 - Commits go to the local repository
 

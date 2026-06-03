@@ -17,7 +17,7 @@ This workspace may reference or generate content for other repositories, but cha
 State files accumulate entries rather than being overwritten. The most recent entry is the active state, but history is preserved.
 
 **Applies to:**
-- `.planning/whats-next.md` — Dead Drops append, don't replace
+- `BACKLOG.md` — Dead Drops append, don't replace
 - `discussion.md` in Storm Sessions — running log, not overwritten
 - Any file serving as a session log or state tracker
 
