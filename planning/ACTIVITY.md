@@ -128,14 +128,13 @@ Restructured the planning and tracking system to clarify file purposes and locat
 - Created `planning/` directory as central point for active task planning
 - Moved `BACKLOG.md` from `docs/` to repository root
 - Moved `ACTIVITY.md` from `docs/` to `planning/`
-- Created `planning/whats-next.md` for tracking active tasks and commits
+- Created `planning/whats-next.md` for tracking active tasks and commits (later merged into `BACKLOG.md`)
 - Added multi-project workstream management as a core goal in `roadmap/planning.md`
 - Updated `workstyle/README.md` with progressive tracking/documentation principles
 
 **File purposes codified:**
-- `BACKLOG.md` (root): Human-in-the-loop review and tracking of completed/in-progress work
+- `BACKLOG.md` (root): Human-in-the-loop review and tracking of completed/in-progress work, plus active session tracking
 - `planning/ACTIVITY.md`: Meta changes to workspace structure and conventions
-- `planning/whats-next.md`: Active task tracking with associated commit hashes
 
 ---
 

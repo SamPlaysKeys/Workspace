@@ -16,7 +16,7 @@ Provide a structured snapshot of the workspace to help the user decide what to w
 ## Process
 
 1. **Read Backlog State**: Read the top of `BACKLOG.md` (specifically the `> State:` line or current active task).
-2. **Read Handoff**: Look for the most recent `planning/whats-next.md` or `wip/<topic>/context.md` that was updated.
+2. **Read Handoff**: Look for the most recent `BACKLOG.md` (under `## Active Sessions`) or `wip/<topic>/context.md` that was updated.
 3. **Format Output**: Use the strict template below to present a compact snapshot. Do NOT invent tasks. 
 
 ## Template

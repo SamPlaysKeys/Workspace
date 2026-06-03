@@ -20,12 +20,12 @@ Create an explicit, structured capture of session state. Leave enough context so
 1. **Assess State**: Briefly review what was just completed, what is currently in-flight, and any open threads or blockers.
 2. **Check Git**: Note the current git state (uncommitted changes, or the last commit hash).
 3. **Format**: Use the **Full Dead Drop** template by default. If the user explicitly asks for a "quick crumb", use the fallback.
-4. **Save**: Append the output to `planning/whats-next.md`. (If in a Storm Session, also update the session's `context.md`).
+4. **Save**: Append the output to `BACKLOG.md` under the `## Active Sessions` header. (If in a Storm Session, also update the session's `context.md`).
 
 ## Templates
 
 ### 1. Full Dead Drop (Default)
-**Path**: Append to `planning/whats-next.md`
+**Path**: Append to `BACKLOG.md` under `## Active Sessions`
 
 ```markdown
 # Dead Drop — YYYY-MM-DD
@@ -47,7 +47,7 @@ Create an explicit, structured capture of session state. Leave enough context so
 
 ### 2. Quick Bread Crumb (Fallback)
 **Use when**: User explicitly asks for a "quick crumb" or is in a rush.
-**Path**: Append to `planning/whats-next.md`
+**Path**: Append to `BACKLOG.md` under `## Active Sessions`
 
 ```markdown
 > YYYY-MM-DD HH:MM — [Brief note on what's happening and what's next]
