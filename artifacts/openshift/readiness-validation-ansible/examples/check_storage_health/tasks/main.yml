@@ -178,45 +178,33 @@
     readiness_failures: >-
       {{
         (readiness_failures | default([])) +
-        ['readiness_check_storage_health: ' +
-         (_storage_results | selectattr('status', 'eq', 'FAIL') | list | length | string) +
+        ['readiness_check_storage_health: ' ~
+         (_storage_results | selectattr('status', 'eq', 'FAIL') | list | length | string) ~
          ' required check(s) failed — see Storage Health Report above']
       }}
   when: _storage_results | selectattr('status', 'eq', 'FAIL') | list | length > 0
 
-# Rule REPORT-3/4/5/6, STATE-3.
-- name: Append storage health section to readiness report
+# Rule REPORT-3, STATE-3: Append structured section to readiness_sections.
+- name: Append storage health section to readiness_sections
   vars:
-    _section: |
-
-      ## Storage Health
-
-      ### PersistentVolumes
-
-      | Status | PV | Detail |
-      |--------|----|--------|
-      {% for r in (_storage_results | selectattr('section', 'eq', 'pv') | sort(attribute='name')) -%}
-      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
-      {% endfor %}
-
-      ### PersistentVolumeClaims
-
-      | Status | PVC | Detail |
-      |--------|-----|--------|
-      {% for r in (_storage_results | selectattr('section', 'eq', 'pvc') | sort(attribute='name')) -%}
-      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
-      {% endfor %}
-
-      ### StorageClasses
-
-      | Status | Name | Detail |
-      |--------|------|--------|
-      {% for r in (_storage_results | selectattr('section', 'eq', 'storageclass') | sort(attribute='name')) -%}
-      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
-      {% endfor %}
-      **PASS:** {{ _storage_results | selectattr('status', 'eq', 'PASS') | list | length }} &nbsp;
-      **WARN:** {{ _storage_results | selectattr('status', 'eq', 'WARN') | list | length }} &nbsp;
-      **FAIL:** {{ _storage_results | selectattr('status', 'eq', 'FAIL') | list | length }}
-
+    _pass: "{{ _storage_results | selectattr('status', 'eq', 'PASS') | list | length }}"
+    _warn: "{{ _storage_results | selectattr('status', 'eq', 'WARN') | list | length }}"
+    _fail: "{{ _storage_results | selectattr('status', 'eq', 'FAIL') | list | length }}"
   ansible.builtin.set_fact:
-    readiness_report_md: "{{ readiness_report_md + _section }}"
+    readiness_sections: >-
+      {{
+        readiness_sections + [{
+          'section': 'storage_health',
+          'pass': _pass | int,
+          'warn': _warn | int,
+          'fail': _fail | int,
+          'results': _storage_results
+        }]
+      }}
+
+# Rule REPORT-4, STATE-4: Increment the shared warn count.
+- name: Update shared warn count
+  ansible.builtin.set_fact:
+    readiness_warn_count: >-
+      {{ (readiness_warn_count | default(0) | int) + (_storage_results | selectattr('status', 'eq', 'WARN') | list | length) }}
+  when: _storage_results | selectattr('status', 'eq', 'WARN') | list | length > 0
