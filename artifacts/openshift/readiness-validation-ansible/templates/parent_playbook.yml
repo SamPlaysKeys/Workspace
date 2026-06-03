@@ -6,10 +6,10 @@
 #   ansible-playbook readiness_validation.yml -i inventory --tags software-versions
 #   ansible-playbook readiness_validation.yml -i inventory --tags readiness-validation
 #
-# Required variables (set in AAP job template or extra vars):
-#   cluster_name              — short cluster name (used to construct kubeconfig path)
-#   bastion_fqdn              — FQDN of the bastion host
-#   ansible_user              — SSH user on the bastion
+# Required variables (set in job template or extra vars):
+#   openshift_cluster_name        — short cluster name (used to construct kubeconfig path)
+#   openshift_bastion_host_fqdn   — FQDN of the bastion host
+#   ansible_user                  — SSH user on the bastion
 
 # ── Play 1: Bootstrap ─────────────────────────────────────────────────────────
 - name: Add bastion to bastion group
@@ -20,13 +20,13 @@
     - required
     - readiness-validation
   tasks:
-    - name: Add {{ bastion_fqdn }} to bastion group
+    - name: Add {{ openshift_bastion_host_fqdn }} to bastion group
       ansible.builtin.add_host:
-        name: "{{ bastion_fqdn }}"
+        name: "{{ openshift_bastion_host_fqdn }}"
         groups: bastion_group
 
 # ── Play 2: Initialize shared facts ──────────────────────────────────────────
-# Rule ARCH-3: Set ocp_kubeconfig, readiness_failures, and readiness_report_md here.
+# Rule ARCH-3: Set ocp_kubeconfig, readiness_failures, readiness_sections, readiness_warn_count here.
 # Rule KUBE-1: ocp_kubeconfig is a host fact derived from runtime variables.
 - name: Readiness validation — initialize shared facts
   hosts: bastion_group
@@ -34,17 +34,12 @@
   tags:
     - readiness-validation
   tasks:
-    - name: Initialize readiness facts and report header
+    - name: Initialize readiness facts
       ansible.builtin.set_fact:
-        ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ cluster_name }}/auth/kubeconfig"
+        ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ openshift_cluster_name }}/auth/kubeconfig"
         readiness_failures: []
-        readiness_report_md: |
-          # Cluster Readiness Report
-          **Cluster:** {{ cluster_name }}
-          **Bastion:** {{ bastion_fqdn }}
-          **Generated:** {{ lookup('pipe', 'date -u +"%Y-%m-%d %H:%M UTC"') }}
-
-          ---
+        readiness_sections: []
+        readiness_warn_count: 0
 
 # ── Play 3..N: One play per role ──────────────────────────────────────────────
 # Rule ARCH-2: gather_facts: false, environment: KUBECONFIG at play level.
@@ -63,39 +58,38 @@
 # Add one play block per role, repeating the pattern above.
 
 # ── Final gate play ───────────────────────────────────────────────────────────
-# Rule ARCH-4: Append summary, publish via set_stats, then fail if any failures.
-# Rule REPORT-7: set_stats publishes the markdown report as an AAP artifact.
+# Rule ARCH-4: Publish structured readiness_report via set_stats, then fail if any failures.
+# Rule REPORT-6: set_stats publishes the structured report as an AAP artifact.
 - name: Readiness validation — final gate
   hosts: bastion_group
   gather_facts: false
   tags:
     - readiness-validation
   tasks:
-    - name: Append validation summary to report
-      vars:
-        _summary: |
-
-          ---
-
-          ## Validation Summary
-
-          {% if readiness_failures | default([]) | length == 0 %}
-          **Result: PASS** — All readiness checks completed without failures.
-          {% else %}
-          **Result: FAIL**
-
-          The following checks recorded failures:
-          {% for f in readiness_failures | default([]) %}
-          - {{ f }}
-          {% endfor %}
-          {% endif %}
-      ansible.builtin.set_fact:
-        readiness_report_md: "{{ readiness_report_md + _summary }}"
-
     - name: Publish readiness report as AAP artifact
+      vars:
+        _fail_count: "{{ readiness_failures | default([]) | length }}"
+        _warn_count: "{{ readiness_warn_count | default(0) | int }}"
       ansible.builtin.set_stats:
         data:
-          readiness_report_md: "{{ readiness_report_md }}"
+          readiness_report:
+            summary:
+              cluster: "{{ openshift_cluster_name }}"
+              bastion: "{{ openshift_bastion_host_fqdn }}"
+              generated: "{{ lookup('pipe', 'date -u +\"%Y-%m-%d %H:%M UTC\"') }}"
+              result: "{{ (_fail_count | int > 0) | ternary('FAIL', 'PASS') }}"
+              failures: "{{ _fail_count | int }}"
+              warnings: "{{ _warn_count | int }}"
+              warnings_note: >-
+                {{
+                  (_warn_count | int > 0)
+                  | ternary(
+                      _warn_count | string ~ ' warning(s) recorded across all checks — see detailed sections for breakdown.',
+                      'No warnings.'
+                    )
+                }}
+              failure_detail: "{{ readiness_failures | default([]) }}"
+            sections: "{{ readiness_sections }}"
         aggregate: false
 
     - name: Fail if any readiness checks recorded failures

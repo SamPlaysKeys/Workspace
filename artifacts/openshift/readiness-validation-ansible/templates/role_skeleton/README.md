@@ -1,6 +1,7 @@
 ---
 type: README-Note
 ---
+
 # readiness_<check_name>
 
 <REPLACE: One-paragraph description of what this role validates and why it matters.>

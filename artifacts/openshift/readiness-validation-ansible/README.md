@@ -4,9 +4,6 @@ type: README-Note
 
 # Readiness Check Role Authoring Guide
 
-**Workspace path:** `artifacts/openshift/readiness-validation-ansible/`  
-**What this is:** A reusable pattern for **Ansible readiness / validation roles** against live OpenShift clusters—multi-play parent playbook, shared Markdown report, **PASS / WARN / FAIL** semantics, and **deferred failure** (roles never call `fail`; a final gate play does). Includes skeletons and example roles.
-
 > **Scope**: This guide is for AI agents and human authors writing new Ansible readiness-check
 > roles that plug into the multi-play validation playbook pattern established in this repository.
 > It is derived from real bugs encountered and fixed during development and contains no
@@ -23,7 +20,7 @@ type: README-Note
 5. [The shared-state contract](#5-the-shared-state-contract)
 6. [The result-accumulation pattern](#6-the-result-accumulation-pattern)
 7. [Three-tier status codes: PASS / WARN / FAIL](#7-three-tier-status-codes-pass--warn--fail)
-8. [Dual reporting: console + markdown](#8-dual-reporting-console--markdown)
+8. [Structured section reporting](#8-structured-section-reporting)
 9. [Critical Ansible gotchas (hard-won fixes)](#9-critical-ansible-gotchas-hard-won-fixes)
 10. [Reading OpenShift API condition fields](#10-reading-openshift-api-condition-fields)
 11. [CSV version matching rules](#11-csv-version-matching-rules)
@@ -44,7 +41,7 @@ A readiness check role is an Ansible role that:
 - Queries a live OpenShift cluster (or related infrastructure) to evaluate some aspect of
   cluster health or configuration
 - Produces a structured result list with `PASS`, `WARN`, or `FAIL` entries
-- Appends a human-readable section to a shared Markdown report fact (`readiness_report_md`)
+- Appends a structured section dict to the shared `readiness_sections` fact
 - Records any failures in a shared `readiness_failures` list (but **never calls `fail` itself**)
 - Is invoked from a multi-play parent playbook that runs a final gate play at the end
 
@@ -58,10 +55,10 @@ The parent playbook uses a **multi-play structure**:
 
 ```
 Play 1 — Bootstrap  : add bastion to dynamic group
-Play 2 — Initialize : set shared facts (kubeconfig path, empty readiness_failures, report header)
+Play 2 — Initialize : set shared facts (kubeconfig path, empty readiness_failures/sections/warn_count)
 Play N — Role play  : gather_facts: false, environment: KUBECONFIG, one role
 ...
-Play N+1 — Final gate: append summary to report, publish via set_stats, fail if readiness_failures
+Play N+1 — Final gate: publish structured report via set_stats, fail if readiness_failures
 ```
 
 ### Why this structure?
@@ -70,9 +67,9 @@ Play N+1 — Final gate: append summary to report, publish via set_stats, fail i
   into one clean summary — not 12 separate task failures mid-play.
 - **Play-level environment**: Setting `environment: KUBECONFIG` at the play level means every
   `oc` command in every task inside the role automatically inherits it. Zero per-task repetition.
-- **Shared facts**: `readiness_failures` and `readiness_report_md` are host facts set in Play 2
-  and mutated by each role play. Because they are host facts (not inventory vars), they persist
-  across play boundaries on the same host.
+- **Shared facts**: `readiness_failures`, `readiness_sections`, and `readiness_warn_count` are
+  host facts set in Play 2 and mutated by each role play. Because they are host facts (not
+  inventory vars), they persist across play boundaries on the same host.
 - **Isolation**: Each role play has `gather_facts: false`, so there is no per-role setup overhead.
 
 ### Template: parent playbook skeleton
@@ -145,23 +142,46 @@ This lets operators run the full suite or target individual checks with `--tags`
 
 ## 5. The shared-state contract
 
-These two facts are set in the **initialize play** and consumed/extended by every role:
+These facts are set in the **initialize play** and consumed/extended by every role:
 
 | Fact | Type | Set by | Extended by |
 |------|------|--------|-------------|
 | `readiness_failures` | list of strings | initialize play | each role (append on failure) |
-| `readiness_report_md` | string (Markdown) | initialize play | each role (string concatenation) |
+| `readiness_sections` | list of dicts | initialize play | each role (append one section dict) |
+| `readiness_warn_count` | integer | initialize play | each role (increment by local warn count) |
 
-A third fact (`ocp_kubeconfig`) is also set in the initialize play and used at the play level:
+A fourth fact (`ocp_kubeconfig`) is also set in the initialize play and used at the play level:
 
 ```yaml
 ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ openshift_cluster_name }}/auth/kubeconfig"
 ```
 
+The final gate play publishes a single `readiness_report` key via `set_stats` containing:
+
+```yaml
+readiness_report:
+  summary:
+    cluster: <cluster_name>
+    bastion: <bastion_fqdn>
+    generated: <timestamp>
+    result: PASS | FAIL
+    failures: <int>
+    warnings: <int>
+    warnings_note: "<N> warning(s) recorded..." | "No warnings."
+    failure_detail: <list of failure strings>
+  sections:          # list in play execution order
+    - section: <section_key>
+      pass: <int>
+      warn: <int>
+      fail: <int>
+      results: [...]
+```
+
 **Rules:**
-- Roles read `readiness_failures | default([])` (never assume it exists)
+- Roles read `readiness_failures | default([])` — never assume the fact exists
 - Roles only **append** to `readiness_failures` — never replace it
-- Roles only **concatenate** onto `readiness_report_md` — never replace it
+- Roles only **append** to `readiness_sections` — never replace it
+- Roles only **increment** `readiness_warn_count` — never replace it
 - Roles never touch `ocp_kubeconfig`
 
 ---
@@ -244,7 +264,7 @@ to right: "if degraded → FAIL, else if not updated → WARN, else PASS."
 
 ---
 
-## 8. Dual reporting: console + markdown
+## 8. Structured section reporting
 
 Every role produces **two reports**:
 
@@ -268,32 +288,38 @@ FAIL : N
 
 Use `{{ '%-6s' | format(r.status) }}` to left-pad the status to 6 characters for alignment.
 
-### 8b. Markdown section appended to readiness_report_md
+### 8b. Structured section appended to readiness_sections
 
-Structure a `vars: _section:` block and then append it:
+Roles do **not** produce Markdown. Instead, they append a structured dict to `readiness_sections`
+and increment `readiness_warn_count`. The final gate publishes the whole structure via `set_stats`.
 
 ```yaml
-- name: Append <check> section to readiness report
+- name: Append <check> section to readiness_sections
   vars:
-    _section: |
-
-      ## Section Title
-
-      | Status | Name | Detail |
-      |--------|------|--------|
-      {% for r in (_my_results | sort(attribute='name')) -%}
-      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
-      {% endfor %}
-      **PASS:** {{ _my_results | selectattr('status', 'eq', 'PASS') | list | length }} &nbsp;
-      **WARN:** {{ _my_results | selectattr('status', 'eq', 'WARN') | list | length }} &nbsp;
-      **FAIL:** {{ _my_results | selectattr('status', 'eq', 'FAIL') | list | length }}
-
+    _pass: "{{ _my_results | selectattr('status', 'eq', 'PASS') | list | length }}"
+    _warn: "{{ _my_results | selectattr('status', 'eq', 'WARN') | list | length }}"
+    _fail: "{{ _my_results | selectattr('status', 'eq', 'FAIL') | list | length }}"
   ansible.builtin.set_fact:
-    readiness_report_md: "{{ readiness_report_md + _section }}"
+    readiness_sections: >-
+      {{
+        readiness_sections + [{
+          'section': '<section_key>',
+          'pass': _pass | int,
+          'warn': _warn | int,
+          'fail': _fail | int,
+          'results': _my_results
+        }]
+      }}
+
+- name: Update shared warn count
+  ansible.builtin.set_fact:
+    readiness_warn_count: >-
+      {{ (readiness_warn_count | default(0) | int) + (_my_results | selectattr('status', 'eq', 'WARN') | list | length) }}
+  when: _my_results | selectattr('status', 'eq', 'WARN') | list | length > 0
 ```
 
-**Note the `-%}` (dash) in the for loop** — it suppresses the trailing newline after each
-iteration, preventing blank rows in the rendered Markdown table.
+The `section` key must be a stable snake_case identifier (e.g. `cluster_operators`, `monitoring_pvcs`).
+The `results` list contains the full result dicts (name, status, detail, and any role-specific fields).
 
 ---
 
@@ -647,7 +673,7 @@ The user needs to know:
 When creating `roles/readiness_<name>/`:
 
 - [ ] `defaults/main.yml` — all configuration variables with inline comments explaining each
-- [ ] `tasks/main.yml` — starts with `_results: []` reset; ends with report debug + failures append + markdown append
+- [ ] `tasks/main.yml` — starts with `_results: []` reset; ends with console debug + failures append + readiness_sections append + readiness_warn_count increment
 - [ ] `meta/main.yml` — `author`, `description`, `min_ansible_version: "2.14"`, `dependencies: []`
 - [ ] `README.md` — documents all variables, all status codes, and requirements
 
@@ -678,4 +704,6 @@ When the role queries a new resource type:
 | `_csv_installed_raw.stdout_lines \| list` without dedup | `\| unique \| sort \| list` |
 | No `changed_when: false` on `oc get` tasks | Always set for read-only commands |
 | String concat with `+` in set_fact | Use `~` everywhere |
-| `| default()` to catch missing dict key | Use `.get('key', fallback)` |
+| `\| default()` to catch missing dict key | Use `.get('key', fallback)` |
+| Appending markdown to `readiness_report_md` | Append a structured dict to `readiness_sections` |
+| Forgetting to increment `readiness_warn_count` | Add `readiness_warn_count` update task after section append |

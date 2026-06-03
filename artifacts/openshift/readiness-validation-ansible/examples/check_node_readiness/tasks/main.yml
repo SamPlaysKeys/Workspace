@@ -131,6 +131,33 @@
       }}
   when: expected_node_count | int > 0
 
+# Rule REPORT-3: Append a structured section dict to readiness_sections.
+# Rule STATE-3:  readiness_sections + [...] only — never replace.
+- name: Append node readiness section to readiness_sections
+  vars:
+    _pass: "{{ _node_results | selectattr('status', 'eq', 'PASS') | list | length }}"
+    _warn: "{{ _node_results | selectattr('status', 'eq', 'WARN') | list | length }}"
+    _fail: "{{ _node_results | selectattr('status', 'eq', 'FAIL') | list | length }}"
+  ansible.builtin.set_fact:
+    readiness_sections: >-
+      {{
+        readiness_sections + [{
+          'section': 'node_readiness',
+          'pass': _pass | int,
+          'warn': _warn | int,
+          'fail': _fail | int,
+          'results': _node_results
+        }]
+      }}
+
+# Rule REPORT-4: Increment the shared warn count.
+# Rule STATE-4:  Add to existing count, never replace.
+- name: Update shared warn count
+  ansible.builtin.set_fact:
+    readiness_warn_count: >-
+      {{ (readiness_warn_count | default(0) | int) + (_node_results | selectattr('status', 'eq', 'WARN') | list | length) }}
+  when: _node_results | selectattr('status', 'eq', 'WARN') | list | length > 0
+
 # Rule FAIL-1: Never call ansible.builtin.fail here.
 # Rule FAIL-2: Message format: role_name: N check(s) failed — see Report above.
 # Rule FAIL-3: Conditional on actual failures.
@@ -140,33 +167,8 @@
     readiness_failures: >-
       {{
         (readiness_failures | default([])) +
-        ['readiness_check_node_readiness: ' +
-         (_node_results | selectattr('status', 'eq', 'FAIL') | list | length | string) +
+        ['readiness_check_node_readiness: ' ~
+         (_node_results | selectattr('status', 'eq', 'FAIL') | list | length | string) ~
          ' required check(s) failed — see Node Readiness Report above']
       }}
   when: _node_results | selectattr('status', 'eq', 'FAIL') | list | length > 0
-
-# Rule REPORT-3: Append markdown section; never replace readiness_report_md.
-# Rule REPORT-4: -%} suppresses blank rows in tables.
-# Rule REPORT-5: **PASS:** N &nbsp; format.
-# Rule REPORT-6: Sort by name.
-# Rule STATE-3: readiness_report_md + _section only.
-- name: Append node readiness section to readiness report
-  vars:
-    _section: |
-
-      ## Node Readiness
-
-      **Total nodes:** {{ _node_items | length }}
-
-      | Status | Node | Detail |
-      |--------|------|--------|
-      {% for r in (_node_results | sort(attribute='name')) -%}
-      | {{ r.status }} | {{ r.name }} | {{ r.detail }} |
-      {% endfor %}
-      **PASS:** {{ _node_results | selectattr('status', 'eq', 'PASS') | list | length }} &nbsp;
-      **WARN:** {{ _node_results | selectattr('status', 'eq', 'WARN') | list | length }} &nbsp;
-      **FAIL:** {{ _node_results | selectattr('status', 'eq', 'FAIL') | list | length }}
-
-  ansible.builtin.set_fact:
-    readiness_report_md: "{{ readiness_report_md + _section }}"
