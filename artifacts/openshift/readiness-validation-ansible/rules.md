@@ -15,9 +15,8 @@ See `README.md` for full explanation of each rule.
 
 **ARCH-2** — Each role play must have `gather_facts: false` and `environment: KUBECONFIG: "{{ ocp_kubeconfig }}"`.
 
-**ARCH-3** — The initialize play sets three host facts: `ocp_kubeconfig`, `readiness_failures: []`, `readiness_report_md: "..."`.
-
-**ARCH-4** — The final gate play appends a summary to `readiness_report_md`, publishes via `set_stats`, and calls `ansible.builtin.fail` if `readiness_failures | length > 0`.
+**ARCH-3** — The initialize play sets five host facts: `ocp_kubeconfig`, `readiness_failures: []`, `readiness_sections: []`, `readiness_warn_count: 0`.
+**ARCH-4** — The final gate play publishes a single `readiness_report` key via `set_stats` containing `summary` (cluster/bastion/generated/result/failures/warnings/failure_detail) and `sections` (list of per-role structured dicts). It then calls `ansible.builtin.fail` if `readiness_failures | length > 0`.
 
 **ARCH-5** — Every play has two tags: the global suite tag and a play-specific check tag.
 
@@ -45,9 +44,11 @@ See `README.md` for full explanation of each rule.
 
 **STATE-2** — Roles only append to `readiness_failures`; never replace it.
 
-**STATE-3** — Roles only concatenate onto `readiness_report_md`; never replace it.
+**STATE-3** — Roles only append to `readiness_sections`; never replace it.
 
-**STATE-4** — Roles never read or write `ocp_kubeconfig`.
+**STATE-4** — Roles only increment `readiness_warn_count`; never replace it.
+
+**STATE-5** — Roles never read or write `ocp_kubeconfig`.
 
 ---
 
@@ -165,15 +166,13 @@ known.get(item, {}).get('explanation', 'unknown')
 
 **REPORT-2** — Console report format: `=== Title ===` header, aligned columns using `{{ '%-6s' | format(r.status) }}`, `=== Summary ===` footer with PASS/WARN/FAIL counts.
 
-**REPORT-3** — Every role appends a Markdown section to `readiness_report_md` via `set_fact: readiness_report_md: "{{ readiness_report_md + _section }}"`.
+**REPORT-3** — Every role appends a structured section dict to `readiness_sections` via `set_fact`. The dict must contain: `section` (snake_case key), `pass` (int), `warn` (int), `fail` (int), `results` (list of result dicts).
 
-**REPORT-4** — Markdown tables use `-%}` (dash) in for loops to suppress blank rows.
+**REPORT-4** — Every role increments `readiness_warn_count` by its local warn count after appending the section.
 
-**REPORT-5** — Markdown summary line format: `**PASS:** N &nbsp; **WARN:** N &nbsp; **FAIL:** N`.
+**REPORT-5** — Result tables in console output are sorted by name: `_results | sort(attribute='name')`.
 
-**REPORT-6** — Result tables are sorted by name: `_results | sort(attribute='name')`.
-
-**REPORT-7** — The final gate play publishes the report via `ansible.builtin.set_stats: data: readiness_report_md: aggregate: false`.
+**REPORT-6** — The final gate play publishes the report via `ansible.builtin.set_stats: data: readiness_report: ... aggregate: false`.
 
 ---
 
