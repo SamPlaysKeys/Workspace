@@ -16,10 +16,9 @@ A personal workspace for brainstorming, planning, troubleshooting, and building 
 ├── docs/                   # Finished documentation and guides
 │   └── homelab/            # Homelab infrastructure planning
 ├── wip/                    # Active brainstorming and investigations
-├── planning/               # Session state and tracking
+├── planning/               # Session state, tracking, and roadmaps
 ├── artifacts/              # Reusable scripts and configs
-├── workstyle/              # AI collaboration conventions
-└── roadmap/                # Strategic planning
+└── workstyle/              # AI collaboration conventions
 ```
 
 ## AI Collaboration

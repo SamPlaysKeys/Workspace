@@ -44,7 +44,7 @@ These aren't all behaviors — some are conventions (rules that apply always, no
 |---------|------|-------|
 | Isolation | Convention | Applies to cross-repo work; prevents leakage |
 | Close-out | Compound behavior | Smooth Brain + Dead Drop, triggered at session end |
-| Append-don't-replace | Convention | For state files like whats-next.md |
+| Append-don't-replace | Convention | For state files like BACKLOG.md |
 
 **Open questions:**
 - Should Close-out be a named behavior, or just documented as a pattern?
@@ -67,11 +67,11 @@ Conventions are always-on rules, not invoked. They shape how work happens regard
 *Exception:* Intentional cross-repo work (e.g., generating docs for another repo) requires explicit confirmation.
 
 **2. Append, don't replace**
-> State files (whats-next.md, session logs) accumulate entries. Most recent is active. Don't overwrite history.
+> State files (BACKLOG.md, session logs) accumulate entries. Most recent is active. Don't overwrite history.
 
 *Why it matters:* Provides audit trail. A session can scan previous entries to understand trajectory, not just current state.
 
-*Applies to:* `.planning/whats-next.md`, Dead Drops, any running log
+*Applies to:* `BACKLOG.md`, Dead Drops, any running log
 
 **3. Close-out** (resolved → compound behavior)
 > When ending a session, run: Smooth Brain (what won't survive?) → Dead Drop (for continuation, not summary).
