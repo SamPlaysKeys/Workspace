@@ -8,7 +8,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
-- [ ] **OpenBao + Tailscale Integration**: Build custom secrets engine plugin in Go, write instructions, and create configuration files
+- [ ] **OpenBao + Tailscale Integration**: Build custom secrets engine plugin in Go, write instructions, and create configuration files — repo at https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
