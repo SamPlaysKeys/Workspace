@@ -15,8 +15,12 @@ import (
 
 func pathAuthToken(b *backend) *framework.Path {
 	return &framework.Path{
-		Pattern: "auth_token",
+		Pattern: "auth-token/(?P<name>[a-zA-Z0-9_.-]+)",
 		Fields: map[string]*framework.FieldSchema{
+			"name": {
+				Type:        framework.TypeString,
+				Description: "The name/purpose of the token, used in the key's description",
+			},
 			"reusable": {
 				Type:        framework.TypeBool,
 				Description: "Whether the generated key is reusable across multiple devices",
@@ -46,8 +50,8 @@ func pathAuthToken(b *backend) *framework.Path {
 		Operations: map[logical.Operation]framework.OperationHandler{
 			logical.ReadOperation: &framework.PathOperation{Callback: b.pathAuthTokenRead},
 		},
-		HelpSynopsis:    "Generate a new dynamic Tailscale authentication key.",
-		HelpDescription: "Reads from this endpoint dynamically call the Tailscale API to generate a new device auth key.",
+		HelpSynopsis:    "Generate a new dynamic Tailscale authentication key with a custom name.",
+		HelpDescription: "Reads from this endpoint dynamically call the Tailscale API to generate a new device auth key, with the name in the path used as the key description.",
 	}
 }
 
@@ -89,6 +93,11 @@ func (b *backend) pathAuthTokenRead(ctx context.Context, req *logical.Request, d
 		return nil, errors.New("plugin is not configured: api_key and tailnet must be set")
 	}
 
+	name := data.Get("name").(string)
+	if name == "" {
+		return nil, errors.New("name is required in the path (e.g. auth-token/<name>)")
+	}
+
 	reusable := data.Get("reusable").(bool)
 	ephemeral := data.Get("ephemeral").(bool)
 	preauthorized := data.Get("preauthorized").(bool)
@@ -108,7 +117,7 @@ func (b *backend) pathAuthTokenRead(ctx context.Context, req *logical.Request, d
 			},
 		},
 		ExpirySeconds: expirySeconds,
-		Description:   "OpenBao dynamic token for Docker",
+		Description:   fmt.Sprintf("OpenBao dynamic token for %s", name),
 	}
 
 	reqBytes, err := json.Marshal(tsReqBody)
