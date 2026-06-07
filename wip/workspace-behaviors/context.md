@@ -7,7 +7,7 @@ Brainstorm additional behaviors, refinements, or related concepts for the worksp
 ## Current State (updated 2026-04-23)
 
 Five behaviors defined in `workstyle/working_style.md`:
-- **Storm Session** — Brainstorming in `.wip/`
+- **Storm Session** — Brainstorming in `wip/`
 - **Pre-Mortem** — Adversarial review before decisions
 - **Smooth Brain** — Surface and question assumptions
 - **Progressive Bookkeeping** — Keep state files current

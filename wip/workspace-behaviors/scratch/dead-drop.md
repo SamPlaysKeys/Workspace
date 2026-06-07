@@ -15,9 +15,9 @@ Dead Drop is an explicit, structured capture of session state for handoffs. It l
 
 ## Where It Lives
 
-Dead Drops go in `.planning/whats-next.md`.
+Dead Drops go in `BACKLOG.md` under `## Active Sessions`.
 
-For Storm Sessions, also update the session's `context.md` — but the Dead Drop in `whats-next.md` is the canonical "resume here" marker.
+For Storm Sessions, also update the session's `context.md` — but the Dead Drop in `BACKLOG.md` is the canonical "resume here" marker.
 
 ## Format
 
