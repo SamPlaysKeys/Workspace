@@ -19,6 +19,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **Git History Refactor**: Change commit author from `vault@tolaria.md` to `sam@samplayskeys.com`
 - [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).
 - [x] Initial repository structure planning
 - [x] Reorganize directory structure to match revised plan
