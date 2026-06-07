@@ -27,189 +27,28 @@ Troubleshoot is a structured mode for investigating issues and capturing remedia
 
 ## Session Structure
 
-Troubleshooting sessions live in `.wip/troubleshoot-<system>-<issue>/` during active investigation.
-
-```
-.wip/troubleshoot-openshift-storage-pvc-pending/
-  investigation.md    # Running log — the working document
-```
-
-Lightweight by design. One file tracks the whole investigation.
-
-**Naming:** `troubleshoot-<system>-<brief-issue>` — e.g., `troubleshoot-openshift-storage-pvc-pending`, `troubleshoot-docker-network-timeout`.
-
----
-
-## investigation.md — The Running Log
-
-This file is updated progressively as the investigation proceeds. Structure:
-
-```markdown
-# <System>: <Issue Summary>
-
-**Status:** investigating | resolved | blocked | abandoned
-
-**Environment:** [relevant versions, context]
-
----
-
-## Symptoms
-
-- What's happening?
-- Error messages, unexpected behavior
-- When did it start? What changed?
-
----
-
-## Investigation
-
-### <Timestamp or Step>
-
-**Hypothesis:** What we think might be wrong
-
-**Tried:** What we did
-
-**Result:** What happened
-
----
-
-(repeat as investigation proceeds)
-
----
-
-## Resolution
-
-**Root cause:** What was actually wrong
-
-**Fix:** What resolved it
-
-**Prevention:** How to avoid this in the future (if applicable)
-```
-
-Update this file *as you go* (Progressive Bookkeeping applies). Don't batch updates for the end.
-
----
-
-## Graduation — Distributable Documentation
-
-When the investigation resolves, the agent creates distributable documentation.
-
-**Trigger:** "Create a walkthrough" / "Write this up" / agent prompts: "Want me to write this up?"
-
-### Two Output Types
-
-**1. Remediation Doc** (always created)
-> "How to fix this issue"
-
-Contains: Symptoms → Investigation → Resolution. For others hitting the same problem.
-
-```markdown
-# Fixing <Issue> on <System>
-
-## Symptoms
-
-What you'll see when this issue occurs...
-
-## Investigation
-
-How to diagnose this issue:
-
-1. Check...
-2. Look for...
-
-## Resolution
-
-Step-by-step fix:
-
-1. ...
-2. ...
-
-## Verification
-
-How to confirm it's fixed.
-```
-
-**2. Prevention / Setup Doc** (conditional)
-> "How to set this up right the first time"
-
-Contains guidance to avoid the issue entirely — correct setup, configuration, or practices.
-
-```markdown
-# Setting Up <Component> on <System>
-
-## Overview
-
-What this configures and why it matters.
-
-## Prerequisites
-
-- ...
-
-## Configuration
-
-Step-by-step setup:
-
-1. ...
-2. ...
-
-## Common Pitfalls
-
-What to avoid (learned from troubleshooting).
-
-## Verification
-
-How to confirm it's working.
-```
-
-### Graduation Decision Logic
-
-| Agent assessment | Action |
-|------------------|--------|
-| Prevention doc clearly needed | Create both docs |
-| Unsure or probably not needed | Prompt user: "Should I also write a prevention/setup guide for this?" |
-| User says no | Skip prevention doc |
-
-**Important:** The agent never unilaterally decides to skip the prevention doc. If in doubt, ask. User has final say.
-
-### Where Distributables Live
-
-```
-docs/
-  troubleshooting/
-    <system>/
-      <issue>.md           # Remediation docs
-  guides/
-    <system>/
-      <component>.md       # Prevention / setup docs
-```
-
----
-
-## Lifecycle
-
-### Full Troubleshooting Session
-
-1. **Detect/Invoke:** Recognize troubleshooting context or explicit trigger
-2. **Start session:** Create `.wip/troubleshoot-<system>-<issue>/investigation.md`
-3. **Investigate:** Update investigation.md progressively
-4. **Resolve:** Document root cause and fix in investigation.md
+Troubleshooting sessions live in `wip/troubleshoot-<system>-<issue>/` during active investigation.
+
+## Workflow
+
+1. **Trigger:** "troubleshoot this", "debug this", or pasting an error log
+2. **Start session:** Create `wip/troubleshoot-<system>-<issue>/investigation.md`
+3. **Investigate:**
+   - Log symptoms
+   - Form hypothesis
+   - Test & record results
+   - Repeat until resolved
+4. **Resolve:** Document the root cause and the exact fix
 5. **Graduate:** 
-   - Prompt to write up docs
-   - Create remediation doc (always)
-   - Create prevention doc (if clearly needed) or prompt user (if unsure)
-6. **Discard session:** Delete `.wip/` directory — investigation.md is disposable once docs exist
+   - Create `docs/troubleshooting/<system>/<issue>.md` (using standard template)
+   - (Optional) Create `docs/guides/<system>/<prevention>.md` if it's a setup/prevention issue
+6. **Discard session:** Delete `wip/` directory — investigation.md is disposable once docs exist
 
-### Quick Doc Path
-
-Not everything needs a full session. Use the quick path when:
-- The fix is already known (no investigation needed)
-- User asks to document something common ("write up how to configure X")
-- Quick question-and-answer that's worth capturing
-
-**Quick path flow:**
-1. User asks for doc or describes known fix
-2. Agent writes directly to `docs/troubleshooting/` or `docs/guides/`
-3. No `.wip/` session needed
+## Fast Path (Quick Doc)
+If the issue is known or solved immediately without needing a scratchpad:
+1. Skip `wip/` session
+2. Write directly to `docs/troubleshooting/`
+3. No `wip/` session needed
 
 ---
 

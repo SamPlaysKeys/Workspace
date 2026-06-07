@@ -1,47 +1,22 @@
----
-title: "Working Style"
-type: Note
-review:
-  status: draft
-  notes: "Automated frontmatter addition, 2026-05-21."
----
+# Portable Agent Working Style
 
-# Working Style
+## What is this?
+This directory contains a **Portable Agent Working Style**. It is designed to be dropped into any new repository or project to instantly give an AI agent (Cursor, Claude Code, etc.) a set of mature, structured behaviors and conventions without needing a complex framework or plugin installation.
 
-This directory defines how AI agents should collaborate in this workspace. The conventions are agent and model agnostic — any AI assistant working here should follow them.
+## How to use it
+You have two modes of operation: **Adopt** (temporary) and **Install** (persistent).
 
-## Core File
+### Mode 1: Adopt (Default)
+1. Copy this `workstyle/` directory into the root of your project.
+2. Tell your AI Agent: *"Read `workstyle/working_style.md` and adopt its behaviors for this session."*
+3. The agent will immediately understand how to scaffold projects, handle troubleshooting, and capture handoffs **in memory**, without altering the target repo's configuration.
 
-**`working_style.md`** — The complete behavior and convention definitions. AI agents should read this file to understand how to operate in this workspace.
+### Mode 2: Install
+If you want to permanently convert a target repository to use this skill-based architecture:
+1. Tell your AI Agent: *"Read `workstyle/working_style.md` and **install** its behaviors."*
+2. The agent will extract the behaviors and generate an `.agents/skills/` directory and `AGENTS.md` configuration in the target repository.
 
-## Behaviors
+## Why portable?
+Agent frameworks and specific tool directories (like `.agents/skills/`) are great for established, permanent workspaces. However, when you need to move fast, jump into a foreign repository, or spin up a quick prototype, you still want your agent to behave predictably. 
 
-| Behavior | Trigger | Purpose |
-|----------|---------|---------|
-| **Storm Session** | "Storm session for X" | Brainstorm new ideas in `wip/` |
-| **Pre-Mortem** | "Pre-mortem" or agent-initiated | Challenge decisions before committing |
-| **Smooth Brain** | Session start or "smooth brain" | Surface and question assumptions |
-| **Progressive Bookkeeping** | Always-on | Keep state files current as work happens |
-| **Dead Drop** | "Dead drop" / "bread crumb" | Structured session handoff |
-| **Troubleshoot** | "Troubleshoot" / "debug" | Structured debugging with knowledge capture |
-| **Sneaky** | "Be sneaky" / "hide your actions" | Hide working dirs under `.workspace/` |
-
-## Conventions
-
-- **Isolation** — No writes to external workspaces without confirmation
-- **Append, Don't Replace** — State files accumulate history
-- **Documentation Structure** — Graduated docs live in `docs/<project>/`
-
-## Quick Reference
-
-### Starting a session
-AI agents should do a quick "Smooth Brain" check — what assumptions are being carried forward? What might have changed?
-
-### During work
-Keep `planning/whats-next.md` and relevant `wip/` files current (Progressive Bookkeeping).
-
-### Ending a session
-Prompt for a Dead Drop if work is in progress. Write structured handoff to `planning/whats-next.md`.
-
-### In external repos
-Use Sneaky mode to hide working files under `.workspace/`.
+This portable markdown file encodes the entire "Skill Suite" (Ideate, Troubleshoot, Handoff, etc.) into plain text instructions that any modern LLM can read and follow dynamically.

@@ -12,7 +12,7 @@ A critical capability is the ability to work on **multiple projects simultaneous
 
 - Each active project gets its own subdirectory under `planning/` (e.g., `planning/project-alpha/`, `planning/infra-migration/`)
 - Workstreams can be paused and resumed without losing context
-- The `planning/whats-next.md` file provides a quick overview of all active workstreams and immediate priorities
+- The `BACKLOG.md` file provides a quick overview of all active workstreams and immediate priorities
 - This enables context-switching between projects while preserving focus and momentum
 
 ### 3. Universal Artifact Repository
@@ -35,10 +35,10 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 
 ```
 .
-├── BACKLOG.md              # Human-in-the-loop task tracking (done/in-progress)
-├── planning/              # Active workstream management (hidden)
+├── BACKLOG.md              # Human-in-the-loop task tracking and active sessions
+├── planning/               # Active workstream management and roadmaps
 │   ├── ACTIVITY.md         # Meta changes to workspace structure
-│   ├── whats-next.md       # Active tasks with commit hashes
+│   ├── roadmap/            # Strategic planning and long-term roadmaps
 │   └── <project>/          # Per-project planning subdirectories
 ├── artifacts/              # Reusable automation components
 │   ├── ansible/
@@ -47,9 +47,8 @@ The workspace shouldn't just be a static storage bin. It should be "aware" of ot
 │   └── openshift/
 ├── docs/                   # Documentation hub
 │   ├── blog/
-│   └── notes/
-├── roadmap/                # Strategic planning and long-term roadmaps
-│   └── ideas/
+│   ├── notes/
+│   └── templates/          # Markdown templates
 ├── research/               # Research and experimentation
 │   └── testing/
 └── workstyle/              # AI behavior and configuration

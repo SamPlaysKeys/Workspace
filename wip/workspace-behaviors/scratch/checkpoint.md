@@ -2,7 +2,7 @@
 
 ### Checkpoints and session handoffs
 
-**Checkpoint** (mid-session save, fast): Write to `.planning/whats-next.md` — create the directory if it doesn't exist.
+**Checkpoint** (mid-session save, fast): Write to `BACKLOG.md` under `## Active Sessions`.
 
 ```
 # Checkpoint — YYYY-MM-DD
