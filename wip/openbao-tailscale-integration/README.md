@@ -94,3 +94,39 @@ bao read docker/tailscale/auth-token/app-prod \
   tags="tag:docker,tag:prod" \
   expiry_seconds=1800
 ```
+
+---
+
+## Easy POC
+
+### 1. Build the plugin
+`cd wip/openbao-tailscale-integration`
+`docker build -t openbao-tailscale-builder .`
+`docker run --rm -v "$(pwd)/bin:/out" openbao-tailscale-builder`
+
+This drops binaries into bin/.
+
+### 2. Start OpenBao with the plugin
+`mkdir -p /tmp/bao-plugins`
+`cp bin/openbao-plugin-secrets-tailscale-darwin-arm64 /tmp/bao-plugins/openbao-plugin-secrets-tailscale`
+`chmod +x /tmp/bao-plugins/openbao-plugin-secrets-tailscale`
+
+`bao server -dev -dev-root-token-id="test" -dev-plugin-dir="/tmp/bao-plugins"`
+
+### 3. In another terminal, register & configure
+`export BAO_TOKEN="test"`
+`export PLUGIN_SHA=$(shasum -a 256 /tmp/bao-plugins/openbao-plugin-secrets-tailscale | cut -d' ' -f1)
+
+`bao plugin register -sha256="${PLUGIN_SHA}" secret openbao-plugin-secrets-tailscale`
+`bao secrets enable -path=docker/tailscale -plugin-name=openbao-plugin-secrets-tailscale plugin`
+
+```
+bao write docker/tailscale/config \
+  api_key="your-tailscale-api-key" \
+  tailnet="your-tailnet-name"
+```
+
+### 4. Request a key
+`bao read docker/tailscale/auth-token/test-container`
+
+You should get back an auth_token starting with tskey-auth-. Paste that into tailscale up --auth-key=<key> on any machine to join it to your tailnet.
