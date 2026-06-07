@@ -456,3 +456,9 @@ A minimal node dedicated to exit node functionality:
 - [ ] Tagging convention for services — how to tag user vs admin interfaces in Docktail labels?
 - [ ] HA service list — which services warrant multi-node advertisement?
 - [x] Grants policy — built as [[tailscale-grants]]
+
+---
+
+## Related Guides
+
+- [OpenBao Tailscale Integration Guide](../../guides/openbao/tailscale-integration.md) - Secure, on-demand generation of Tailscale device auth keys for Docker containers.
