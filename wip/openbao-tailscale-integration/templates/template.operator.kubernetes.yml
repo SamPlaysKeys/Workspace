@@ -1,0 +1,78 @@
+# ==============================================================
+# OpenBao Tailscale Auth — Kubernetes Operator Template
+# ==============================================================
+# Two approaches to connect pods to Tailscale:
+#
+# Option A — Sidecar (plugin): A tailscale container shares the
+#   app pod's network, fetching its auth key from OpenBao at
+#   startup. (Deployment example below.)
+#
+# Option B — Tailscale Operator: Annotate a ClusterIP Service
+#   with tailscale.com/experimental; the operator creates a
+#   proxy pod automatically — no auth key management needed.
+#   (See: https://tailscale.com/kubernetes-operator)
+# ==============================================================
+
+---
+# Option A: Sidecar using the OpenBao plugin
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app-with-tailscale
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: app-with-tailscale
+  template:
+    metadata:
+      labels:
+        app: app-with-tailscale
+    spec:
+      # Sidecar and app share the same pod network
+      containers:
+        - name: tailscale
+          image: tailscale-sidecar:latest   # built from template.sidecar.Dockerfile
+          env:
+            - name: vault_address
+              value: http://openbao:8200
+            - name: bao_token
+              valueFrom:
+                secretKeyRef:
+                  name: bao-auth
+                  key: token
+            - name: service_name
+              value: app-with-tailscale
+          securityContext:
+            capabilities:
+              add: ["NET_ADMIN"]
+            # To run without a service account or specific settings
+
+        - name: app
+          image: my-app:latest
+          # Shares the Tailscale sidecar's network stack
+          env:
+            - name: TAILSCALE_TUN
+              value: "userspace-networking"
+
+---
+# Option B: Tailscale Operator (no key management needed)
+# Install the operator first:
+#   kubectl apply -f https://raw.githubusercontent.com/tailscale/tailscale/main/cmd/k8s-operator/deploy/manifests/operator.yaml
+#
+# Then annotate a standard ClusterIP Service:
+#
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: my-app
+#   annotations:
+#     tailscale.com/experimental: "true"
+#     tailscale.com/tailnet-fqdn: "my-app"
+# spec:
+#   type: ClusterIP
+#   selector:
+#     app: my-app
+#   ports:
+#     - port: 80
+#       targetPort: 8080

@@ -1,0 +1,20 @@
+# ==============================================================
+# OpenBao Tailscale Auth Key — Docker Compose Template
+# ==============================================================
+# Example service that fetches a Tailscale auth key from OpenBao
+# at startup using the Dockerfile template.
+# ==============================================================
+
+services:
+  my-service:
+    build:
+      context: .
+      dockerfile: template.dockerfile
+    environment:
+      vault_address: http://openbao:8200
+      bao_token: "${BAO_TOKEN}"
+      service_name: my-service
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun

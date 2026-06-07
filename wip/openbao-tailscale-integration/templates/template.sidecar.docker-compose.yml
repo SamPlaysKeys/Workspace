@@ -1,0 +1,33 @@
+# ==============================================================
+# OpenBao Tailscale Auth — Docker Compose (Sidecar Pattern)
+# ==============================================================
+# A Tailscale sidecar fetches its auth key from OpenBao. The
+# app container shares the sidecar's network namespace, giving
+# it full tailnet access without running Tailscale itself.
+#
+# Runtime env vars:
+#   BAO_TOKEN      - OpenBao authentication token (set in .env)
+#   vault_address  - OpenBao server URL
+#   service_name   - Name for this sidecar (key description)
+# ==============================================================
+
+services:
+  tailscale-sidecar:
+    build:
+      context: .
+      dockerfile: template.sidecar.Dockerfile
+    environment:
+      vault_address: http://openbao:8200
+      bao_token: "${BAO_TOKEN}"
+      service_name: sidecar
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+
+  app:
+    build: .
+    network_mode: "service:tailscale-sidecar"
+    depends_on:
+      tailscale-sidecar:
+        condition: service_started
