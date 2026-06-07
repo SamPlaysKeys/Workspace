@@ -2,6 +2,8 @@
 
 An OpenBao secrets engine plugin that dynamically generates short-lived, preauthorized, and ephemeral Tailscale node authentication keys on-demand.
 
+**Repository:** <https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale>
+
 ## How it Works
 
 When a client queries OpenBao for a secret at path `docker/tailscale/auth-token/<service-name>` (e.g. `docker/tailscale/auth-token/nginx`), the plugin makes an API request to Tailscale to generate a node auth key. The name of the service (`nginx` in this case) is used as the key's description in the Tailscale admin console, making it easy to track which key was generated for which workload.

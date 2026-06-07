@@ -11,6 +11,8 @@ references:
 
 # Tailscale Integration for OpenBao
 
+**Plugin repository:** <https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale>
+
 This guide details how to set up an on-demand, dynamic Tailscale integration in OpenBao. When a client (such as a Docker container) requests a secret from `docker/tailscale/auth-token/<name>` (for example, `docker/tailscale/auth-token/nginx`), OpenBao will automatically call the Tailscale API to generate a short-lived, preauthorized, and ephemeral authentication key labeled for that specific container, returning it to the client immediately.
 
 ---
