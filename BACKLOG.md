@@ -8,9 +8,10 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [ ] **OpenBao + Tailscale Integration**: Build custom secrets engine plugin in Go, write instructions, and create configuration files
+- [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
-- [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [ ] Populate `artifacts/` with reusable automation components
 - [ ] Create initial skills in `workstyle/skills/`
 - [ ] Set up pre-commit hooks for secret scanning
@@ -19,6 +20,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [x] **Git History Refactor**: Change commit author from `vault@tolaria.md` to `sam@samplayskeys.com`
 - [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).
 - [x] Initial repository structure planning
