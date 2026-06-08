@@ -8,6 +8,8 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
+
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
 - [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
@@ -19,6 +21,8 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
+- [x] **Git History Refactor**: Change commit author from `vault@tolaria.md` to `sam@samplayskeys.com`
 - [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).
 - [x] Initial repository structure planning
 - [x] Reorganize directory structure to match revised plan
@@ -30,6 +34,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [x] Add conventions to working_style.md (Isolation, Append-Don't-Replace)
 - [x] Add Close-out compound behavior under Dead Drop
 - [x] Add Troubleshoot behavior for structured debugging and knowledge capture
+- [x] **OpenBao + Tailscale Integration**: Go plugin for dynamic Tailscale auth keys — repo at https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale
 
 ---
 
@@ -332,3 +337,26 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 **Git state:** Uncommitted changes (new skills in `.agents/skills/`).
 
 **Open threads:** None.
+
+# Dead Drop — 2026-06-07
+
+**In progress:** Nothing active — session complete.
+
+**Just completed:**
+- Reviewed and verified OpenBao Tailscale plugin (`wip/openbao-tailscale-integration/`) — code is sound, ready for testing
+- Ran `go mod tidy` — committed `go.mod` + `go.sum` with Go 1.24 toolchain
+- Updated Dockerfile base to `golang:1.24-alpine` to match `go.mod`
+- Created 5 deployment templates: inline (Dockerfile), sidecar (Dockerfile + Compose), basic Compose, K8s operator
+- Created `BRIEF.md` consolidating the session
+- Graduated work item in BACKLOG.md to Completed
+- Plugin lives at https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale
+
+**Next step:** Manual integration test with `bao server -dev` and a real Tailscale API key. If that works, tag a v0.1 release.
+
+**Key decision:** No TTL/lease needed — Tailscale owns the key lifecycle server-side. No revocation support for v0.1 (can add via key ID + DELETE API later).
+
+**Git state:** `5d84568` — Added the new plugin link (clean working tree)
+
+**Open threads:**
+- Separate Storm Session for Tailscale IDP/OIDC auth (`wip/tailscale-idp-openbao/`) — still in progress
+- Plugin v0.1 tag + release pending successful manual test
