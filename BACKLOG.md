@@ -12,6 +12,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
+- [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [ ] Populate `artifacts/` with reusable automation components
 - [ ] Create initial skills in `workstyle/skills/`
 - [ ] Set up pre-commit hooks for secret scanning
