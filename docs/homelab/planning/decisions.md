@@ -107,3 +107,25 @@ Key architectural and tooling decisions, with rationale.
 **Operational trade-off:** ResourceSync TOML that lives in Git may reference the feature branch while that branch is active; after merge to `main`, **small manual edits on `main`** repoint environments back to `main` where intended. Releases/tags for Prod-only pinning are optional and deferred until needed.
 
 **Full rationale, consequences, and mitigations:** [ADR — Per-environment Git branches via Komodo ResourceSync](adrs/0001-komodo-resourcesync-branch-per-environment.md).
+
+---
+
+## References
+
+### FoxxMD — Migrating to Komodo (Nov 2024, updated Aug 2025)
+
+**URL:** https://blog.foxxmd.dev/posts/migrating-to-komodo/#create-komodo-periphery-agents
+
+An opinionated migration guide covering a homelab with 5 servers, 20+ stacks, and 60+ containers. Relevant to our setup given similar topology.
+
+**What it covers:**
+
+- **Storage strategy:** Monorepo layout for stacks (`stacks/serverN/`) and Komodo resource TOMLs (`komodo/resources/main.toml`). Git repo-based for all resources (backup via commits on save).
+- **Rootless Periphery (community pattern):** Docker socket-proxy (`linuxserver/socket-proxy`) with a non-root Periphery container, controlled via `DOCKER_HOST: tcp://socket-proxy:2375`. Also covers building a custom Periphery image for git user config when running non-root.
+- **Periphery deployment evolution:** Started containerized, switched to systemd agent after 3+ months — "systemd makes Docker interactions simpler." Notes terminal/shell access differences between container and systemd agents.
+- **Stack creation:** Configuring Linked Repos for monorepo, `Run Directory` per stack, converting standalone containers via `docker-autocompose`.
+- **Environment variables & Secrets:** How Komodo's `.env` interpolation works, secrets via `[[SecretName]]` syntax.
+- **Resource Sync:** Setting up bi-directional sync between Komodo and a Git repo for full topology backup. Tags for scope limiting, Execute vs Commit modes.
+- **Docker data agnostic location:** Using `$DOCKER_DATA` ENV per host for bind mount paths, making compose files portable across servers.
+
+**Follow-up post (also by FoxxMD):** [Komodo FAQ, Tips, and Tricks](https://blog.foxxmd.dev/posts/komodo-tips-tricks/) — covers container exec shortcuts, troubleshooting, and deeper operational patterns.
