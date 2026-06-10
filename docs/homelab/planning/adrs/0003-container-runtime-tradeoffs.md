@@ -105,29 +105,29 @@ This is the inverse of the security tradeoff:
 
 ## Recommended Direction
 
-This ADR does not make a standalone decision — it informs [ADR 0002](0002-baremetal-host-os.md). The current recommendation aligns there:
+This ADR does not make a standalone decision — it informs [ADR 0002](0002-baremetal-host-os.md). The current direction:
 
-> **Docker (rootless)** as the compromise: a central socket for clean management, but user-namespaced to contain blast radius.
+> **Docker (rootful)** for maximum simplicity and tooling compatibility. The socket-security risk is accepted as an acceptable tradeoff for a homelab with trusted workloads.
 
-Podman is the more secure architecture by design, and Docker rootful is the most convenient. Rootless Docker sits in the middle — sacrificing some convenience (setup steps, privileged workloads) and some security (still a central daemon) to get a workable balance.
+Podman is the more secure architecture by design, and rootless Docker is a middle ground. Rootful Docker optimizes for operational simplicity — no setup ceremony, no port restrictions, no privileged container limitations. For a homelab where all workloads are user-deployed and trusted, the central-socket risk is manageable.
 
-If Podman's Komodo compatibility improves to first-class status, this should be revisited — the daemonless model is genuinely superior for security.
+If the homelab expands to include untrusted or multi-tenant workloads, this should be revisited — rootless Docker or Podman would contain blast radius in a way rootful Docker cannot.
 
 ## Consequences
 
-**If Docker (rootless) is adopted (current direction):**
+**If Docker (rootful) is adopted (current direction):**
 
-- Management tooling (Komodo, CLI) works through a single socket — simple, standard API
-- Central daemon is still a single point of trust — compromise means all that user's containers are at risk
-- Setup is more involved than rootful Docker
-- Some workloads (privileged containers, low ports) need adaptation
+- All management tooling works natively with zero configuration — standard Docker API on the well-known socket
+- Setup is minimal — `dnf install docker`, enable daemon, run containers
+- No workload restrictions — privileged containers, ports <1024, cgroup limits all work
+- Socket is root-equivalent — any process with socket access owns the host. Acceptable for homelab trusted workloads.
 
-**If Podman is reconsidered later:**
+**If Docker (rootless) or Podman is reconsidered later:**
 
-- No central daemon to attack — fundamentally more secure
-- Each container is isolated at the process level
-- Management complexity is higher — socket emulation required for Komodo
-- Tooling ecosystem is still catching up
+- Stronger isolation — compromise is contained to a user namespace or individual container
+- Some workloads (privileged containers, Swarm mode) are restricted
+- Management complexity increases — socket discovery, env vars, emulation layers required for Komodo
+- Ports <1024 need workarounds
 
 ## References
 
