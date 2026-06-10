@@ -62,6 +62,26 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Active Sessions
 
+# Dead Drop — 2026-06-10
+
+**In progress:** Nothing active — session complete.
+
+**Just completed:**
+- Selected Fedora Server as baremetal Docker host OS (ADR 0002)
+- Compared rootful vs rootless Docker vs Podman container runtimes (ADR 0003)
+- Decided: **rootful Docker** with containerized Periphery provisioned via Ansible
+- Created Ansible role structure in ADR 0002: `komodo-periphery` role with Jinja2 config template, `docker_container` task, playbook skeleton
+- Documented 6 gotchas for containerized Periphery (SELinux `:z`, host networking, image tags, onboarding key rotation, config restart, vault secrets)
+- Both ADRs cross-referenced and listed in ADR README
+
+**Next step:** Build the `docker-install` and `komodo-periphery` Ansible roles for real — start with role scaffolding, Docker CE repo setup, and the Periphery container task.
+
+**Key decision:** Flipped from rootless → rootful Docker mid-session. Rootless is more secure but Komodo's community-only support and operational friction (socket proxies, filesystem namespace issues, manual binary updates) wasn't worth the tradeoff for a homelab. Rootful + containerized Periphery is simpler to manage and Ansible-provisionable.
+
+**Git state:** `77c6201` — uncommitted: both ADR files modified
+
+**Open threads:** None
+
 ## Current Tasks
 
 | Task | Status | Commit |

@@ -1,11 +1,10 @@
 ---
 type: ADR
+Status: Accepted  
+Date: 2026-05-12  
 ---
 
 # ADR: Per-environment Git branches via Komodo ResourceSync
-
-**Status:** Accepted  
-**Date:** 2026-05-12  
 
 ## Context
 
