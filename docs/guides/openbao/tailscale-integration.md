@@ -5,8 +5,8 @@ system: OpenBao
 related_to:
   - docs/homelab/network/tailscale.md
 references:
-  - [Tailscale Keys API Documentation](https://tailscale.com/kb/1101/api#keys)
-  - [OpenBao Plugin Development](https://openbao.org/docs/plugins/developing/)
+  - Tailscale Keys API Documentation: https://tailscale.com/kb/1101/api#keys
+  - OpenBao Plugin Development: https://openbao.org/docs/plugins/developing/
 ---
 
 # Tailscale Integration for OpenBao
