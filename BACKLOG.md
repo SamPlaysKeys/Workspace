@@ -48,6 +48,13 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [x] Auto-load working_style for CLI agents — Updated AGENTS.md to direct agents to follow [[working_style]] conventions.
 - [ ] Journal in docs — create a `docs/journal/` area for capturing ideas, observations, and thoughts while working; less structured than Storm Sessions, more persistent than scratch files
 
+## Talks
+
+*Conference talks, meetups, and presentations to develop*
+
+- [ ] **How to Plan Out a Homelab** — talk on requirements gathering, hardware selection, and maintainability (`docs/talks/how-to-plan-a-homelab-proposal.md`)
+- [ ] **Social Engineering Your Project To Success** — engaging stakeholders via social engineering, sales, and teaching concepts (`docs/talks/social-engineering-your-project-to-success-proposal.md`)
+
 ---
 
 ## Writing Ideas
