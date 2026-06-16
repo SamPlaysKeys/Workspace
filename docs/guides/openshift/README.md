@@ -9,6 +9,7 @@ Prose guides for OpenShift Container Platform workflows used in this workspace. 
 
 | Document | Topic |
 |----------|--------|
+| [Checking OpenShift Certificates](checking-certificates.md) | Verify expiration dates of API, Ingress, and other internal certificates |
 | [Using the integrated OpenShift container image registry](using-integrated-openshift-registry.md) | Push/pull, in-cluster image references |
 | [NVIDIA vGPU Manager: integrated registry and ClusterPolicy](nvidia-vgpu-manager-internal-registry-and-clusterpolicy.md) | Build vGPU Manager image, integrated registry, GPU Operator `ClusterPolicy` |
 
