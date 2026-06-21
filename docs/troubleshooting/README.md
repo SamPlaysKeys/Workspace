@@ -2,6 +2,10 @@
 
 Collection of troubleshooting guides organized by system or technology area.
 
+## Tailscale
+
+- [Overlapping Subnet with `--accept-routes`](./tailscale/accept-routes-overlapping-local-subnet.md) - Local subnet becomes unreachable when Tailscale accepts an overlapping advertised route.
+
 ## GPU / CUDA
 
 - [Docker CDI "AMD spec not found" GPU Patch Failure](./gpu/docker-cdi-amd-spec-gpu-patch-fails.md) - Fix NemoClaw GPU patch failures caused by missing AMD CDI spec on Proxmox VMs.
