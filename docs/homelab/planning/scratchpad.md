@@ -36,12 +36,17 @@ JONSBO NAS - Prod, Tailscale container, mapped to LenovoMini 1
 Synology NAS - Test, Tailscale installed, mapped to LenovoMini 2
 
 ProxMox Host - Tailscale installed directly, several VMs available
- - "Remoting VM"
-   - Running Fedora, used for remote work, has my dotfiles and tools installed. Tailscale installed directly
+ - VM 100 - Bluefin (remote work VM)
+    - 4 vCPU, 8GB RAM, 50GB disk (sdb / bluefin-lvm)
+    - Tailscale installed directly
+ - VM 101 - (reserved for Windows VM)
+ - VM 103 - Fedora Server (dev VM)
+    - 8 vCPU, 16GB RAM, 50GB disk (nvme0n1 / nvme-lvm)
+    - NVIDIA Quadro P5000 passthrough
  - "Debian Test"
-   - Test VM, running debian, tools installed, used only for testing packages on Debian. Mostly stays powered off.
+    - Test VM, running debian, tools installed, used only for testing packages on Debian. Mostly stays powered off.
  - Docker VM
-   - mirror of the test and prod VMs, running Komodo periphery, testing docker containers and workloads
+    - mirror of the test and prod VMs, running Komodo periphery, testing docker containers and workloads
  - Remaining resources will be used for testing out VM ideas. No remote windows machine is needed.
 
 Intel NUC - Technically part of the prod environment, this runs the komodo instance that does the management for everything else. Additionally, it will be the main host that the ansible and terraform commands will be run from. It will have a GitHub runner installed to handle executing the management tasks.
