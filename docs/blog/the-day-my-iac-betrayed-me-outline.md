@@ -1,5 +1,5 @@
 ---
-type: Outline
+type: Note
 status: draft
 ---
 
