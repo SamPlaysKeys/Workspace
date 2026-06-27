@@ -9,6 +9,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 ## In Progress
 
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
+- [ ] **Storm Session: RHACM/Argo Drift Management System**: Design drift detection, classification, and remediation workflows (`wip/drift-management-rhcm-argo/`)
 
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
