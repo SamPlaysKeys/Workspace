@@ -47,6 +47,11 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type
 - [x] Auto-load working_style for CLI agents — Updated AGENTS.md to direct agents to follow [[working_style]] conventions.
 - [ ] Journal in docs — create a `docs/journal/` area for capturing ideas, observations, and thoughts while working; less structured than Storm Sessions, more persistent than scratch files
+- [ ] NFC integration patterns — capture as backlog items:
+  - Consumable tags for replacement items (air filters): tag links to HA entity, product page, or reorder action
+  - Fridge receipt launch: NFC opens receipt-scan app to eliminate drop-zone friction
+  - Router/location status tags: local offline-safe status page on tap for quick service checks
+  - Pi-hole temporary ad-block disable: tag triggers time-limited disable-for-30-min action with visible countdown
 
 ## Talks
 

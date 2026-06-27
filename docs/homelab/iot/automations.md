@@ -259,3 +259,107 @@ Requires Tapo integration or generic camera with RTSP. Snapshots save to `/confi
 ### Zigbee Events
 
 Button events use `zha_event` (for ZHA) or `mqtt` triggers (for Zigbee2MQTT). Device IDs and commands vary by button model — check HA device page after pairing.
+
+---
+
+## Receipt Automation
+
+### Receipt Fridge Launch — NFC App Launch
+
+Tap the fridge NFC tag to open the receipt scanner app directly.
+
+```yaml
+alias: "Receipts - NFC App Launch"
+description: "Launch receipt scanner app from fridge NFC"
+trigger:
+  - platform: nfc
+    tag_id: <fridge_receipt_nfc_uid>
+action:
+  - service: notify.mobile_app_<phone>
+    data:
+      message: "open_receipt_scanner"
+      data:
+        action: launch_app
+        package: com.example.receiptscanner
+mode: single
+```
+
+The NFC tag is the entry point. The app handles the actual capture and any per-receipt workflow.
+
+**Considerations:**
+- If the app supports deep links or URL schemes, prefer that over a generic notification.
+- If people use different phones/scanner apps, map multiple `notify` targets or a `choose` block by person/presence.
+
+---
+
+## Service Check / Router Status NFC
+
+### Router Status — NFC Status Page
+
+Opens a locally hosted status page showing service health.
+
+```yaml
+alias: "Status - Router NFC"
+description: "Serve local status page for router/service health"
+trigger:
+  - platform: nfc
+    tag_id: <router_status_nfc_uid>
+action:
+  - service: browser_mod.popup
+    data:
+      title: "Service Status"
+      # Serve from a local/static endpoint; no external CDN deps
+      url: "/local/status/index.html"
+mode: single
+```
+
+**Implementation notes:**
+- Host `status/index.html` on the same host that serves HA or a lightweight internal web server.
+- Keep the page plain HTML with no external dependencies so it works when the internet is down.
+- Display gateway ping, DNS resolution result, Pi-hole stats, and a one-click router reboot if supported.
+
+---
+
+## Consumable Replacement NFC
+
+### Consumable Tag — Reorder Trigger
+
+Opens the replacement item's reorder path.
+
+```yaml
+alias: "Consumables - Replace"
+description: "Open consumable replacement action"
+trigger:
+  - platform: nfc
+    tag_id: <consumable_nfc_uid>
+action:
+  - service: browser_mod.popup
+    data:
+      title: "Replace Air Filter"
+      # Prefer a stable local/HA endpoint; the destination can rotate behind this URL
+      url: "/local/consumables/air-filter.html"
+mode: single
+```
+
+Instead of encoding a retailer URL directly, use a stable local or Home Assistant destination so the reorder page can change without rewriting the tag.
+
+---
+
+## Pi-hole Temporary Disable NFC
+
+### Pi-hole — 30 Minute Disable
+
+Disables Pi-hole time-boxed for 30 minutes.
+
+```yaml
+alias: "Pi-hole - Temp Disable 30m"
+description: "Disable Pi-hole for 30 minutes from NFC tap"
+trigger:
+  - platform: nfc
+    tag_id: <pihole_temp_disable_nfc_uid>
+action:
+  - service: rest_command.pihole_disable_30m
+mode: single
+```
+
+Time-box the disable window so ad-blocking is re-enabled automatically. Surface the remaining time on the local status page so the household can see the countdown.
