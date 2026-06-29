@@ -9,6 +9,7 @@ Graduated documentation from brainstorming sessions, troubleshooting investigati
 
 ```
 docs/
+├── platform/          # Platform architecture, operator models, drift management
 ├── homelab/           # Homelab planning (see homelab/README.md for topic index)
 │   ├── overview/      # Map + visual graphic
 │   ├── network/       # Tailscale, UniFi
