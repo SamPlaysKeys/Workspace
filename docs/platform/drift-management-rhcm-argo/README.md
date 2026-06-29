@@ -5,9 +5,9 @@ updated_at: 2026-06-27
 owner: SamPlaysKeys
 topic: drift-management-rhcm-argo
 status: exploring
-review_status: awaiting_review
+review_status: accepted
 agent_generated: true
-last_modified_by: agent
+last_modified_by: SamPlaysKeys
 tags:
   - docs
   - platform
