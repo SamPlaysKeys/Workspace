@@ -43,6 +43,8 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 *Capture ideas here before promoting them to "In Progress"*
 
+- [ ] **Unattended Run Methods for AI Tools** — compare `--allow-all on`, "autopilot", "YOLO", and other unattended/headless execution modes across different AI coding assistants; evaluate tradeoffs (safety vs speed, human oversight vs autonomy), use cases (CI pipelines, batch refactors, background tasks), and suggested patterns for responsible use
+
 - [ ] Review recovery environment — audit current backup/restore strategy, identify gaps, document recovery procedures
 - [ ] ScaleTail + Vault example — create a ScaleTail sidecar container example for HashiCorp Vault deployment; demonstrate secure secrets access over Tailscale without advertising a service
 - [ ] Tags/categories for troubleshooting docs findability — as `docs/troubleshooting/` grows, may need metadata or naming conventions to help locate past fixes by symptom, system, or error type
