@@ -1,8 +1,4 @@
----
-type: README-Note
----
-
-# readiness_<check_name>
+# readiness_check_<check_name>
 
 <REPLACE: One-paragraph description of what this role validates and why it matters.>
 
@@ -42,5 +38,5 @@ Default: `<value>`
 ## Requirements
 
 - `oc` CLI available on the target host with a valid kubeconfig
-- Target host: `<bastion_group>` (set via parent playbook dynamic group)
+- Target host: `openshift_bastion` (set via parent playbook dynamic group)
 - <REPLACE: any other prerequisites>
