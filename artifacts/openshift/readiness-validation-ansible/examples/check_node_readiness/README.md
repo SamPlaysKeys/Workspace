@@ -14,7 +14,7 @@ conditions (`MemoryPressure`, `DiskPressure`, `PIDPressure`).
    `PIDPressure` conditions from `status.conditions`
 3. Evaluates each node: `PASS` if Ready=true and all pressures=false; `FAIL` otherwise
 4. Optionally checks the total node count against `expected_node_count`
-5. Appends a per-node table to the shared `readiness_report_md` fact
+5. Appends a structured `node_readiness` section to `readiness_sections`
 
 ## Result statuses
 
@@ -58,14 +58,14 @@ node_expected_conditions:
 ### Boolean coercion (Rule BOOL-1)
 
 OpenShift API returns condition status fields as the strings `"True"` and `"False"`.
-Ansible coerces these to Python booleans when setting facts from parsed JSON.
-This role compares against YAML boolean literals (`true`/`false`), not strings.
+This example compares those values as strings, matching the condition-handling pattern used by
+`readiness_check_cluster_operators`.
 
 ### String concatenation (Rule BOOL-2)
 
 The `detail` field uses Jinja2 `~` (tilde) for concatenation — not Python `+`. This is
-required because condition values are Python booleans after coercion; `+` raises a
-`TypeError`, while `~` coerces both operands to strings before joining.
+keeps detail construction safe if any value is not already a string; `~` coerces both operands
+to strings before joining.
 
 ## Requirements
 

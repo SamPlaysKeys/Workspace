@@ -1,5 +1,5 @@
 ---
-# tasks/main.yml — readiness_<check_name>
+# tasks/main.yml - readiness_check_<check_name>
 #
 # Rule ACCUM-1: Always reset the result list first.
 - name: Reset <check_name> results list
@@ -9,9 +9,9 @@
 # ── Data collection ───────────────────────────────────────────────────────────
 # Rule CMD-1: changed_when: false on all read-only commands.
 # Rule CMD-2: Register names end in _raw for raw output.
-- name: <REPLACE: describe what you are fetching>
+- name: "<REPLACE: describe what you are fetching>"
   ansible.builtin.command:
-    cmd: <REPLACE: oc get ... -o json>
+    cmd: "<REPLACE: oc get ... -o json>"
   register: _raw
   changed_when: false
 
@@ -23,7 +23,7 @@
 # ── Evaluation loop ───────────────────────────────────────────────────────────
 # Rule ACCUM-2: Accumulate results via set_fact in a loop.
 # Rule ACCUM-3: Each entry must have name, status, detail.
-# Rule BOOL-1:  Compare OCP API condition booleans against 'true'/'false' (YAML bools).
+# Rule BOOL-1:  Compare OCP API condition status values against 'True'/'False' strings.
 # Rule BOOL-2:  Use ~ not + for string concatenation.
 # Rule LOOP-1:  Always set loop_control label.
 - name: Evaluate each <resource>
@@ -47,11 +47,11 @@
         _results + [{
           'name': item.metadata.name,
           # Rule STATUS-4: Nested ternary for multi-branch status logic.
-          # Rule OCP-2: Compare against YAML bool literals.
+          # Rule OCP-2: Compare against API strings.
           'status': (
-            (_condition_a == false)
+            (_condition_a == 'False')
             | ternary('FAIL',
-              (_condition_b == true)
+              (_condition_b == 'True')
               | ternary('WARN', 'PASS')
             )
           ),
@@ -124,7 +124,7 @@
     readiness_failures: >-
       {{
         (readiness_failures | default([])) +
-        ['readiness_<check_name>: ' ~
+        ['readiness_check_<check_name>: ' ~
          (_results | selectattr('status', 'eq', 'FAIL') | list | length | string) ~
          ' required check(s) failed — see <Check Name> Report above']
       }}

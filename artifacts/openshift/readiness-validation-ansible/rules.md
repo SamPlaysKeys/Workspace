@@ -1,5 +1,5 @@
 ---
-type: Reference
+type: reference
 ---
 
 # Readiness Check Role — Authoring Rules
@@ -11,14 +11,15 @@ See `README.md` for full explanation of each rule.
 
 ## ARCHITECTURE
 
-**ARCH-1** — Parent playbook structure: Bootstrap play → Initialize play → one role per play → Final gate play.
+**ARCH-1** — Parent playbook structure: Bootstrap play -> Initialize play -> cluster identity play -> one role per play -> Final gate play.
 
 **ARCH-2** — Each role play must have `gather_facts: false` and `environment: KUBECONFIG: "{{ ocp_kubeconfig }}"`.
 
-**ARCH-3** — The initialize play sets five host facts: `ocp_kubeconfig`, `readiness_failures: []`, `readiness_sections: []`, `readiness_warn_count: 0`.
-**ARCH-4** — The final gate play publishes a single `readiness_report` key via `set_stats` containing `summary` (cluster/bastion/generated/result/failures/warnings/failure_detail) and `sections` (list of per-role structured dicts). It then calls `ansible.builtin.fail` if `readiness_failures | length > 0`.
+**ARCH-3** — The initialize play sets four host facts: `ocp_kubeconfig`, `readiness_failures: []`, `readiness_sections: []`, `readiness_warn_count: 0`.
+**ARCH-4** — The cluster identity play sets `ocp_api_url`, `ocp_cluster_id`, and `ocp_console_url` for final reporting.
+**ARCH-5** — The final gate play publishes a single `readiness_report` key via `set_stats` containing `summary` (cluster/cluster_id/bastion/api_url/console_url/generated/result/failures/warnings/failure_detail) and `sections` (list of per-role structured dicts). It then calls `ansible.builtin.fail` if `readiness_failures | length > 0`.
 
-**ARCH-5** — Every play has two tags: the global suite tag and a play-specific check tag.
+**ARCH-6** — Every role play has two tags: the global suite tag and a play-specific check tag.
 
 ---
 
@@ -26,7 +27,7 @@ See `README.md` for full explanation of each rule.
 
 **ROLE-1** — Every role contains exactly: `defaults/main.yml`, `tasks/main.yml`, `meta/main.yml`, `README.md`.
 
-**ROLE-2** — Role name prefix: `readiness_<check_name>`.
+**ROLE-2** — Role name prefix: `readiness_`; new validation checks normally use `readiness_check_<check_name>`.
 
 **ROLE-3** — Internal (role-private) fact names use a leading underscore: `_co_results`, `_amtool_raw`.
 
@@ -76,22 +77,21 @@ See `README.md` for full explanation of each rule.
 
 ---
 
-## BOOLEAN COERCION (critical — most common bug source)
+## OPENSHIFT CONDITION STATUS VALUES
 
-**BOOL-1** — OpenShift API condition status fields (`"True"`/`"False"` strings) are coerced by Ansible to Python
-booleans. Compare against YAML boolean literals only.
+**BOOL-1** — OpenShift API condition status fields are `"True"`/`"False"` strings. The existing readiness roles compare those values as strings unless a role explicitly converts them first.
 
 ```yaml
 # WRONG:
-(_available == 'True')
+(_available == true)
 
 # CORRECT:
-(_available == true)
+(_available == 'True')
 ```
 
 **BOOL-2** — Never use Python `+` operator for string concatenation in `set_fact` or `vars` blocks.
 Use Jinja2 `~` (tilde). The `~` operator coerces both operands to strings; `+` raises
-`TypeError` when one operand is a boolean.
+`TypeError` when one operand is not already a string.
 
 ```yaml
 # WRONG:
@@ -192,13 +192,13 @@ known.get(item, {}).get('explanation', 'unknown')
 
 ---
 
-## OPENING CONDITION FIELDS (OCP API)
+## OPENSHIFT CONDITION FIELDS (OCP API)
 
 **OCP-1** — Extract condition values with:
 ```yaml
 {{ item.status.conditions | selectattr('type', 'eq', 'ConditionType') | map(attribute='status') | first | default('Unknown') }}
 ```
 
-**OCP-2** — Compare extracted values against YAML boolean literals (`true`/`false`), never strings.
+**OCP-2** — Compare extracted condition values against API strings (`'True'`/`'False'`), unless the role explicitly converts them first.
 
 **OCP-3** — Always provide `| default('Unknown')` on condition extraction — some resources may omit conditions.

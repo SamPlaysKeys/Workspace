@@ -12,7 +12,7 @@ PersistentVolumes, PersistentVolumeClaims, and required StorageClasses.
 1. Fetches all PersistentVolumes via `oc get pv -o json` and evaluates their phase
 2. Fetches PVCs (all namespaces or a configured subset) and evaluates their phase
 3. Checks that each required StorageClass exists
-4. Appends a three-section report to the shared `readiness_report_md` fact
+4. Appends a structured `storage_health` section to `readiness_sections`
 
 ## Result statuses
 

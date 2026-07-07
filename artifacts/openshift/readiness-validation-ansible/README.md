@@ -1,7 +1,3 @@
----
-type: README-Note
----
-
 # Readiness Check Role Authoring Guide
 
 > **Scope**: This guide is for AI agents and human authors writing new Ansible readiness-check
@@ -21,7 +17,7 @@ type: README-Note
 6. [The result-accumulation pattern](#6-the-result-accumulation-pattern)
 7. [Three-tier status codes: PASS / WARN / FAIL](#7-three-tier-status-codes-pass--warn--fail)
 8. [Structured section reporting](#8-structured-section-reporting)
-9. [Critical Ansible gotchas (hard-won fixes)](#9-critical-ansible-gotchas-hard-won-fixes)
+9. [Critical Ansible gotchas](#9-critical-ansible-gotchas)
 10. [Reading OpenShift API condition fields](#10-reading-openshift-api-condition-fields)
 11. [CSV version matching rules](#11-csv-version-matching-rules)
 12. [KUBECONFIG management](#12-kubeconfig-management)
@@ -29,8 +25,9 @@ type: README-Note
 14. [Dictionary access safety](#14-dictionary-access-safety)
 15. [Loop and output hygiene](#15-loop-and-output-hygiene)
 16. [Failure deferral — never fail inside a role](#16-failure-deferral--never-fail-inside-a-role)
-17. [File checklist for a new role](#17-file-checklist-for-a-new-role)
-18. [Quick reference: common mistakes](#18-quick-reference-common-mistakes)
+17. [Examples from existing roles](#17-examples-from-existing-roles)
+18. [File checklist for a new role](#18-file-checklist-for-a-new-role)
+19. [Quick reference: common mistakes](#19-quick-reference-common-mistakes)
 
 ---
 
@@ -76,6 +73,119 @@ Play N+1 — Final gate: publish structured report via set_stats, fail if readin
 
 See `templates/parent_playbook.yml`.
 
+### Greenfield minimum runnable environment
+
+The role examples are enough to rebuild the checks, but a fresh environment also needs a small
+Ansible/OpenShift execution scaffold around them. At minimum, build this layout:
+
+```text
+playbooks/
+├── readiness_validation.yml
+└── roles/
+    ├── readiness_check_<role_1>/
+    ├── readiness_check_<role_2>/
+    └── readiness_guidelines/
+```
+
+The parent playbook must provide the same execution contract as `templates/parent_playbook.yml`:
+
+- Add the target bastion host to an `openshift_bastion` group.
+- Initialize `ocp_kubeconfig`, `readiness_failures`, `readiness_sections`, and
+  `readiness_warn_count` before any role runs.
+- Collect cluster identity values if the final report should include API URL, console URL, and
+  cluster ID.
+- Run one play per readiness role with `hosts: openshift_bastion`, `gather_facts: false`, and
+  play-level `environment: KUBECONFIG: "{{ ocp_kubeconfig }}"`.
+- Publish the final `readiness_report` with `ansible.builtin.set_stats`, then fail only in the
+  final gate if `readiness_failures` is non-empty.
+
+#### Control host requirements
+
+Run the playbook from an Ansible control host that has:
+
+- Ansible Core 2.14 or newer.
+- SSH access to the bastion as `ansible_user`.
+- Python on the bastion for normal Ansible module execution.
+- The `oc` CLI on the bastion and in the bastion user's `PATH`.
+- `jq` only if a rebuilt role explicitly shells out to it. The examples avoid requiring it by
+  parsing JSON with Ansible filters.
+
+#### Required inventory or extra vars
+
+A minimal greenfield inventory can be as small as localhost plus runtime variables, because the
+first play dynamically adds the bastion host:
+
+```ini
+[localhost]
+localhost ansible_connection=local
+```
+
+Provide these variables through inventory, group vars, a job template, or `--extra-vars`:
+
+```yaml
+openshift_cluster_name: example-cluster
+openshift_bastion_host_fqdn: bastion.example.internal
+ansible_user: ansible
+```
+
+By default the template derives the kubeconfig path from those values:
+
+```yaml
+ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ openshift_cluster_name }}/auth/kubeconfig"
+```
+
+If the kubeconfig lives elsewhere in a greenfield environment, either change the initialize play or
+set `ocp_kubeconfig` directly there. Do not make individual roles guess kubeconfig locations.
+
+#### Cluster access requirements
+
+The kubeconfig user must be able to run read-only `oc get`, `oc exec`, and `oc auth can-i` style
+queries for the resources checked by the enabled roles. The full suite commonly needs read access
+to these API areas:
+
+- Cluster identity resources: `Infrastructure`, `ClusterVersion`, and `Console`.
+- Cluster health resources: `ClusterOperator` and `MachineConfigPool`.
+- Operator inventory: `ClusterServiceVersion` across all namespaces.
+- Monitoring and alerting: pods and Alertmanager resources in `openshift-monitoring`.
+- Networking: `NetworkAttachmentDefinition` resources in the configured namespace.
+- Logging: logging stack resources, pods, secrets, and tenant query endpoints if that role is used.
+- Storage: monitoring PVCs and any optional logging/storage resources enabled in defaults.
+- Bare metal: `BareMetalHost` resources for root-disk RAID validation.
+- Machine API: `MachineHealthCheck` and related machine resources.
+- Virtualization: `HyperConverged` when CPU overcommit validation is enabled.
+- RBAC: groups and authorization checks for required access groups.
+- RHACM: managed-cluster agent namespace, Klusterlet, and agent pods when RHACM validation is used.
+
+Keep role defaults environment-owned. In a greenfield build, replace example receiver names,
+endpoint URLs, VLAN IDs, operator CSV regexes, group names, namespace names, and required/optional
+flags with values that match the target platform.
+
+#### Optional component handling
+
+Not every cluster has every component. Encode that in defaults rather than deleting checks:
+
+- Use `required: false` for optional operators, receivers, endpoints, PVCs, and alerts.
+- Use role-specific required flags such as `rhacm_check_required` or
+  `root_disk_raid_required` where available.
+- Missing optional infrastructure should normally produce `WARN` so operators can see that the
+  check was skipped or not applicable.
+- Bad configuration for infrastructure that is present and required should produce `FAIL`.
+
+#### First-run smoke test
+
+After rebuilding the parent playbook and at least one role, verify the scaffold before enabling the
+whole suite:
+
+```bash
+ansible-playbook playbooks/readiness_validation.yml -i inventory.ini --syntax-check
+ansible-playbook playbooks/readiness_validation.yml -i inventory.ini --tags cluster-operators
+ansible-playbook playbooks/readiness_validation.yml -i inventory.ini --tags readiness-validation
+```
+
+For AAP or another automation controller, confirm the job artifact contains `readiness_report` with
+a `summary` dict and a `sections` list. For local CLI runs, confirm each role prints its debug
+status section and the final gate is the only task that can fail the playbook.
+
 ---
 
 ## 3. Role anatomy
@@ -83,7 +193,7 @@ See `templates/parent_playbook.yml`.
 Every readiness check role must contain exactly these files:
 
 ```
-roles/readiness_<check_name>/
+roles/readiness_check_<check_name>/
 ├── defaults/
 │   └── main.yml     # All role-specific configuration. This is the operator baseline.
 ├── meta/
@@ -102,13 +212,17 @@ Always include them via `ansible.builtin.include_tasks` from `tasks/main.yml`.
 
 ### Role name
 
-All readiness check roles are prefixed `readiness_`:
+All readiness roles are prefixed `readiness_`. New validation checks should normally use
+`readiness_check_`:
 
 ```
-readiness_<check_name>
+readiness_check_<check_name>
 ```
 
-Examples: `readiness_check_cluster_operators`, `readiness_alert_routing`.
+Examples from this repository include `readiness_check_cluster_operators`,
+`readiness_check_cpu_overcommit`, and `readiness_check_root_disk_raid`.
+Existing non-check readiness roles such as `readiness_alert_routing` and
+`readiness_issue_remediation` still participate in the same reporting contract.
 
 ### Internal variable prefix
 
@@ -156,13 +270,18 @@ A fourth fact (`ocp_kubeconfig`) is also set in the initialize play and used at 
 ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ openshift_cluster_name }}/auth/kubeconfig"
 ```
 
-The final gate play publishes a single `readiness_report` key via `set_stats` containing:
+The current parent playbook also has a cluster-identity play that collects API URL, console URL,
+and cluster ID before role execution. The final gate play publishes a single `readiness_report`
+key via `set_stats` containing:
 
 ```yaml
 readiness_report:
   summary:
     cluster: <cluster_name>
+    cluster_id: <cluster_id>
     bastion: <bastion_fqdn>
+    api_url: <api_url>
+    console_url: <console_url>
     generated: <timestamp>
     result: PASS | FAIL
     failures: <int>
@@ -323,32 +442,32 @@ The `results` list contains the full result dicts (name, status, detail, and any
 
 ---
 
-## 9. Critical Ansible gotchas (hard-won fixes)
+## 9. Critical Ansible gotchas
 
-These bugs were discovered in production and fixed through multiple commits. Every new role
-author must know them.
+Every new role author should follow these patterns because they match the readiness roles in
+this repository.
 
-### 9a. OCP API boolean coercion (the #1 bug source)
+### 9a. OCP API condition status values are strings
 
 **The problem**: OpenShift API condition status fields return the strings `"True"` and `"False"`.
-When Ansible parses JSON from `oc ... -o json` and sets a fact from it, it coerces these
-strings to Python boolean `True` / `False`.
+The readiness roles in this repository parse `oc ... -o json` output and compare condition
+status values as strings.
 
-**Consequence**: Comparisons like `_available == 'True'` will **never match** a bool.
-String concatenation like `'Available=' + _available` will **raise a TypeError** in Jinja2.
+**Consequence**: Comparisons must be consistent. Do not compare condition values to YAML
+booleans unless you explicitly converted them first.
 
 **The fix**:
 
 ```yaml
-# WRONG — comparing strings to a bool:
-status: (_available == 'True') | ternary('PASS', 'FAIL')
-
-# CORRECT — compare against YAML boolean literals:
+# WRONG — condition values are strings in the readiness roles:
 status: (_available == true) | ternary('PASS', 'FAIL')
+
+# CORRECT — compare condition values to API strings:
+status: (_available == 'True') | ternary('PASS', 'FAIL')
 ```
 
 ```yaml
-# WRONG — string + bool raises TypeError:
+# WRONG — `+` is brittle when a value is not already a string:
 detail: 'Available=' + _available
 
 # CORRECT — use ~ (tilde) for string concatenation:
@@ -358,7 +477,7 @@ detail: 'Available=' ~ _available
 ### 9b. Always use `~` for string concatenation in Jinja2 / set_fact
 
 `+` is Python's concatenation operator and only works when both operands are already strings.
-After bool coercion, status values are Python booleans — `+` raises a `TypeError`.
+If an operand is not already a string, `+` raises a `TypeError`.
 
 `~` (tilde) in Jinja2 converts both operands to strings before joining. It is always safe.
 
@@ -439,8 +558,8 @@ vars:
 Then compare:
 
 ```yaml
-# CORRECT — compare against YAML boolean because Ansible coerces 'True'/'False':
-status: (_available == false or _degraded == true) | ternary('FAIL', 'PASS')
+# CORRECT — compare condition values to API strings:
+status: (_available == 'False' or _degraded == 'True') | ternary('FAIL', 'PASS')
 ```
 
 **Common condition sets by resource type:**
@@ -523,14 +642,15 @@ Set the kubeconfig path as a **host fact** in the initialize play, then referenc
   ansible.builtin.set_fact:
     ocp_kubeconfig: "/home/{{ ansible_user | lower }}/{{ cluster_name }}/auth/kubeconfig"
     readiness_failures: []
-    readiness_report_md: "# Cluster Readiness Report\n..."
+    readiness_sections: []
+    readiness_warn_count: 0
 ```
 
 **In each role play:**
 
 ```yaml
 - name: Readiness validation — my check
-  hosts: bastion_group
+  hosts: openshift_bastion
   gather_facts: false
   environment:
     KUBECONFIG: "{{ ocp_kubeconfig }}"
@@ -668,9 +788,131 @@ The user needs to know:
 
 ---
 
-## 17. File checklist for a new role
+## 17. Examples from existing roles
 
-When creating `roles/readiness_<name>/`:
+These examples are taken from readiness roles that exist in this repository. Prefer these
+patterns over older hypothetical examples.
+
+For a role-by-role greenfield rebuild reference, see
+`examples/readiness_validation_roles/README.md`. That catalog covers every readiness role wired
+into `readiness_validation.yml` with sanitized defaults, core task patterns, status rules, section
+keys, and rebuild notes.
+
+### 17a. API query failure as a result entry
+
+`readiness_check_cluster_operators` and `readiness_check_root_disk_raid` use `failed_when: false`
+for `oc` reads that may fail, then convert the failure into a normal readiness result. This lets
+later checks still run and lets the final gate report the failure centrally.
+
+```yaml
+- name: Get ClusterOperators
+  ansible.builtin.command:
+    cmd: oc get co -o json
+  register: _co_raw
+  changed_when: false
+  failed_when: false
+
+- name: Record ClusterOperator API query failure
+  ansible.builtin.set_fact:
+    _co_results: >-
+      {{
+        _co_results + [{
+          'type': 'co',
+          'name': 'oc-api',
+          'status': 'FAIL',
+          'detail': 'oc get co failed (rc=' ~ _co_raw.rc ~ ') - cluster API may be temporarily unreachable',
+          'required': true
+        }]
+      }}
+  when: _co_raw.rc != 0
+```
+
+### 17b. Condition evaluation with string comparisons
+
+`readiness_check_cluster_operators` extracts condition statuses from `status.conditions` and
+compares them to the API strings `"True"` and `"False"`.
+
+```yaml
+vars:
+  _available: >-
+    {{ item.status.conditions
+       | selectattr('type', 'eq', 'Available')
+       | map(attribute='status') | first | default('Unknown') }}
+  _progressing: >-
+    {{ item.status.conditions
+       | selectattr('type', 'eq', 'Progressing')
+       | map(attribute='status') | first | default('Unknown') }}
+  _degraded: >-
+    {{ item.status.conditions
+       | selectattr('type', 'eq', 'Degraded')
+       | map(attribute='status') | first | default('Unknown') }}
+status: >-
+  {{
+    (_available == 'False' or _degraded == 'True')
+    | ternary('FAIL',
+      (_progressing == 'True')
+      | ternary('WARN', 'PASS')
+    )
+  }}
+```
+
+### 17c. Optional infrastructure as WARN, bad configuration as FAIL
+
+`readiness_check_cpu_overcommit` records missing OpenShift Virtualization as `WARN`, because the
+check is not meaningful without that component, but records a missing or wrong ratio as `FAIL`
+when the component exists.
+
+```yaml
+_status: >-
+  {{
+    (not _cpu_overcommit_hco_present) | ternary('WARN',
+      _missing_field | ternary('FAIL',
+        _matches | ternary('PASS', 'FAIL')
+      )
+    )
+  }}
+```
+
+### 17d. External JSON with safe `.get()` chains
+
+`readiness_check_root_disk_raid` reads BareMetalHost data where nested fields may be absent.
+Use `.get()` chains for this kind of external API data.
+
+```yaml
+vars:
+  _name: "{{ item.get('metadata', {}).get('name', 'unknown') }}"
+  _hints: "{{ item.get('spec', {}).get('rootDeviceHints', {}) }}"
+  _hint_wwn: "{{ _hints.get('wwn', '') }}"
+  _storage: "{{ item.get('status', {}).get('hardware', {}).get('storage', []) }}"
+```
+
+### 17e. Structured section append
+
+Every readiness role appends one section dict to `readiness_sections`. The final gate publishes
+these sections as the `readiness_report` artifact.
+
+```yaml
+- name: Append root disk RAID backing section to readiness_sections
+  vars:
+    _pass: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'PASS') | list | length }}"
+    _warn: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'WARN') | list | length }}"
+    _fail: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'FAIL') | list | length }}"
+  ansible.builtin.set_fact:
+    readiness_sections: >-
+      {{
+        readiness_sections + [{
+          'section': 'root_disk_raid',
+          'pass': _pass | int,
+          'warn': _warn | int,
+          'fail': _fail | int,
+          'results': _root_disk_raid_results
+        }]
+      }}
+```
+
+## 18. File checklist for a new role
+
+When creating `roles/readiness_check_<name>/`:
 
 - [ ] `defaults/main.yml` — all configuration variables with inline comments explaining each
 - [ ] `tasks/main.yml` — starts with `_results: []` reset; ends with console debug + failures append + readiness_sections append + readiness_warn_count increment
@@ -684,16 +926,16 @@ When adding the role to the parent playbook:
 When the role queries a new resource type:
 
 - [ ] Verify condition field names (check OCP API docs — they are not always consistent)
-- [ ] Confirm you compare boolean conditions against `true`/`false` (YAML booleans), not strings
+- [ ] Confirm OpenShift condition statuses are compared consistently, normally against `"True"`/`"False"` strings
 - [ ] Test on a real cluster or mock JSON before committing
 
 ---
 
-## 18. Quick reference: common mistakes
+## 19. Quick reference: common mistakes
 
 | Mistake | Correct pattern |
 |---------|----------------|
-| `_available == 'True'` | `_available == true` |
+| `_available == true` for OpenShift condition status | `_available == 'True'` |
 | `'detail: ' + _bool_var` | `'detail: ' ~ _bool_var` |
 | `known[item].key \| default(x)` | `known.get(item, {}).get('key', x)` |
 | `environment: KUBECONFIG:` on each task | Set at play level; roles inherit it |
@@ -705,5 +947,5 @@ When the role queries a new resource type:
 | No `changed_when: false` on `oc get` tasks | Always set for read-only commands |
 | String concat with `+` in set_fact | Use `~` everywhere |
 | `\| default()` to catch missing dict key | Use `.get('key', fallback)` |
-| Appending markdown to `readiness_report_md` | Append a structured dict to `readiness_sections` |
+| Appending Markdown report text from a role | Append a structured dict to `readiness_sections` |
 | Forgetting to increment `readiness_warn_count` | Add `readiness_warn_count` update task after section append |
