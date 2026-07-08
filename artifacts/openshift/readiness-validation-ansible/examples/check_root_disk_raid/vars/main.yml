@@ -1,0 +1,16 @@
+---
+# Model substrings (case-insensitive) that identify a RAID-backed root disk.
+# Any storage entry whose model contains at least one of these strings is
+# considered RAID-backed.  Add new models here as new hardware is onboarded.
+#
+# Known good examples:
+#   "PERC H745 Frnt"      → matched by "PERC"
+#   "DELLBOSS VD"         → matched by "DELLBOSS VD"
+#   "Smart Array P816i-a" → matched by "Smart Array"
+#   "HPE Logical Volume"  → matched by "HPE"
+root_disk_raid_expected_models:
+  - "PERC"
+  - "RAID"
+  - "DELLBOSS VD"
+  - "Smart Array"
+  - "HPE"

@@ -1,0 +1,307 @@
+---
+# Smoke-tests for readiness_check_root_disk_raid.
+#
+# Runs entirely on localhost without a live cluster by injecting pre-cooked
+# BareMetalHost JSON via _root_disk_raid_bmh_raw so the role never calls oc.
+#
+# root_disk_raid_expected_models is defined in the role's vars/main.yml and is
+# loaded automatically when the role is included.  No vars_files needed here.
+#
+# Scenarios covered
+# -----------------
+# 1. wwn_pass        - WWN hint resolves to a PERC disk             → PASS
+# 2. wwn_fail_model  - WWN hint resolves to a non-RAID disk         → FAIL
+# 3. wwn_no_match    - WWN hint does not match any storage WWN      → FAIL
+# 4. dev_pass        - No WWN; deviceName matches storage.name      → PASS
+# 5. dev_altname     - No WWN; deviceName matches alternateNames    → PASS
+# 6. dev_no_match    - No WWN; deviceName matches nothing           → FAIL
+# 7. no_hint         - Neither wwn nor deviceName set               → FAIL
+# 8. dellboss_pass   - No WWN; deviceName matches DELLBOSS VD disk  → PASS
+# 9. hpe_smartarray_pass - No WWN; deviceName matches HPE Smart Array disk → PASS
+
+- name: readiness_check_root_disk_raid — scenario 1 (wwn_pass)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    # Pre-cook the oc output so no live cluster is needed.
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-0"},
+            "spec": {"rootDeviceHints": {"wwn": "0x600508e000000000abcdef1234567890"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "wwn": "0x600508e000000000abcdef1234567890",
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert PASS for master-0
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-0') | first).status == 'PASS'
+        fail_msg: "Expected PASS for wwn_pass scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 2 (wwn_fail_model)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-1"},
+            "spec": {"rootDeviceHints": {"wwn": "0xaabbccddee112233"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "wwn": "0xaabbccddee112233",
+               "vendor": "SEAGATE", "model": "ST2000NM0001"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert FAIL for master-1 (non-RAID model)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-1') | first).status == 'FAIL'
+        fail_msg: "Expected FAIL for wwn_fail_model scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 3 (wwn_no_match)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-2"},
+            "spec": {"rootDeviceHints": {"wwn": "0xdeadbeef00000001"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "wwn": "0x0000000000000002",
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert FAIL for master-2 (WWN did not match)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-2') | first).status == 'FAIL'
+        fail_msg: "Expected FAIL for wwn_no_match scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 4 (dev_pass via storage name)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    # No wwn in rootDeviceHints; deviceName present instead.
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-3"},
+            "spec": {"rootDeviceHints": {"deviceName": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert PASS for master-3 (deviceName matched by storage.name)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-3') | first).status == 'PASS'
+        fail_msg: "Expected PASS for dev_pass scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 5 (dev_altname via alternateNames)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    # deviceName given as /dev/sda (alternateNames entry, not stable name).
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-4"},
+            "spec": {"rootDeviceHints": {"deviceName": "/dev/sda"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert PASS for master-4 (deviceName matched via alternateNames)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-4') | first).status == 'PASS'
+        fail_msg: "Expected PASS for dev_altname scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 6 (dev_no_match)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-5"},
+            "spec": {"rootDeviceHints": {"deviceName": "/dev/sdb"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert FAIL for master-5 (deviceName did not match)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-5') | first).status == 'FAIL'
+        fail_msg: "Expected FAIL for dev_no_match scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 7 (no_hint)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-6"},
+            "spec": {"rootDeviceHints": {}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:02:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "DELL", "model": "PERC H745 Frnt"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert FAIL for master-6 (no hint set)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-6') | first).status == 'FAIL'
+        fail_msg: "Expected FAIL for no_hint scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 8 (dellboss_pass)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    # Control plane node: no WWN exposed by the BOSS card; hint uses deviceName.
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "master-7"},
+            "spec": {"rootDeviceHints": {"deviceName": "/dev/sda"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:03:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "DELL", "model": "DELLBOSS VD"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert PASS for master-7 (DELLBOSS VD matched via alternateNames)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/master-7') | first).status == 'PASS'
+        fail_msg: "Expected PASS for dellboss_pass scenario, got: {{ _root_disk_raid_results }}"
+
+- name: readiness_check_root_disk_raid — scenario 9 (hpe_smartarray_pass)
+  hosts: localhost
+  gather_facts: false
+  vars:
+    readiness_sections: []
+    readiness_failures: []
+    readiness_warn_count: 0
+    # Worker node: no WWN on the Smart Array virtual disk; hint uses deviceName.
+    _root_disk_raid_bmh_raw:
+      rc: 0
+      stdout: |
+        {
+          "items": [{
+            "metadata": {"name": "worker-0"},
+            "spec": {"rootDeviceHints": {"deviceName": "/dev/sda"}},
+            "status": {"hardware": {"storage": [
+              {"name": "/dev/disk/by-path/pci-0000:04:00.0-scsi-0:0:0:0",
+               "alternateNames": ["/dev/sda"],
+               "vendor": "HPE", "model": "Smart Array P816i-a SR Gen10"}
+            ]}}
+          }]
+        }
+  tasks:
+    - name: Run role
+      ansible.builtin.include_role:
+        name: readiness_check_root_disk_raid
+    - name: Assert PASS for worker-0 (Smart Array matched via alternateNames)
+      ansible.builtin.assert:
+        that:
+          - (_root_disk_raid_results | selectattr('name', 'eq', 'baremetalhost/worker-0') | first).status == 'PASS'
+        fail_msg: "Expected PASS for hpe_smartarray_pass scenario, got: {{ _root_disk_raid_results }}"

@@ -1,0 +1,186 @@
+---
+- name: Build root disk RAID model regex from expected models list
+  ansible.builtin.set_fact:
+    _root_disk_raid_model_regex: "(?i)({{ root_disk_raid_expected_models | map('regex_escape') | join('|') }})"
+
+- name: Reset root disk RAID results list
+  ansible.builtin.set_fact:
+    _root_disk_raid_results: []
+
+- name: Get BareMetalHosts in {{ root_disk_raid_bmh_namespace }}
+  ansible.builtin.command:
+    cmd: oc get baremetalhost -n {{ root_disk_raid_bmh_namespace }} -o json
+  register: _root_disk_raid_bmh_raw
+  changed_when: false
+  failed_when: false
+
+- name: Parse BareMetalHost list
+  vars:
+    _safe_stdout: "{{ _root_disk_raid_bmh_raw.stdout if _root_disk_raid_bmh_raw.rc == 0 else '{\"items\":[]}' }}"
+    _parsed: "{{ _safe_stdout if (_safe_stdout is mapping) else (_safe_stdout | from_json) }}"
+  ansible.builtin.set_fact:
+    _root_disk_raid_bmh_items: "{{ _parsed.get('items', []) }}"
+
+- name: Filter BareMetalHosts for root disk RAID validation
+  ansible.builtin.set_fact:
+    _root_disk_raid_bmh_targets: >-
+      {{
+        _root_disk_raid_bmh_items
+        if (root_disk_raid_bmh_name_regex | default('') | length) == 0
+        else (_root_disk_raid_bmh_items | selectattr('metadata.name', 'search', root_disk_raid_bmh_name_regex) | list)
+      }}
+
+- name: Record BareMetalHost query failure
+  ansible.builtin.set_fact:
+    _root_disk_raid_results: >-
+      {{
+        _root_disk_raid_results + [{
+          'name': 'baremetalhosts',
+          'status': root_disk_raid_required | bool | ternary('FAIL', 'WARN'),
+          'detail': 'Could not list BareMetalHosts in namespace ' ~ root_disk_raid_bmh_namespace ~ ': ' ~ (_root_disk_raid_bmh_raw.stderr | default('unknown error')),
+          'required': root_disk_raid_required | bool
+        }]
+      }}
+  when: _root_disk_raid_bmh_raw.rc != 0
+
+- name: Record no BareMetalHosts found
+  ansible.builtin.set_fact:
+    _root_disk_raid_results: >-
+      {{
+        _root_disk_raid_results + [{
+          'name': 'baremetalhosts',
+          'status': root_disk_raid_required | bool | ternary('FAIL', 'WARN'),
+          'detail': 'No BareMetalHosts found in namespace ' ~ root_disk_raid_bmh_namespace ~ ((root_disk_raid_bmh_name_regex | default('') | length > 0) | ternary(' matching regex ' ~ root_disk_raid_bmh_name_regex, '')),
+          'required': root_disk_raid_required | bool
+        }]
+      }}
+  when:
+    - _root_disk_raid_bmh_raw.rc == 0
+    - (_root_disk_raid_bmh_targets | length) == 0
+
+- name: Evaluate BareMetalHost root disk backing
+  vars:
+    _name: "{{ item.get('metadata', {}).get('name', 'unknown') }}"
+    _hints: "{{ item.get('spec', {}).get('rootDeviceHints', {}) }}"
+    # --- WWN hint (primary) ---
+    _hint_wwn: "{{ _hints.get('wwn', '') }}"
+    _hint_wwn_normalized: "{{ _hint_wwn | lower | regex_replace('^0x', '') | regex_replace('[^0-9a-f]', '') }}"
+    # --- deviceName hint (fallback when wwn is absent) ---
+    _hint_device_name: "{{ _hints.get('deviceName', '') }}"
+    _storage: "{{ item.get('status', {}).get('hardware', {}).get('storage', []) }}"
+    # Match by WWN when a WWN hint is present.
+    _wwn_matches: >-
+      {%- set matches = [] -%}
+      {%- for disk in _storage -%}
+      {%- set disk_wwn = disk.get('wwn', '') | lower | regex_replace('^0x', '') | regex_replace('[^0-9a-f]', '') -%}
+      {%- if _hint_wwn_normalized | length > 0 and disk_wwn == _hint_wwn_normalized -%}
+      {%- set _ = matches.append(disk) -%}
+      {%- endif -%}
+      {%- endfor -%}
+      {{ matches }}
+    # Match by deviceName (exact) when no WWN hint is set.  The BMH spec stores
+    # the stable by-path name in storage[].name and legacy /dev/sdX names in
+    # storage[].alternateNames, so we check both.
+    _dev_matches: >-
+      {%- set matches = [] -%}
+      {%- if _hint_wwn_normalized | length == 0 and _hint_device_name | length > 0 -%}
+      {%- for disk in _storage -%}
+      {%- set disk_name = disk.get('name', '') -%}
+      {%- set alt_names = disk.get('alternateNames', []) -%}
+      {%- if disk_name == _hint_device_name or _hint_device_name in alt_names -%}
+      {%- set _ = matches.append(disk) -%}
+      {%- endif -%}
+      {%- endfor -%}
+      {%- endif -%}
+      {{ matches }}
+    # Resolved match — prefer WWN result; fall back to deviceName result.
+    _matches: "{{ _wwn_matches if (_wwn_matches | length > 0) else _dev_matches }}"
+    _matched_disk: "{{ (_matches | first | default({})) if (_matches is iterable and _matches is not string) else {} }}"
+    _matched_vendor: "{{ _matched_disk.get('vendor', '?') }}"
+    _matched_model: "{{ _matched_disk.get('model', '?') }}"
+    # Hint type used — drives the detail message.
+    _hint_type: "{{ 'wwn' if _hint_wwn_normalized | length > 0 else ('deviceName' if _hint_device_name | length > 0 else 'none') }}"
+    _hint_value: "{{ _hint_wwn if _hint_type == 'wwn' else (_hint_device_name if _hint_type == 'deviceName' else '') }}"
+    _has_hint: "{{ _hint_type != 'none' }}"
+    _has_storage: "{{ _storage | length > 0 }}"
+    _has_match: "{{ _matched_disk | length > 0 }}"
+    _model_matches: "{{ _has_match and (_matched_model is search(_root_disk_raid_model_regex)) }}"
+    _passed: "{{ _has_hint and _has_storage and _has_match and _model_matches }}"
+    _detail: >-
+      {{
+        (not _has_hint) | ternary(
+          'spec.rootDeviceHints has neither wwn nor deviceName; cannot prove root disk backing',
+          (not _has_storage) | ternary(
+            'status.hardware.storage is empty; ' ~ _hint_type ~ '=' ~ _hint_value,
+            (not _has_match) | ternary(
+              _hint_type ~ '=' ~ _hint_value ~ ' did not match any status.hardware.storage entry',
+              _hint_type ~ '=' ~ _hint_value ~ ' matched vendor=' ~ _matched_vendor ~ ' model=' ~ _matched_model ~ ' expected_models=' ~ root_disk_raid_expected_models | join(',')
+            )
+          )
+        )
+      }}
+  ansible.builtin.set_fact:
+    _root_disk_raid_results: >-
+      {{
+        _root_disk_raid_results + [{
+          'name': 'baremetalhost/' ~ _name,
+          'status': _passed | ternary('PASS', (root_disk_raid_required | bool) | ternary('FAIL', 'WARN')),
+          'detail': _detail,
+          'required': root_disk_raid_required | bool
+        }]
+      }}
+  loop: "{{ _root_disk_raid_bmh_targets }}"
+  loop_control:
+    label: "{{ item.get('metadata', {}).get('name', 'unknown') }}"
+  when: _root_disk_raid_bmh_raw.rc == 0
+
+- name: Display root disk RAID backing readiness report
+  ansible.builtin.debug:
+    msg: |
+      === Root Disk RAID Backing Status ===
+      Namespace            : {{ root_disk_raid_bmh_namespace }}
+      BMH name filter      : {{ ((root_disk_raid_bmh_name_regex | default('') | length) > 0) | ternary(root_disk_raid_bmh_name_regex, '<none>') }}
+      Expected models      : {{ root_disk_raid_expected_models | join(', ') }}
+
+      {% for r in (_root_disk_raid_results | sort(attribute='name')) %}
+      {{ '%-6s' | format(r.status) }} {{ r.name }}
+             {{ r.detail }}
+      {% endfor %}
+
+      === Summary ===
+      PASS : {{ _root_disk_raid_results | selectattr('status', 'eq', 'PASS') | list | length }}
+      WARN : {{ _root_disk_raid_results | selectattr('status', 'eq', 'WARN') | list | length }}
+      FAIL : {{ _root_disk_raid_results | selectattr('status', 'eq', 'FAIL') | list | length }}
+
+- name: Append root disk RAID backing section to readiness_sections
+  vars:
+    _pass: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'PASS') | list | length }}"
+    _warn: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'WARN') | list | length }}"
+    _fail: "{{ _root_disk_raid_results | selectattr('status', 'eq', 'FAIL') | list | length }}"
+  ansible.builtin.set_fact:
+    readiness_sections: >-
+      {{
+        readiness_sections + [{
+          'section': 'root_disk_raid',
+          'pass': _pass | int,
+          'warn': _warn | int,
+          'fail': _fail | int,
+          'results': _root_disk_raid_results
+        }]
+      }}
+
+- name: Record root disk RAID backing validation failures
+  ansible.builtin.set_fact:
+    readiness_failures: >-
+      {{
+        (readiness_failures | default([])) +
+        ['readiness_check_root_disk_raid: '
+         ~ (_root_disk_raid_results | selectattr('status', 'eq', 'FAIL') | list | length | string)
+         ~ ' required check(s) failed — see Root Disk RAID Backing Status below']
+      }}
+  when: _root_disk_raid_results | selectattr('status', 'eq', 'FAIL') | list | length > 0
+
+- name: Accumulate root disk RAID backing warning count
+  ansible.builtin.set_fact:
+    readiness_warn_count: >-
+      {{ (readiness_warn_count | default(0) | int) + (_root_disk_raid_results | selectattr('status', 'eq', 'WARN') | list | length) }}
