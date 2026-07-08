@@ -13,6 +13,7 @@ type: Reference
 | **Dev**     | Development & experimentation    | 10.0.3.0/24 | ProxMox Host (DevDocker VM, DevNode VMs), LenovoMini 3–5 (OCP cluster), Tailscale Operator |
 | **User**    | Personal workstation             | 10.0.10.0/24 | Gaming PC                                                              |
 | **IoT**     | Smart home & cameras             | 10.0.4.0/24 | Reolink cameras, Google Home                                          |
+| **DMZ**     | Public-facing services            | 10.0.5.0/24 | Shared NIC on existing hosts OR dedicated seed box; qBittorrent; shared storage mount |
 
 ---
 
@@ -24,6 +25,7 @@ type: Reference
 | 2    | Test                      | 10.0.2.0/24 | Allow all internal; restrict IoT → Test | Wired only                          |
 | 3    | Dev                       | 10.0.3.0/24 | Allow all internal                       | Wired only                          |
 | 4    | IoT                       | 10.0.4.0/24 | Isolate from prod/test/dev               | `IoT` (WPA2)                     |
+| 5    | DMZ                       | 10.0.5.0/24 | DMZ → External allowed (specific ports); External → DMZ restricted; DMZ → all internal blocked (except DMZ → UnRaid NFS for shared storage) | Wired only                          |
 | 10   | User                      | 10.0.10.0/24| Isolate from prod/test/dev/IoT           | `Home` (WPA3)                      |
 
 ---
@@ -38,7 +40,8 @@ GFiber (1Gbps) → Unifi UDM → Unifi 16-port PoE Switch
 ├── LenovoMini 3–5 (Dev OCP cluster)
 ├── Intel NUC (Prod management / Komodo Controller)
 ├── Gaming PC (User)
-└── IoT VLAN (Reolink, Google Home)
+├── IoT VLAN (Reolink, Google Home)
+└── DMZ VLAN (qBittorrent, shared storage mount)
 
 Tailscale Overlay: All nodes
 ```
@@ -74,6 +77,10 @@ Tailscale Overlay: All nodes
 - plex (media server)
 - audiobookshelf (audiobook management)
 
+**DMZ Services** (shared NIC on LenovoMini 1 / ProxMox, or dedicated seed box):
+- qBittorrent (torrent client for Internet Archive backups)
+- Shared storage mount (NFS from UnRaid NAS for downloaded content — accessible by Prod services)
+
 ```
 Intel NUC (10.0.1.0/24) - Komodo Controller
 ├── Komodo Core (orchestrates)
@@ -106,6 +113,15 @@ ProxMox Host (Dev)
 │   ├── tsflow (CI/CD)
 │   └── Experimental containers
 └── DevNode VMs (unmanaged sandbox)
+
+DMZ (10.0.5.0/24)
+├── Option A: Shared NICs on existing hosts via VLAN tagging
+│   ├── LenovoMini 1 (Docker container on DMZ network)
+│   └── ProxMox Host (VM with DMZ network)
+├── Option B: Dedicated seed box
+│   └── MiniPC (qBittorrent, other DMZ services)
+└── Shared storage: NFS mount from UnRaid NAS (Prod VLAN)
+    └── Firewall exception: allow DMZ → UnRaid NAS (NFS port 2049)
 ```
 
 ---
@@ -113,6 +129,7 @@ ProxMox Host (Dev)
 ## Future
 - **Guest Network**: VLAN (10.0.20.0/24) on Unifi SSID `Guest`
 - **Tailscale SSH**: Secure remote CLI access to all nodes
+- **DMZ expansion**: Additional public-facing services beyond qBittorrent
 
 ---
 

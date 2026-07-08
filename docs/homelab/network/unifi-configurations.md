@@ -23,6 +23,7 @@ Go to **Settings > Security > Firewall > Zones** and create the following custom
 | **Test**  | Test (2)                 | Pre-production validation |
 | **Dev**   | Dev (3)                  | OCP and Sandbox nodes |
 | **IoT**   | IoT (4)                  | Cameras, smart plugs |
+| **DMZ**   | DMZ (5)                  | Public-facing services (qBittorrent) |
 | **User**  | User (10)                | Laptops, phones, trusted devices |
 
 *(Note: Ensure each VLAN is moved out of the default `Internal` zone and into its respective custom zone.)*
@@ -82,6 +83,36 @@ Go to **Settings > Security > Firewall > Policy Table** (or click the cells in t
 - **Destination Zone:** Dev
 - **Auto Allow Return Traffic:** Checked
 
+### Policy 6: DMZ to External (Internet)
+*Allows DMZ services (e.g. qBittorrent) to reach the internet for torrent traffic and updates.*
+- **Name:** Allow DMZ to External
+- **Action:** Allow
+- **Source Zone:** DMZ
+- **Destination Zone:** External
+- **Auto Allow Return Traffic:** Checked
+
+### Policy 7: External to DMZ (Specific Ports)
+*Allows incoming connections to DMZ services on required ports. Tightly scoped to only what's needed.*
+- **Name:** Allow External to DMZ Services
+- **Action:** Allow
+- **Source Zone:** External
+- **Destination Zone:** DMZ
+- **Destination Port:** `6881` (TCP — torrent); `6881` (UDP — DHT); add more as new services are added
+- **Auto Allow Return Traffic:** Checked
+- **Notes:** This is the only inbound path from the internet into the lab. Review and restrict per-service.
+
+### Policy 8: DMZ to UnRaid NAS (Shared Storage)
+*Allows DMZ services to write downloaded content to the UnRaid NAS NFS export so Prod services can access it.*
+- **Name:** Allow DMZ to UnRaid NFS
+- **Action:** Allow
+- **Source Zone:** DMZ
+- **Destination Zone:** Prod
+- **Source Device/IP:** DMZ subnet (10.0.5.0/24)
+- **Destination IP:** UnRaid NAS IP (10.0.1.X)
+- **Destination Port:** `2049` (TCP — NFS)
+- **Auto Allow Return Traffic:** Checked
+- **Notes:** This is the **only** exception to DMZ → Internal block. Tightly scoped to a single IP + port.
+
 ## 3. Enable Multicast DNS (mDNS) for Discovery
 
 For casting to work across VLANs, devices on the `User` VLAN must be able to discover the Chromecasts on the `IoT` VLAN. UniFi handles this via a built-in mDNS reflector.
@@ -94,11 +125,11 @@ Go to **Settings > Networks > Global Network Settings** (or the specific network
 
 To complete the segmentation, we must ensure that all other inter-zone traffic is blocked. UniFi's matrix allows you to set the baseline interaction between zones.
 
-For any zone pair that shouldn't communicate (e.g., `IoT` to `User`, `User` to `Dev`), create a catch-all block policy:
+For any zone pair that shouldn't communicate (e.g., `IoT` to `User`, `User` to `Dev`, `DMZ` to any internal zone), create a catch-all block policy:
 
 - **Name:** Block Inter-Zone Traffic
 - **Action:** Block
-- **Source Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User`)
+- **Source Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User, DMZ`)
 - **Destination Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User`)
 - *Note: Place this policy at the very bottom of the Policy Table so our explicit "Allow" rules above take precedence. (The built-in `Hotspot` zone is natively blocked from other zones by UniFi, so it does not need to be included in this block list).*
 
@@ -107,6 +138,7 @@ For any zone pair that shouldn't communicate (e.g., `IoT` to `User`, `User` to `
 The `External` zone represents the Internet. 
 
 - **User, Prod, Test, Dev to External:** Generally allowed by default so containers can pull images and devices can update.
+- **DMZ to External:** Allowed via Policy 6 above.
 - **IoT to External:** 
   - To block IoT devices from "phoning home", create a policy: **Block IoT to Internet**.
   - **Source Zone:** IoT

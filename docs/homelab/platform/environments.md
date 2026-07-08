@@ -100,11 +100,41 @@ These are network segments without Komodo-managed workloads.
 
 ---
 
+### DMZ
+
+**Purpose:** Public-facing services that need internet exposure — qBittorrent for Internet Archive torrent backups, potentially other public endpoints.
+
+**VLAN:** 10.0.5.0/24
+
+**Hardware:** Two deployment options:
+
+**Option A — Shared NICs via VLAN tagging:**
+- DMZ containers/VMs run on existing hosts (LenovoMini 1, ProxMox) with the DMZ VLAN tagged on a shared physical NIC
+- qBittorrent runs as a Docker container on LenovoMini 1 with a DMZ-network interface
+- Lower cost, no additional hardware, but shares failure domain with Prod/Dev
+
+**Option B — Dedicated seed box:**
+- A dedicated MiniPC on the DMZ VLAN, physically isolated from all other environments
+- Runs qBittorrent (and future DMZ services) on a baremetal OS or minimal Docker setup
+- Higher isolation, no shared attack surface with Prod/Dev, but additional hardware cost
+
+**Shared Storage:**
+- DMZ services write downloaded content to an NFS export on the UnRaid NAS (Prod VLAN)
+- A specific firewall exception allows DMZ → UnRaid NAS on NFS port 2049
+- Prod services (Plex, *arr) access the same export for processing — no data transfer through DMZ needed beyond the initial write
+
+**Firewall:**
+- DMZ → External: Allowed (torrent traffic, updates)
+- External → DMZ: Restricted to specific ports (torrent DHT/TCP)
+- DMZ → Internal: **Blocked by default**. Controlled exception for DMZ → UnRaid NAS (NFS)
+
+---
+
 ## Environment Comparison
 
-| Aspect | Prod | Test | Dev | User | IoT |
-|--------|------|------|-----|------|-----|
-| **VLAN** | 10.0.1.0/24 | 10.0.2.0/24 | 10.0.3.0/24 | 10.0.10.0/24 | 10.0.4.0/24 |
-| **Komodo managed** | Yes | Yes | Partial | No | No |
-| **Promotion path** | — | → Prod | → Test | — | — |
-| **Primary runtime** | Docker | Docker | Docker, VMs, OCP | Desktop | Embedded |
+| Aspect | Prod | Test | Dev | User | IoT | DMZ |
+|--------|------|------|-----|------|-----|-----|
+| **VLAN** | 10.0.1.0/24 | 10.0.2.0/24 | 10.0.3.0/24 | 10.0.10.0/24 | 10.0.4.0/24 | 10.0.5.0/24 |
+| **Komodo managed** | Yes | Yes | Partial | No | No | No |
+| **Promotion path** | — | → Prod | → Test | — | — | — |
+| **Primary runtime** | Docker | Docker | Docker, VMs, OCP | Desktop | Embedded | Docker / baremetal |

@@ -8,7 +8,7 @@ Design, architecture, and operations for a greenfield homelab rebuild. Documenta
 
 ## At a glance
 
-The homelab is organized into **five logical environments** (VLANs) with different purposes:
+The homelab is organized into **six logical environments** (VLANs) with different purposes:
 
 | Environment | Purpose | Management |
 |-------------|---------|------------|
@@ -17,6 +17,7 @@ The homelab is organized into **five logical environments** (VLANs) with differe
 | **Dev** | Development, experimentation, OCP cluster | Mixed (Komodo for Docker, unmanaged for VMs/OCP) |
 | **User** | Personal workstation | N/A |
 | **IoT** | Smart home, cameras | Isolated |
+| **DMZ** | Public-facing services (qBittorrent) | Isolated, restricted |
 
 Prod, Test, and Dev (Docker containers) form a **promotion path** managed by Komodo. Dev also contains unmanaged nodes (VMs, OCP cluster) for experimentation.
 

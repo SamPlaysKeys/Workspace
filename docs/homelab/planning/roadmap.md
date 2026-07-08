@@ -15,7 +15,7 @@ These need to be resolved as the build progresses.
 ### Network Topology
 
 - [x] Network segmentation between environments (VLANs) — defined in [homelab-map.md](../overview/homelab-map.md)
-- [ ] Firewall rules between Prod/Test/Dev/IoT
+- [x] Firewall rules between Prod/Test/Dev/IoT/DMZ — defined in [unifi-configurations.md](../network/unifi-configurations.md)
 - [ ] DNS strategy (internal DNS, split-horizon?)
 - [ ] Reverse proxy / ingress strategy (Traefik, Caddy, nginx?)
 
@@ -31,6 +31,14 @@ These need to be resolved as the build progresses.
 - [ ] Exactly which resources does Terraform manage?
 - [ ] Does Terraform manage the physical MiniPCs, or just VMs on ProxMox?
 - [ ] How do we bootstrap the Komodo Controller itself?
+
+### DMZ Strategy
+
+- [x] DMZ VLAN defined (VLAN 5, 10.0.5.0/24) — see [homelab-map.md](../overview/homelab-map.md)
+- [ ] Decide on shared NIC vs dedicated seed box hardware
+- [ ] qBittorrent deployment (Docker on shared NIC or baremetal on seed box)
+- [ ] NFS export for shared storage (DMZ → UnRaid NAS)
+- [ ] Lock down firewall rules — strictly limit DMZ → Internal to NFS only
 
 ### Monitoring & Alerting
 
@@ -57,6 +65,13 @@ Apps and stacks to deploy once infrastructure is ready.
 | Plex | Stack | High |
 | *arr suite (Sonarr, Radarr, Prowlarr, etc.) | Stack | High |
 | Uptime Kuma | App | Medium |
+| *TBD* | — | — |
+
+### DMZ
+
+| Workload | Type | Priority |
+|----------|------|----------|
+| qBittorrent (Internet Archive torrent backups) | App | Medium |
 | *TBD* | — | — |
 
 ### Test

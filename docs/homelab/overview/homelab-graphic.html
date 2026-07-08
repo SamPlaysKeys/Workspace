@@ -16,12 +16,12 @@
       --space-2: .5rem; --space-3: .75rem; --space-4: 1rem; --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
       --radius-md: .75rem; --radius-lg: 1rem; --radius-xl: 1.25rem; --radius-full: 9999px;
       --bg: #f5f4f0; --surface: #fcfbf8; --surface-2: #f1efe8; --text: #1f1d18; --muted: #6f6c65; --border: rgba(31,29,24,.12);
-      --prod: #0f766e; --test: #c26d12; --dev: #2563eb; --user: #7c3aed; --iot: #3f7a1f; --wire: #9aa2ac;
+      --prod: #0f766e; --test: #c26d12; --dev: #2563eb; --user: #7c3aed; --iot: #3f7a1f; --dmz: #b91c1c; --wire: #9aa2ac;
       --shadow: 0 12px 28px rgba(0,0,0,.08);
     }
     [data-theme="dark"] {
       --bg: #121312; --surface: #191b1a; --surface-2: #222523; --text: #e8e6e1; --muted: #a4a09a; --border: rgba(255,255,255,.1);
-      --prod: #4f98a3; --test: #f0a43c; --dev: #6aa7ff; --user: #b68cff; --iot: #87c05d; --wire: #5e6772;
+      --prod: #4f98a3; --test: #f0a43c; --dev: #6aa7ff; --user: #b68cff; --iot: #87c05d; --dmz: #f87171; --wire: #5e6772;
       --shadow: 0 18px 40px rgba(0,0,0,.32);
     }
     *{box-sizing:border-box} html,body{margin:0;padding:0}
@@ -39,7 +39,7 @@
     .backbone{display:flex;align-items:center;gap:var(--space-3);margin-bottom:var(--space-6);padding:var(--space-4);border:1px solid var(--border);border-radius:var(--radius-xl);background:var(--surface-2)}
     .pill{display:inline-flex;align-items:center;gap:.55rem;padding:.55rem .9rem;border-radius:var(--radius-full);background:var(--surface);border:1px solid var(--border);font-size:var(--text-sm);white-space:nowrap}
     .arrow{color:var(--muted);font-size:1.1rem}
-    .grid{display:grid;grid-template-columns:repeat(5, 1fr);gap:var(--space-5);position:relative}
+    .grid{display:grid;grid-template-columns:repeat(6, 1fr);gap:var(--space-4);position:relative}
     .env{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:24px;padding:var(--space-4);min-height:760px}
     .env:before{content:'';position:absolute;left:0;right:0;top:0;height:5px;border-radius:24px 24px 0 0;background:var(--accent)}
     .env h2{margin:0;font-size:var(--text-lg);font-weight:800;letter-spacing:-.02em}
@@ -66,7 +66,7 @@
     .svc img{object-fit:contain}
     .svc .ph{border-radius:10px;background:color-mix(in oklab, var(--accent) 20%, var(--surface));display:grid;place-items:center;font-size:.72rem;font-weight:800;color:var(--accent)}
     .svc span{font-size:.68rem;color:var(--muted);line-height:1.05}
-    .env.prod{--accent:var(--prod)} .env.test{--accent:var(--test)} .env.dev{--accent:var(--dev)} .env.user{--accent:var(--user)} .env.iot{--accent:var(--iot)}
+    .env.prod{--accent:var(--prod)} .env.test{--accent:var(--test)} .env.dev{--accent:var(--dev)} .env.user{--accent:var(--user)} .env.iot{--accent:var(--iot)} .env.dmz{--accent:var(--dmz)}
     .overlay{margin-top:var(--space-5);padding:var(--space-4);border:1px dashed rgba(79,152,163,.45);border-radius:20px;background:linear-gradient(90deg, rgba(79,152,163,.08), rgba(79,152,163,.03));display:flex;justify-content:space-between;gap:var(--space-4);align-items:center}
     .overlay-title{font-size:var(--text-lg);font-weight:800;margin:0 0 .35rem}
     .overlay p{margin:0;color:var(--muted)}
@@ -101,6 +101,7 @@
         <div class="pill"><span class="sw" style="--sw:var(--dev)"></span>Dev</div>
         <div class="pill"><span class="sw" style="--sw:var(--user)"></span>User</div>
         <div class="pill"><span class="sw" style="--sw:var(--iot)"></span>IoT</div>
+        <div class="pill"><span class="sw" style="--sw:var(--dmz)"></span>DMZ</div>
       </div>
 
       <div class="diagram">
@@ -252,6 +253,31 @@
               </article>
             </div>
           </section>
+
+          <section class="env dmz">
+            <h2>DMZ</h2>
+            <p class="meta">VLAN 5 · 10.0.5.0/24 · Public-facing services</p>
+            <div class="host-stack">
+              <article class="host">
+                <div class="host-header"><div class="host-title"><div class="host-icon">🖥</div><div><h3>Option A: Shared NIC</h3><small>VLAN tagging on existing hosts</small></div></div></div>
+                <div class="services">
+                  <div class="svc"><div class="ph">QB</div><span>qBittorrent</span></div>
+                </div>
+              </article>
+              <article class="host">
+                <div class="host-header"><div class="host-title"><div class="host-icon">🖥</div><div><h3>Option B: Seed Box</h3><small>Dedicated MiniPC on DMZ VLAN</small></div></div></div>
+                <div class="services">
+                  <div class="svc"><div class="ph">QB</div><span>qBittorrent</span></div>
+                </div>
+              </article>
+              <article class="host">
+                <div class="host-header"><div class="host-title"><div class="host-icon">💾</div><div><h3>Shared Storage</h3><small>NFS mount from UnRaid (Prod)</small></div></div></div>
+                <div class="services">
+                  <div class="svc"><div class="ph">NFS</div><span>NFS export</span></div>
+                </div>
+              </article>
+            </div>
+          </section>
         </div>
 
         <section class="overlay">
@@ -269,6 +295,7 @@
         <section class="future">
           <article class="card"><h3>Guest Network</h3><p>Future guest VLAN with a dedicated UniFi SSID, using UniFi's default Guest VLAN behavior.</p></article>
           <article class="card"><h3>Tailscale SSH</h3><p>Planned secure shell access tightly scoped to adhere to "least priviledge" methodology.</p></article>
+          <article class="card"><h3>DMZ Expansion</h3><p>Additional public-facing services beyond qBittorrent as needs grow.</p></article>
         </section>
       </div>
     </section>
