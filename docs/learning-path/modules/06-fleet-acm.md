@@ -15,7 +15,7 @@
 - [ ] **RHACM governance & policy** — [ACM governance docs](https://docs.redhat.com/en/documentation/red_hat_advanced_cluster_management_for_kubernetes/2.16/html/governance/governance); import a cluster, label it, write your first policy
 - [ ] Learn **PolicyGenerator** (YAML → policies) and **Placements/PlacementBindings** for label targeting
 - [ ] Practice **`inform` vs `enforce`** and the **Argo CD Application vs ACM Policy** decision table
-- [ ] **DO480** (Red Hat Multicluster Management with RHACM) → validates with **EX480**
+- [ ] **DO432** (Multicluster Management with Red Hat Advanced Cluster Management for Kubernetes) → validates with **EX432**
 - [ ] Complete the scenario-based verification at the bottom
 - [ ] <!-- ORG-SPECIFIC: our hub cluster, fleet topology, and mandates vs team-owned configs -->
 

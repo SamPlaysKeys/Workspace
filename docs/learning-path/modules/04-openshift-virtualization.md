@@ -15,7 +15,7 @@
 - [ ] Browse the [Red Hat OpenShift Virtualization learning hub](https://www.redhat.com/en/technologies/cloud-computing/openshift/virtualization/learn) and [kubevirt.io](https://kubevirt.io/) for the upstream project
 - [ ] Create/start/stop a VM; find its backing VMI Pod
 - [ ] Practice live migration (needs multi-node + RWX) and walk one MTV migration plan
-- [ ] **Formal course:** [DO316](https://www.redhat.com/en/services/training/do316-managing-virtual-machines-red-hat-openshift-virtualization) (or DO156 Admin I / DO256 Admin II)
+- [ ] **Formal course:** [DO317](https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam) — Managing VMs with OpenShift Virtualization (includes **EX316** exam)
 - [ ] Pass the scenario-based Verification at the bottom
 
 <!-- ORG-SPECIFIC: Virt-enabled clusters, RWX storage classes, migration source environment -->
@@ -41,7 +41,7 @@ OpenShift Virtualization runs VMs *inside* Kubernetes via KubeVirt. The hypervis
 - [Migrating VMs from vSphere (MTV)](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/migration_toolkit_for_virtualization/)
 - [VMs as code with GitOps + Virt](https://cloud.redhat.com/blog/virtual-machines-as-code-with-openshift-gitops-and-openshift-virtualization)
 
-**Formal courses:** [DO316 — Managing VMs with OpenShift Virtualization](https://www.redhat.com/en/services/training/do316-managing-virtual-machines-red-hat-openshift-virtualization); DO156/DO256 Administration I/II.
+**Formal courses:** [DO317 — Managing VMs with OpenShift Virtualization](https://www.redhat.com/en/services/training/managing-virtual-machines-red-hat-openshift-virtualization-exam) (includes EX316 exam); DO156 Administration I as an alternative entry point.
 
 <!-- ORG-SPECIFIC: our Virt-enabled clusters, available storage classes for RWX, and migration source environment. -->
 
