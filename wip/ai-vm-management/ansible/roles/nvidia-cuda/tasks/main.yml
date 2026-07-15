@@ -1,0 +1,42 @@
+---
+- name: Add non-free contrib repos
+  apt_repository:
+    repo: "deb http://deb.debian.org/debian {{ debian_release }} main contrib non-free non-free-firmware"
+    state: present
+
+- name: Install NVIDIA driver
+  apt:
+    name: "nvidia-driver-{{ nvidia_driver_version }}"
+    state: present
+    update_cache: yes
+  register: nvidia_install
+
+- name: Reboot if driver was installed
+  reboot:
+    reboot_timeout: 120
+  when: nvidia_install.changed
+
+- name: Download CUDA runfile
+  get_url:
+    url: "https://developer.download.nvidia.com/compute/cuda/{{ cuda_version }}/local_installers/cuda_{{ cuda_version }}.0-1_amd64.deb"
+    dest: /tmp/cuda.deb
+
+- name: Install CUDA toolkit
+  apt:
+    deb: /tmp/cuda.deb
+  register: cuda_install
+
+- name: Set CUDA environment
+  template:
+    src: cuda.sh.j2
+    dest: /etc/profile.d/cuda.sh
+    mode: 0644
+
+- name: Verify GPU
+  command: nvidia-smi --query-gpu=name,memory.total --format=csv,noheader
+  register: nvidia_smi
+  changed_when: no
+
+- name: Log GPU info
+  debug:
+    msg: "GPU detected: {{ nvidia_smi.stdout }}"
