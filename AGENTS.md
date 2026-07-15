@@ -14,6 +14,7 @@ This workspace enforces strict alignment and controlled execution. Do not run of
 - **Progressive Bookkeeping:** Update state files (`BACKLOG.md`, `context.md`, etc.) as progress happens, not just at the end of a session.
 - **Isolation:** Stay within this project unless cross-repo work is explicitly requested. Do not modify external projects.
 - **Append, Don't Replace:** State and log files should accumulate entries to preserve history.
+- **No nginx Unless Required:** When designing service delivery, default to direct HTTP access via Tailscale Serve (pointing at the service port). Do not propose nginx or any reverse proxy unless the service requires TLS termination, path-based routing, or virtual hosting that Tailscale Serve cannot provide.
 
 ## Interactive Workflows (Skills)
 
