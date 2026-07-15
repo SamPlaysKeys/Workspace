@@ -83,6 +83,18 @@ Decisions, roadmap, ADRs, and working notes.
 
 ---
 
+## AI VM
+
+Dedicated Debian VM with Quadro P5000 GPU passthrough, running LlamaFarm as the AI model management layer. Disposable — Ansible provisions, persistent storage holds models and data.
+
+| Document | Contents |
+|----------|----------|
+| [Architecture](ai-vm/architecture.md) | VM specs, storage layout, GPU profile, provisioning flow |
+| [ADR 0001](ai-vm/adr/0001-llamafarm-over-ansible.md) | LlamaFarm as AI model management layer |
+| [Ansible playbook draft](ai-vm/ansible/playbook.yml) | Provisioning roles (os-hardening, nvidia-cuda, persistent-storage, llamafarm-install, llamafarm-service) |
+
+---
+
 ## Smart home (IoT)
 
 | Document | Contents |

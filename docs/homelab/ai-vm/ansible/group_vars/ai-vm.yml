@@ -1,0 +1,24 @@
+---
+# AI VM configuration
+debian_release: "bookworm"
+
+# NVIDIA
+nvidia_driver_version: "550"
+cuda_version: "12.4"
+cuda_install_dir: "/usr/local/cuda-{{ cuda_version }}"
+
+# Storage
+persistent_device: "/dev/sdb"          # secondary disk for models/data
+persistent_mount: "/var/lib/llamafarm"
+lf_data_dir: "{{ persistent_mount }}"
+hf_cache_dir: "{{ persistent_mount }}/cache"
+
+# LlamaFarm
+lf_version: "latest"                   # or pin: "v0.0.34"
+lf_user: "ai"
+lf_group: "ai"
+lf_project_name: "my-ai-vm"
+lf_namespace: "default"
+
+# Network
+tailscale_ip: "100.x.x.x"

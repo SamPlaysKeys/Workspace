@@ -1,0 +1,10 @@
+---
+all:
+  children:
+    ai-vm:
+      hosts:
+        ai-debian:
+          ansible_host: 10.0.x.x  # Tailscale IP
+          ansible_user: debian
+      vars:
+        ansible_become: yes

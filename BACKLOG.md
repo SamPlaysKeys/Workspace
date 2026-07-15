@@ -8,6 +8,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [x] **AI VM Management**: LlamaFarm-based AI model management layer on Debian + Quadro P5000 — ADR 0001, architecture plan, and Ansible draft → graduated to `docs/homelab/ai-vm/`
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [x] **Storm Session: RHACM/Argo Drift Management System**: Design drift detection, classification, and remediation workflows → graduated to `docs/platform/argo-rhacm-drift-management/`
 
@@ -22,6 +23,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **AI VM Management**: ADR 0001 (LlamaFarm over Ansible), architecture plan, Ansible draft — graduated from `wip/ai-vm-management/` to `docs/homelab/ai-vm/`
 - [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [x] **Git History Refactor**: Change commit author from `vault@tolaria.md` to `sam@samplayskeys.com`
 - [x] **VSCode Setup Guide for Enterprise Development**: Documentation for VSCode plugins and workflows (OpenShift, Ansible, Python, YAML, Bash, Git, PATs, and prerequisites).

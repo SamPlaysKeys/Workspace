@@ -1,0 +1,49 @@
+---
+- name: Install base packages
+  apt:
+    name:
+      - fail2ban
+      - ufw
+      - unattended-upgrades
+      - htop
+      - curl
+      - git
+      - unzip
+    state: present
+    update_cache: yes
+
+- name: Configure unattended-upgrades
+  dpkg_reconfigure:
+    package: unattended-upgrades
+
+- name: Enable fail2ban
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes
+
+- name: Allow Tailscale SSH only
+  ufw:
+    rule: allow
+    name: OpenSSH
+    src: "{{ tailscale_ip }}/32"
+  notify: reload ufw
+
+- name: Enable UFW default deny
+  ufw:
+    state: enabled
+    policy: deny
+    direction: incoming
+
+- name: Create ai user
+  user:
+    name: "{{ lf_user }}"
+    group: "{{ lf_group }}"
+    shell: /bin/bash
+    create_home: yes
+    state: present
+
+  handlers:
+    - name: reload ufw
+      ufw:
+        state: reloaded

@@ -133,12 +133,50 @@ For any zone pair that shouldn't communicate (e.g., `IoT` to `User`, `User` to `
 - **Destination Zone:** Select all custom zones (`Prod, Test, Dev, IoT, User`)
 - *Note: Place this policy at the very bottom of the Policy Table so our explicit "Allow" rules above take precedence. (The built-in `Hotspot` zone is natively blocked from other zones by UniFi, so it does not need to be included in this block list).*
 
-## 5. Internet Access (External Zone)
+## 5. Port Forwarding — qBittorrent
+
+Port forwarding is required for qBittorrent to accept incoming peer connections, which improves swarm connectivity and satisfies tracker connectability requirements.
+
+### Configure Port Forward Rule
+
+Go to **Settings > Security > Traffic Rules > Port Forwarding** and create:
+
+| Field | Value | Notes |
+|-------|-------|-------|
+| **Name** | qBittorrent Incoming | |
+| **Enabled** | True | |
+| **From** | Any | Accepts connections from any WAN IP |
+| **Port** | `51820` | Pick a high ephemeral port (avoid `6881` — some ISPs throttle well-known BitTorrent ports) |
+| **Forward IP** | `10.0.5.X` | DMZ machine's static IP running qBittorrent |
+| **Forward Port** | `51820` | Can differ from WAN port if needed, but matching is cleaner |
+| **Protocol** | TCP & UDP | Both needed: TCP for peer data, UDP for DHT/magnet links |
+| **Log** | False | Avoid log noise |
+
+### qBittorrent Configuration
+
+In qBittorrent, set the incoming port to match the forward port:
+
+**Settings > Connection > Listening Port:** `51820`
+
+### Relationship to ZBF Policies
+
+- The port forward rule implicitly creates a firewall exception on the WAN interface.
+- ZBF Policy 7 (External → DMZ) still governs east-west traffic once the packet arrives at the DMZ VLAN.
+- If Policy 7's destination port is locked to `6881`, you must update it to match your chosen forward port (`51820`), or widen it to cover both.
+
+### Optional: Static DHCP Lease
+
+Ensure the DMZ machine's IP does not change:
+
+**Settings > Networks > LAN (DMZ VLAN) > DHCP > DHCP Lease Table:**
+- Add a fixed lease for the qBittorrent MAC → `10.0.5.X`
+
+## 6. Internet Access (External Zone)
 
 The `External` zone represents the Internet. 
 
 - **User, Prod, Test, Dev to External:** Generally allowed by default so containers can pull images and devices can update.
-- **DMZ to External:** Allowed via Policy 6 above.
+- **DMZ to External:** Allowed via Policy 6.
 - **IoT to External:** 
   - To block IoT devices from "phoning home", create a policy: **Block IoT to Internet**.
   - **Source Zone:** IoT
