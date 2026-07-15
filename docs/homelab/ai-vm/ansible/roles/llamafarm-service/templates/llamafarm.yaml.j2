@@ -1,0 +1,36 @@
+version: v1
+name: "{{ lf_project_name }}"
+namespace: "{{ lf_namespace }}"
+
+runtime:
+  default_model: balanced
+
+  models:
+    fast:
+      description: "Fast local model for quick queries"
+      provider: universal
+      model: Qwen/Qwen2.5-1.5B-Instruct
+      base_url: http://127.0.0.1:11540/v1
+
+    balanced:
+      description: "Primary model"
+      provider: universal
+      model: unsloth/Qwen3-8B-GGUF:Q4_K_M
+      base_url: http://127.0.0.1:11540/v1
+      extra_body:
+        n_ctx: 4096
+        n_gpu_layers: -1
+        flash_attn: true
+
+    embedder:
+      description: "Embedding model for RAG"
+      provider: universal
+      model: sentence-transformers/all-MiniLM-L6-v2
+      base_url: http://127.0.0.1:11540/v1
+      model_type: embedding
+
+prompts:
+  - name: default
+    messages:
+      - role: system
+        content: You are a helpful AI assistant running on a homelab VM.

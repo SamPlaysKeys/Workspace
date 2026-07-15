@@ -1,0 +1,18 @@
+[Unit]
+Description=LlamaFarm AI Platform
+After=network.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User={{ lf_user }}
+Group={{ lf_group }}
+Environment=LF_DATA_DIR={{ lf_data_dir }}
+Environment=TRANSFORMERS_CACHE={{ hf_cache_dir }}
+WorkingDirectory=/home/{{ lf_user }}/{{ lf_project_name }}
+ExecStart=/usr/local/bin/lf start
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
