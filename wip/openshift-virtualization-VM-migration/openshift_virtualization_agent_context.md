@@ -28,7 +28,12 @@ The conversation identified several native or near-native controls that should r
 - Dedicated migration networking as a way to improve determinism and throughput for migration traffic.[page:2]
 
 ## Tooling assumptions
-The conversation explicitly noted access to enterprise tooling such as Ansible. The likely role for Ansible is orchestration, policy application, maintenance sequencing, and automation around native OpenShift Virtualization and KubeVirt migration controls rather than replacing the underlying migration engine.[web:2][page:2]
+The conversation explicitly noted access to enterprise tooling such as Ansible, AAP, and ACM. These are positioned as orchestrators, policy enforcers, and maintainers of migration states:
+- **Ansible Core (Engine-only)** acts as the local CLI-based executor to interface with OpenShift APIs and orchestrate KubeVirt migration objects, drains, and reboots.
+- **Ansible Automation Platform (AAP)** extends this to a centralized, auditable orchestration layer with RBAC, secure credential storage, and GitOps-ish webhook/API integrations.
+- **Advanced Cluster Management (ACM)** acts as the multi-cluster fleet manager, utilizing declarative governance policies that trigger AAP job templates to manage pre-migration and post-validation checks across multiple OpenShift Virtualization environments.
+
+The likely role for these tools is orchestration, policy application, maintenance sequencing, and automation around native OpenShift Virtualization and KubeVirt migration controls rather than replacing the underlying migration engine.[web:2][page:2]
 
 The conversation also explored the idea of a “drop-in layer” or middleware for memory compression. The resulting direction was that there is not a simple Red Hat ecosystem product that transparently acts as an external memory-compression sidecar for OpenShift Virtualization migrations; instead, any practical auxiliary layer would more likely be orchestration, policy control, or QEMU/KubeVirt feature enablement rather than a standalone pod that sits outside the migration engine.[web:2][page:2]
 
