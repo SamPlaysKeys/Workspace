@@ -1,0 +1,144 @@
+---
+type: Reference
+---
+# AAP Workflow Job Template: Node Upgrade Workflow
+# Purpose: Chain classification, migration, and validation into a unified workflow
+#
+# CUSTOMIZATION REQUIRED:
+# - Replace <PLACEHOLDERS> with your environment values
+# - Link actual Job Template IDs from your AAP instance
+# - Configure approval nodes and notifications
+#
+# WORKFLOW DIAGRAM:
+# ┌─────────────┐    ┌──────────────┐    ┌─────────────┐
+# │  Classify   │───▶│   Migrate    │───▶│  Validate   │
+# │    VMs      │    │     VMs      │    │             │
+# └─────────────┘    └──────────────┘    └─────────────┘
+#        │                  │                   │
+#        │             (on failure)        (on failure)
+#        ▼                  ▼                   ▼
+#    [Continue]         [Rollback]          [Alert]
+#
+# DOCUMENTATION:
+# - https://docs.ansible.com/automation-controller/latest/html/userguide/workflows.html
+
+apiVersion: tower.ansible.com/v1alpha1
+kind:WorkflowJobTemplate
+metadata:
+  name: node-upgrade-workflow
+  namespace: aap
+spec:
+  # === BASIC CONFIGURATION ===
+  name: "OpenShift Node Upgrade - VM Migration Workflow"
+  description: |
+    Complete workflow for evacuating VMs from a node:
+    1. Classify VMs with migration policies
+    2. Migrate VMs off target node
+    3. Validate migrations succeeded
+    
+    Use before node drain and upgrade operations.
+  
+  organization: "<ORGANIZATION_NAME>"
+  
+  # === WORKFLOW NODES ===
+  # Each node represents a Job Template or approval step
+  
+  # Node 1: Classify VMs
+  - identifier: "classify-vms"
+    unified_job_template:
+      type: "job_template"
+      name: "VM Classification"  # Must match Job Template name in AAP
+    
+    # Pass survey variables to next nodes
+    success_nodes:
+      - "migrate-vms"
+    
+    # Always run classification even if previous run failed
+    all_parents_must_converge: false
+  
+  # Node 2: Migrate VMs
+  - identifier: "migrate-vms"
+    unified_job_template:
+      type: "job_template"
+      name: "VM Migration - Node Evacuation"
+    
+    # Inherit survey variables from workflow
+    success_nodes:
+      - "validate-migrations"
+    
+    failure_nodes:
+      - "migration-failure-handler"
+    
+    all_parents_must_converge: true
+  
+  # Node 3: Validate Migrations
+  - identifier: "validate-migrations"
+    unified_job_template:
+      type: "job_template"
+      name: "VM Migration Validation"
+    
+    success_nodes:
+      - "workflow-complete"
+    
+    failure_nodes:
+      - "validation-failure-alert"
+    
+    all_parents_must_converge: true
+  
+  # Node 4: Approval Gate (Optional)
+  # Uncomment to require manual approval before proceeding
+  # - identifier: "approval-continue-upgrade"
+  #   unified_job_template:
+  #     type: "workflow_approval"
+  #     name: "Approval: Continue with Node Upgrade"
+  #     description: "VMs evacuated. Approve to continue with node drain."
+  #   
+  #   success_nodes:
+  #     - "workflow-complete"
+  
+  # Node: Failure Handlers
+  - identifier: "migration-failure-handler"
+    unified_job_template:
+      type: "job_template"
+      name: "Migration Rollback"  # Custom rollback playbook
+    
+    all_parents_must_converge: false
+  
+  - identifier: "validation-failure-alert"
+    unified_job_template:
+      type: "job_template"
+      name: "Send Alert"  # Notification playbook
+    
+    all_parents_must_converge: false
+  
+  # Node: Workflow Complete
+  - identifier: "workflow-complete"
+    unified_job_template:
+      type: "job_template"
+      name: "Workflow Success Notification"
+    
+    all_parents_must_converge: true
+  
+  # === SURVEY (PASSED TO ALL NODES) ===
+  survey_enabled: true
+  survey_spec:
+    name: ""
+    description: "Node upgrade workflow parameters"
+    spec:
+      - type: text
+        question_name: "Target Node"
+        question_description: "Node to evacuate and upgrade"
+        variable: "target_node"
+        required: true
+      
+      - type: boolean
+        question_name: "Interactive Mode"
+        question_description: "Pause for approval between phases"
+        variable: "interactive_mode"
+        default: true
+  
+  # === LABELS ===
+  labels:
+    - "openshift"
+    - "virtualization"
+    - "workflow"

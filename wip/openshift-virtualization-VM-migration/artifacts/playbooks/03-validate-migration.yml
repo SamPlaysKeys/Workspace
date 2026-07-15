@@ -1,0 +1,99 @@
+---
+# Playbook: Validate VM Migrations
+# Purpose: Verify VMs are running and healthy after migration
+#
+# CUSTOMIZATION REQUIRED:
+# - Add application-specific health checks
+# - Define validation criteria for your workloads
+# - Set up alerting for failed validations
+# - Customize rollback behavior
+#
+# USAGE:
+# ansible-playbook 03-validate-migration.yml -e "target_node=worker-01"
+#
+# PREREQUISITES:
+# - kubernetes.core collection installed
+# - kubeconfig or token for OpenShift API access
+# - Access to VM health endpoints (if checking application health)
+
+- name: Validate VM Migrations
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Node that was evacuated (to verify VMs are NOT on this node)
+    evacuated_node: ""
+    
+    # Health check timeout (seconds)
+    health_check_timeout: 300
+    
+    # Check application-level health (requires guest agent or network access)
+    check_application_health: false
+    
+  tasks:
+    - name: Get all VirtualMachineInstances
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+      register: all_vmis
+    
+    - name: Verify no VMIs on evacuated node
+      ansible.builtin.assert:
+        that:
+          - all_vmis.resources | selectattr('status.nodeName', 'defined') | selectattr('status.nodeName', 'equalto', evacuated_node) | list | length == 0
+        fail_msg: "WARNING: VMIs still found on evacuated node {{ evacuated_node }}"
+        success_msg: "Confirmed: No VMIs on evacuated node {{ evacuated_node }}"
+      when: evacuated_node | length > 0
+    
+    - name: Check VM running status
+      ansible.builtin.debug:
+        msg: |
+          TODO: Implement VM running status check
+          
+          For each VMI, verify:
+          - status.phase == "Running"
+          - status.conditions includes Ready: true
+          
+          Example:
+          - name: Check VMI {{ item.metadata.name }} is running
+            kubernetes.core.k8s_info:
+              api_version: kubevirt.io/v1
+              kind: VirtualMachineInstance
+              name: "{{ item.metadata.name }}"
+              namespace: "{{ item.metadata.namespace }}"
+            register: vmi_status
+            failed_when: >
+              vmi_status.resources[0].status.phase != "Running"
+            loop: "{{ migrated_vmis }}"
+    
+    - name: Placeholder - Application health checks
+      ansible.builtin.debug:
+        msg: |
+          TODO: Add application-level health checks
+          
+          Options for health validation:
+          
+          1. QEMU Guest Agent (if installed in VM):
+             - Check guest OS responsiveness
+             - Query guest filesystem/network status
+          
+          2. Network-based health checks:
+             - HTTP/HTTPS endpoint checks
+             - TCP port connectivity
+             - Database connection tests
+          
+          3. Application-specific:
+             - Database replication status
+             - Service discovery registration
+             - Custom health endpoints
+          
+          Example using uri module:
+          - name: Check application health endpoint
+            ansible.builtin.uri:
+              url: "http://{{ vm_ip }}:8080/health"
+              method: GET
+              status_code: 200
+              timeout: 10
+            register: health_check
+            until: health_check.status == 200
+            retries: 10
+            delay: 30

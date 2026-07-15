@@ -121,23 +121,11 @@ CompletionTimeoutPerGiB = Observed Sec/GiB × 1.5 (50% safety margin)
 
 ## HCO Configuration
 
-Set cluster-wide default via HyperConverged CR:
+Set cluster-wide default via HyperConverged CR.
 
-```yaml
-apiVersion: hco.kubevirt.io/v1beta1
-kind: HyperConverged
-metadata:
-  name: kubevirt-hyperconverged
-  namespace: openshift-cnv
-spec:
-  liveMigrationConfig:
-    completionTimeoutPerGiB: 5
-    parallelMigrationsPerCluster: 5
-    parallelOutboundMigrationsPerNode: 2
-    bandwidthPerMigration: 0  # 0 = unlimited
-```
+**See:** `artifacts/manifests/migration-policies/hco-cluster-default.yml` for a complete example with all configurable fields.
 
-Override per workload class via `MigrationPolicy` CR.
+Override per workload class via `MigrationPolicy` CR — see `artifacts/manifests/migration-policies/` for baseline, enhanced, auto-converge, and post-copy policy examples.
 
 ---
 

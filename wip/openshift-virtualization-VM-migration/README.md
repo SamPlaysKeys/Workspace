@@ -104,3 +104,15 @@ Each guide includes:
 
 ### Reference Documents
 * `migration-timeout-calculation.md` - Methodology for calculating and calibrating `CompletionTimeoutPerGiB` based on network configuration and observed migration behavior.
+
+### Artifacts
+Reusable code examples for implementation:
+
+| Collection | Path | Contents |
+|------------|------|----------|
+| **Playbooks** | `artifacts/playbooks/` | Ansible skeleton playbooks for classification, migration, validation |
+| **Job Templates** | `artifacts/job-templates/` | AAP Job Template and Workflow definitions |
+| **ACM Policies** | `artifacts/acm-policies/` | ACM Policy, PlacementRule, and AnsibleJob templates |
+| **Manifests** | `artifacts/manifests/` | MigrationPolicy CRs, HCO config, RBAC templates |
+
+All artifacts are skeleton examples with placeholders — customize for your environment before use.
