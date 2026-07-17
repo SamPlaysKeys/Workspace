@@ -401,3 +401,30 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 **Open threads:**
 - Separate Storm Session for Tailscale IDP/OIDC auth (`wip/tailscale-idp-openbao/`) — still in progress
 - Plugin v0.1 tag + release pending successful manual test
+
+# Dead Drop — 2026-07-16
+
+**In progress:** OpenShift Virtualization Migration Strategy — Storm Session (`wip/openshift-virtualization-VM-migration/`)
+
+**Just completed:**
+- Created execution guides for 3 orchestration paths: Ansible Core, AAP, AAP+ACM
+- Created ADR 0001 for VM policy thresholds with memory/dirty-rate classification
+- Created `migration-timeout-calculation.md` with calibration methodology
+- Created `artifacts/` directory with 15 skeleton files (playbooks, job templates, ACM policies, manifests)
+- Updated README with artifacts section and references
+
+**Next step:** Session ready to graduate to documentation or continue with:
+- Drafting actual Ansible playbooks (fill in the skeletons)
+- Test matrix for Phase 2 validation
+- Dedicated migration network design (Multus/NMState)
+
+**Key decisions:**
+- Timeout values are environment-dependent (calibrate per network, not fixed defaults)
+- Artifacts are skeleton examples with placeholders, not turnkey solutions
+- CoP deliverable needs concrete code examples alongside architecture
+
+**Git state:** `a0d42cf` — Remove old concept files (uncommitted changes: new `artifacts/` directory, updated files)
+
+**Open threads:**
+- ADR threshold values need validation during Phase 2 testing
+- Backlog items added: AAP Controller docs, ACM topology docs

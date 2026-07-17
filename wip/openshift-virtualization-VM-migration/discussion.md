@@ -58,4 +58,32 @@ Created `migration-timeout-calculation.md` explaining how `CompletionTimeoutPerG
 
 Updated ADR to reference this doc and use environment-aware calibration instead of fixed values.
 
+### Migration Timeout Calculation Reference
+Created `migration-timeout-calculation.md` explaining how `CompletionTimeoutPerGiB` is calculated:
+
+**Key insight:** Value depends on network bandwidth and dirty-page iteration multiplier:
+- Dedicated 10+ Gbps: 2-5 sec/GiB
+- Dedicated 1-10 Gbps: 5-10 sec/GiB
+- Shared/overcommitted: 20-50 sec/GiB
+
+**Formula:** `Total Timeout = CompletionTimeoutPerGiB × VM Memory (GiB)`
+
+### Artifacts Directory Creation
+Created `artifacts/` with skeleton examples for implementation:
+
+**Structure:**
+```
+artifacts/
+├── playbooks/           # 4 Ansible skeleton playbooks
+├── job-templates/       # 2 AAP Job/Workflow templates
+├── acm-policies/        # 3 ACM Policy/PlacementRule/AnsibleJob templates
+└── manifests/
+    ├── migration-policies/  # 5 MigrationPolicy + HCO examples
+    └── rbac/                # ACM-AAP integration RBAC template
+```
+
+**Total:** 15 new skeleton files with placeholders for customization.
+
+**Rationale:** Community of Practice deliverable needs concrete code examples, not just architecture. Skeletons provide starting points without assuming specific environment configs.
+
 
