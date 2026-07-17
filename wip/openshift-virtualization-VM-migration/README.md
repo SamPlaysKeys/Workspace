@@ -8,6 +8,7 @@ An enterprise strategy to minimize downtime during OpenShift cluster node mainte
 * Categorize and segment VM workloads by resource profile (memory size and memory dirty rate) to apply appropriate migration profiles.
 * Evaluate and tune native OpenShift Virtualization and KubeVirt controls (auto-converge, post-copy, timeouts, and bandwidth).
 * Establish a robust decision tree mapping available infrastructure tooling (Ansible, AAP, ACM) to appropriate orchestration workflows.
+* Configure and monitor OpenShift Virtualization (CNV) operator upgrades with automatic VM workload updates.
 
 ---
 
@@ -98,6 +99,24 @@ Each guide includes:
 - `design.md` — Narrative architecture and failure modes
 - `checklist.md` — Step-by-step execution with verification gates
 - `reference.md` — CRD schemas, API references, external links
+
+### CNV Operator Update Guides
+
+Configure and monitor OpenShift Virtualization operator upgrades:
+
+| Document | Purpose |
+|----------|---------|
+| `cnv-update/README.md` | Decision tree and overview |
+| `cnv-update/prerequisites.md` | Version compatibility, channel selection |
+| `cnv-update/hyperconverged-config.md` | Workload update strategy configuration |
+| `cnv-update/monitoring-upgrade.md` | Monitor upgrade progress and detect issues |
+| `cnv-update/control-plane-only.md` | Special handling for OpenShift 4.16+ upgrades |
+
+**Key difference:** CNV updates are OLM-driven (automatic) while OpenShift cluster upgrades require orchestration. The CNV update guides focus on configuration and monitoring rather than execution automation.
+
+**Artifacts:**
+- `cnv-update/artifacts/hyperconverged/` — HyperConverged CR profiles (baseline, aggressive, conservative)
+- `cnv-update/artifacts/verification/` — Shell script and Ansible playbook for monitoring
 
 ### Architecture Decision Records
 * `adr/0001-vm-policy-thresholds.md` - VM classification thresholds (memory size, dirty-rate) and migration policy profile definitions.

@@ -1,0 +1,195 @@
+---
+type: Reference
+---
+# Ansible Playbook: Monitor CNV Upgrade Progress
+
+Monitor OpenShift Virtualization operator upgrade status, VM migrations, and workload updates.
+
+## Usage
+
+```bash
+# Run against inventory
+ansible-playbook monitor-upgrade-progress.yml -i inventory.ini
+
+# Check specific namespace
+ansible-playbook monitor-upgrade-progress.yml -e "target_namespace=my-vms"
+
+# Continuous monitoring mode
+ansible-playbook monitor-upgrade-progress.yml -e "watch_mode=true" -e "watch_interval=30"
+```
+
+## Prerequisites
+
+- `kubernetes.core` collection installed
+- Access to OpenShift cluster with `oc` CLI configured
+- Appropriate RBAC permissions to read CNV resources
+
+## Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `kubeconfig` | `~/.kube/config` | Path to kubeconfig file |
+| `target_namespace` | `""` (all) | Specific namespace to monitor |
+| `watch_mode` | `false` | Enable continuous monitoring |
+| `watch_interval` | `30` | Seconds between checks in watch mode |
+| `outdated_threshold` | `0` | Alert if outdated workloads exceed this |
+
+## Playbook
+
+```yaml
+---
+- name: Monitor CNV Upgrade Progress
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  vars:
+    kubeconfig: "~/.kube/config"
+    target_namespace: ""
+    watch_mode: false
+    watch_interval: 30
+    outdated_threshold: 0
+    cnv_namespace: "openshift-cnv"
+  
+  tasks:
+    - name: Check HyperConverged operator status
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: hco.kubevirt.io/v1beta1
+        kind: HyperConverged
+        name: kubevirt-hyperconverged
+        namespace: "{{ cnv_namespace }}"
+      register: hco_status
+      
+    - name: Display operator conditions
+      ansible.builtin.debug:
+        msg: |
+          Operator Status:
+          {% for condition in hco_status.resources[0].status.conditions %}
+          - {{ condition.type }}: {{ condition.status }}
+          {% endfor %}
+          
+    - name: Check outdated workloads count
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: kubevirt.io/v1
+        kind: KubeVirt
+        name: kubevirt-kubevirt-hyperconverged
+        namespace: "{{ cnv_namespace }}"
+      register: kv_status
+      
+    - name: Set outdated workloads fact
+      ansible.builtin.set_fact:
+        outdated_count: "{{ kv_status.resources[0].status.outdatedVirtualMachineInstanceWorkloads | default(0) }}"
+        
+    - name: Display outdated workloads
+      ansible.builtin.debug:
+        msg: "Outdated workloads: {{ outdated_count }}"
+        
+    - name: Check for outdated VMIs
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+        label_selectors:
+          - kubevirt.io/outdatedLauncherImage
+        namespace: "{{ target_namespace if target_namespace else '' }}"
+      register: outdated_vmis
+      when: outdated_count | int > 0
+      
+    - name: Display outdated VMIs
+      ansible.builtin.debug:
+        msg: |
+          VMIs with outdated virt-launcher:
+          {% for vmi in outdated_vmis.resources %}
+          - {{ vmi.metadata.namespace }}/{{ vmi.metadata.name }}
+          {% endfor %}
+      when: outdated_vmis is defined and outdated_vmis.resources | length > 0
+      
+    - name: Check active migrations
+      kubernetes.core.k8s_info:
+        kubeconfig: "{{ kubeconfig }}"
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstanceMigration
+        namespace: "{{ target_namespace if target_namespace else '' }}"
+      register: active_migrations
+      
+    - name: Display active migrations
+      ansible.builtin.debug:
+        msg: |
+          Active migrations: {{ active_migrations.resources | length }}
+          {% for migration in active_migrations.resources %}
+          - {{ migration.metadata.namespace }}/{{ migration.metadata.name }}: {{ migration.status.phase | default('Unknown') }}
+          {% endfor %}
+      when: active_migrations.resources | length > 0
+      
+    - name: Alert if outdated workloads exceed threshold
+      ansible.builtin.debug:
+        msg: "WARNING: Outdated workloads ({{ outdated_count }}) exceed threshold ({{ outdated_threshold }})"
+      when: outdated_count | int > outdated_threshold | int
+      
+    - name: Summary
+      ansible.builtin.debug:
+        msg: |
+          === CNV Upgrade Status ===
+          Operator Available: {{ hco_status.resources[0].status.conditions | selectattr('type', 'equalto', 'Available') | map(attribute='status') | first }}
+          Outdated Workloads: {{ outdated_count }}
+          Active Migrations: {{ active_migrations.resources | length }}
+          
+          {% if outdated_count | int == 0 %}
+          Status: All workloads updated
+          {% else %}
+          Status: Workload updates in progress
+          {% endif %}
+          
+    - name: Watch mode - wait and repeat
+      ansible.builtin.pause:
+        seconds: "{{ watch_interval }}"
+      when: watch_mode | bool
+      
+    - name: Watch mode - re-run
+      ansible.builtin.include_tasks: monitor-upgrade-progress.yml
+      when: watch_mode | bool
+```
+
+## AAP Job Template Configuration
+
+When creating an AAP Job Template from this playbook:
+
+| Setting | Value |
+|---------|-------|
+| Name | CNV Upgrade Monitor |
+| Job Type | Run |
+| Inventory | localhost (or cluster inventory) |
+| Execution Environment | `registry.redhat.io/ansible-automation-platform-22/ee-supported-rhel8:latest` |
+| Credentials | OpenShift API token or kubeconfig |
+| Variables | See below |
+
+**Survey Variables:**
+```yaml
+target_namespace: ""
+watch_mode: false
+watch_interval: 30
+outdated_threshold: 0
+```
+
+## Output Example
+
+```
+TASK [Summary] ***********************************************************
+ok: [localhost] => {
+    "msg": [
+        "=== CNV Upgrade Status ===",
+        "Operator Available: True",
+        "Outdated Workloads: 3",
+        "Active Migrations: 2",
+        "",
+        "Status: Workload updates in progress"
+    ]
+}
+```
+
+## Related
+
+- `check-outdated-workloads.sh` — Shell script alternative
+- `../monitoring-upgrade.md` — Monitoring documentation

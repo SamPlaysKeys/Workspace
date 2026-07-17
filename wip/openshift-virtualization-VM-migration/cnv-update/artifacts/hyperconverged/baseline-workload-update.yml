@@ -1,0 +1,77 @@
+---
+type: Reference
+---
+# HyperConverged CR: Baseline Workload Update Strategy
+
+Balanced configuration for most environments.
+
+## Configuration
+
+```yaml
+apiVersion: hco.kubevirt.io/v1beta1
+kind: HyperConverged
+metadata:
+  name: kubevirt-hyperconverged
+  namespace: openshift-cnv
+spec:
+  virtualization:
+    # Workload update strategy for CNV operator upgrades
+    workloadUpdateStrategy:
+      workloadUpdateMethods:
+      - LiveMigrate    # Primary: migrate running VMs
+      - Evict          # Fallback: restart VMs that can't migrate
+      batchEvictionSize: 10           # VMs per batch
+      batchEvictionInterval: "1m0s"   # Wait between batches
+
+    # Live migration configuration
+    liveMigrationConfig:
+      completionTimeoutPerGiB: 5      # Adjust based on network (see migration-timeout-calculation.md)
+      parallelMigrationsPerCluster: 5
+      parallelOutboundMigrationsPerNode: 2
+      bandwidthPerMigration: "0"      # 0 = unlimited
+
+    # Additional virtualization settings
+    # TODO: Add any site-specific configurations
+```
+
+## Apply Configuration
+
+```bash
+oc apply -f baseline-workload-update.yml
+```
+
+Or patch existing HyperConverged CR:
+
+```bash
+oc patch -n openshift-cnv hco kubevirt-hyperconverged \
+  --type=merge \
+  -p '{"spec": {"virtualization": {"workloadUpdateStrategy": {"workloadUpdateMethods": ["LiveMigrate","Evict"], "batchEvictionSize": 10, "batchEvictionInterval": "1m0s"}}}}'
+```
+
+## Characteristics
+
+| Setting | Value | Rationale |
+|---------|-------|-----------|
+| Update methods | LiveMigrate + Evict | Safe primary, fallback for non-migratable VMs |
+| Batch size | 10 | Moderate parallelism |
+| Batch interval | 1 minute | Allow resource stabilization |
+| Timeout | 5 sec/GiB | Assumes dedicated 10+ Gbps network |
+
+## Use When
+
+- Standard production environments
+- Mix of VMs with and without live migration support
+- Normal maintenance windows (2-4 hours)
+- No critical constraints on update duration
+
+## Related
+
+- `aggressive-workload-update.yml` — Faster updates
+- `conservative-workload-update.yml` — Cautious updates
+- `../../hyperconverged-config.md` — Configuration guide
+- `../../../migration-timeout-calculation.md` — Timeout calibration
+
+## Red Hat Documentation
+
+- [Configuring workload update methods](https://docs.openshift.com/container-platform/latest/virt/virtual_machines/virt-node-maintenance-virt.html#virt-configuring-workload-update-methods_virt-node-maintenance-virt)
+- [HyperConverged CR configuration](https://docs.openshift.com/container-platform/latest/virt/install/virt-installing-virt-operator.html#virt-hyperconverged-cr_virt-installing-virt-operator)

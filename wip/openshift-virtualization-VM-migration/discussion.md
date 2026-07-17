@@ -86,4 +86,27 @@ artifacts/
 
 **Rationale:** Community of Practice deliverable needs concrete code examples, not just architecture. Skeletons provide starting points without assuming specific environment configs.
 
+### CNV Operator Update Guides
+
+Added dedicated documentation for OpenShift Virtualization (CNV) operator updates, separate from cluster upgrade orchestration.
+
+**Key insight:** CNV updates are OLM-driven (automatic) while cluster upgrades require orchestration. The guides focus on configuration and monitoring rather than execution automation.
+
+**Created:**
+```
+cnv-update/
+├── README.md                    # Decision tree and overview
+├── prerequisites.md             # Version compatibility, channel selection
+├── hyperconverged-config.md     # workloadUpdateStrategy configuration
+├── monitoring-upgrade.md        # Monitor progress and detect issues
+├── control-plane-only.md        # OpenShift 4.16+ special handling
+└── artifacts/
+    ├── hyperconverged/          # 3 CR profiles (baseline, aggressive, conservative)
+    └── verification/            # Shell script + Ansible playbook for monitoring
+```
+
+**Control Plane Only Updates:** OpenShift 4.16+ disables CNV workload updates during control-plane-only upgrades. Must re-enable and verify all workloads updated before proceeding.
+
+**Integration with existing docs:** CNV update guides link to migration policy ADR and timeout calculation docs. Main README updated to include CNV update section.
+
 
