@@ -109,4 +109,39 @@ cnv-update/
 
 **Integration with existing docs:** CNV update guides link to migration policy ADR and timeout calculation docs. Main README updated to include CNV update section.
 
+---
+
+## Graduation — 2026-07-17
+
+**Status:** Graduated to `docs/guides/openshift-virtualization-upgrade/` and `artifacts/openshift/openshift-virtualization-upgrade/`
+
+### Files Moved
+
+**Documentation (→ `docs/guides/openshift-virtualization-upgrade/`):**
+- `README.md` — Main entry point with decision tree
+- `migration-timeout-calculation.md` — Timeout calibration reference
+- `adr/0001-vm-policy-thresholds.md` — VM classification thresholds
+- `execution-guides/` — 9 files (ansible-core, aap, aap-acm)
+- `cnv-update/` — 5 docs + artifacts subdirectory
+
+**Artifacts (→ `artifacts/openshift/openshift-virtualization-upgrade/`):**
+- `playbooks/` — 4 Ansible skeleton playbooks
+- `job-templates/` — 2 AAP templates
+- `acm-policies/` — 3 ACM/AnsibleJob templates
+- `manifests/migration-policies/` — 5 MigrationPolicy CRs
+- `manifests/rbac/` — 1 RBAC template
+
+**Total:** 26 files graduated
+
+### Post-Graduation Updates
+
+- Updated `docs/guides/README.md` with new index entry
+- Removed session-specific document references from main README
+- Updated relative paths in CNV artifacts
+- Updated artifact paths to `artifacts/openshift/openshift-virtualization-upgrade/`
+
+### Remaining in WIP
+
+- `discussion.md` — Session log (this file)
+
 

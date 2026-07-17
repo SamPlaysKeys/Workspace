@@ -123,9 +123,9 @@ CompletionTimeoutPerGiB = Observed Sec/GiB × 1.5 (50% safety margin)
 
 Set cluster-wide default via HyperConverged CR.
 
-**See:** `artifacts/manifests/migration-policies/hco-cluster-default.yml` for a complete example with all configurable fields.
+**See:** `artifacts/openshift/openshift-virtualization-upgrade/manifests/migration-policies/hco-cluster-default.yml` for a complete example with all configurable fields.
 
-Override per workload class via `MigrationPolicy` CR — see `artifacts/manifests/migration-policies/` for baseline, enhanced, auto-converge, and post-copy policy examples.
+Override per workload class via `MigrationPolicy` CR — see `artifacts/openshift/openshift-virtualization-upgrade/manifests/migration-policies/` for baseline, enhanced, auto-converge, and post-copy policy examples.
 
 ---
 

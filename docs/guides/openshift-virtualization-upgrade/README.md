@@ -1,3 +1,6 @@
+---
+type: Guide
+---
 # OpenShift Virtualization VM Migration Strategy
 
 An enterprise strategy to minimize downtime during OpenShift cluster node maintenance by optimizing KubeVirt live migration convergence for large-memory and high-dirty-rate virtual machines.
@@ -77,16 +80,7 @@ graph TD
 
 ---
 
-## Active Session Documents
-
-### Architecture & Strategy
-* `openshift_virtualization_project_scope.md` - Definition of objectives, in/out of scope boundaries, and phase planning.
-* `openshift_virtualization_solution_draft.md` - Logical architecture diagrams and VM policy layers.
-* `openshift_virtualization_upgrade_strategy_summary.md` - Technical background on pre-copy, post-copy, auto-converge, and networking.
-* `openshift_virtualization_agent_context.md` - Strategic direction, baselines, and constraints for agent guidance.
-* `discussion.md` - The running discussion log of decisions made.
-
-### Execution Guides
+## Execution Guides
 Detailed implementation guides for each orchestration path:
 
 | Path | Documents | Purpose |
@@ -129,9 +123,9 @@ Reusable code examples for implementation:
 
 | Collection | Path | Contents |
 |------------|------|----------|
-| **Playbooks** | `artifacts/playbooks/` | Ansible skeleton playbooks for classification, migration, validation |
-| **Job Templates** | `artifacts/job-templates/` | AAP Job Template and Workflow definitions |
-| **ACM Policies** | `artifacts/acm-policies/` | ACM Policy, PlacementRule, and AnsibleJob templates |
-| **Manifests** | `artifacts/manifests/` | MigrationPolicy CRs, HCO config, RBAC templates |
+| **Playbooks** | `artifacts/openshift/openshift-virtualization-upgrade/playbooks/` | Ansible skeleton playbooks for classification, migration, validation |
+| **Job Templates** | `artifacts/openshift/openshift-virtualization-upgrade/job-templates/` | AAP Job Template and Workflow definitions |
+| **ACM Policies** | `artifacts/openshift/openshift-virtualization-upgrade/acm-policies/` | ACM Policy, PlacementRule, and AnsibleJob templates |
+| **Manifests** | `artifacts/openshift/openshift-virtualization-upgrade/manifests/` | MigrationPolicy CRs, HCO config, RBAC templates |
 
 All artifacts are skeleton examples with placeholders — customize for your environment before use.
