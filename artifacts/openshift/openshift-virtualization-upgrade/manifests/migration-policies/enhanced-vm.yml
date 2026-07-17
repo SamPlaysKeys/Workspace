@@ -1,0 +1,37 @@
+---
+type: Reference
+---
+# MigrationPolicy: Enhanced VM
+# Suitable for: Medium VMs (16-64 GB), moderate churn
+# 
+# CALIBRATION NOTE:
+# Adjust completionTimeoutPerGiB based on your network configuration.
+# See ../../migration-timeout-calculation.md for methodology.
+#
+# Recommended values:
+#   Dedicated 10+ Gbps: 5-10
+#   Dedicated 1-10 Gbps: 10-20
+#   Shared/overcommitted: 30-60
+
+apiVersion: kubevirt.io/v1alpha1
+kind: MigrationPolicy
+metadata:
+  name: enhanced-vm
+  namespace: openshift-cnv
+spec:
+  completionTimeoutPerGiB: 10
+  
+  # Reduced parallelism for larger VMs
+  parallelMigrationsPerCluster: 3
+  parallelOutboundMigrationsPerNode: 1
+  
+  # Explicit bandwidth cap to prevent network saturation
+  bandwidthPerMigration: "256Mi"
+  
+  # Migration mode
+  autoConverge: false
+  allowPostCopy: false
+  
+  selectors:
+    virtualMachineInstanceSelector:
+      migration-policy: enhanced-vm

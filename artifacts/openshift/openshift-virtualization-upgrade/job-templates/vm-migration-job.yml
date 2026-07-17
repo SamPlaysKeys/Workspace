@@ -1,0 +1,119 @@
+---
+type: Reference
+---
+# AAP Job Template: VM Migration
+# Purpose: Execute VM migration playbook from Ansible Automation Platform
+#
+# CUSTOMIZATION REQUIRED:
+# - Replace <PLACEHOLDERS> with your environment values
+# - Adjust survey questions for your workflow
+# - Set appropriate credentials and execution environment
+#
+# IMPORT TO AAP:
+# 1. API: POST /api/v2/job_templates/ with this JSON
+# 2. UI: Create Job Template in AAP Controller UI using these fields
+# 3. CLI: Use awx or ansible-controller CLI tool
+#
+# DOCUMENTATION:
+# - https://docs.ansible.com/automation-controller/latest/html/userguide/job_templates.html
+
+apiVersion: tower.ansible.com/v1alpha1
+kind: JobTemplate
+metadata:
+  name: vm-migration-job
+  namespace: aap  # Adjust to your AAP namespace
+spec:
+  # === BASIC CONFIGURATION ===
+  name: "VM Migration - Node Evacuation"
+  description: |
+    Migrate VMs from a target node in preparation for maintenance.
+    Uses KubeVirt live migration with policy-based profiles.
+  
+  # Organization and project
+  organization: "<ORGANIZATION_NAME>"  # e.g., "Default"
+  project: "<PROJECT_NAME>"            # Git project containing playbooks
+  
+  # Playbook to execute
+  playbook: "artifacts/playbooks/02-migrate-vms.yml"
+  
+  # Execution environment (container image with required collections)
+  execution_environment: "<EE_NAME>"   # e.g., "Custom EE with kubernetes.core"
+  
+  # Inventory (target cluster)
+  inventory: "<INVENTORY_NAME>"        # e.g., "OpenShift Production"
+  
+  # === CREDENTIALS ===
+  # Credential for OpenShift API access
+  credentials:
+    - "<CREDENTIAL_NAME>"              # e.g., "OpenShift Admin Token"
+  
+  # === EXECUTION SETTINGS ===
+  job_type: "run"                      # run or check (dry-run)
+  
+  # Limit to localhost (playbook runs against API, not hosts)
+  limit: "localhost"
+  
+  # Verbosity: 0 (normal) to 4 (very verbose)
+  verbosity: 1
+  
+  # Timeout in seconds (0 = no timeout)
+  timeout: 3600                        # 1 hour max
+  
+  # Concurrent jobs (forks)
+  forks: 1                             # Single-threaded for API calls
+  
+  # === SURVEY (USER INPUT) ===
+  # Survey questions for job launch
+  survey_enabled: true
+  survey_spec:
+    name: ""
+    description: "Node evacuation parameters"
+    spec:
+      - type: text
+        question_name: "Target Node"
+        question_description: "Node to evacuate VMs from"
+        variable: "target_node"
+        required: true
+      
+      - type: multiplechoice
+        question_name: "Parallelism"
+        question_description: "Number of concurrent migrations"
+        variable: "parallel_migrations"
+        choices:
+          - "1"
+          - "2"
+          - "3"
+          - "5"
+        default: "3"
+      
+      - type: multiplechoice
+        question_name: "VM Class Filter"
+        question_description: "Only migrate VMs of this class (optional)"
+        variable: "vm_class_filter"
+        choices:
+          - "all"
+          - "small"
+          - "medium"
+          - "large"
+          - "very-large"
+        default: "all"
+      
+      - type: boolean
+        question_name: "Fail on Error"
+        question_description: "Stop execution if any migration fails"
+        variable: "fail_on_error"
+        default: false
+  
+  # === NOTIFICATIONS ===
+  # Uncomment and configure for your notification system
+  # notifications:
+  #   success:
+  #     - "<SUCCESS_NOTIFICATION>"
+  #   failure:
+  #     - "<FAILURE_NOTIFICATION>"
+  
+  # === LABELS ===
+  labels:
+    - "openshift"
+    - "virtualization"
+    - "migration"

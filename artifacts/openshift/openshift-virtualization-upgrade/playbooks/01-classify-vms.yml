@@ -1,0 +1,96 @@
+---
+# Playbook: Classify VMs for Migration Policy Assignment
+# Purpose: Analyze VMs and assign appropriate migration policy labels
+#
+# CUSTOMIZATION REQUIRED:
+# - Set target_namespace or use all namespaces
+# - Adjust memory thresholds to match your environment
+# - Add dirty-rate detection if monitoring is available
+# - Customize label schema to match your MigrationPolicy selectors
+#
+# USAGE:
+# ansible-playbook 01-classify-vms.yml -e "target_namespace=my-namespace"
+#
+# PREREQUISITES:
+# - kubernetes.core collection installed
+# - kubeconfig or token for OpenShift API access
+# - Read access to VirtualMachine resources
+
+- name: Classify VMs for Migration Policy Assignment
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Target namespace (omit or set to "" for all namespaces)
+    target_namespace: ""
+    
+    # Memory thresholds for VM classification (in GiB)
+    # Adjust these based on your environment and ADR thresholds
+    memory_threshold_small: 16
+    memory_threshold_medium: 64
+    memory_threshold_large: 256
+    
+    # Default namespace if targeting specific namespace
+    # Override with -e "target_namespace=openshift-cnv"
+    
+  tasks:
+    - name: Set namespace filter
+      ansible.builtin.set_fact:
+        namespace_filter: "{{ target_namespace | default('', true) }}"
+    
+    - name: Get all VirtualMachines
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachine
+        namespace: "{{ namespace_filter if namespace_filter else omit }}"
+      register: vms
+    
+    - name: Display VM count
+      ansible.builtin.debug:
+        msg: "Found {{ vms.resources | length }} VirtualMachines"
+    
+    # TODO: Add logic to determine VM memory size
+    # This requires reading VM spec.template.spec.domain.memory
+    # or calculating from spec.template.spec.domain.resources
+    
+    # TODO: Add logic to measure or estimate dirty-rate
+    # This requires:
+    # - Access to Prometheus metrics
+    # - Historical migration data
+    # - Or manual classification based on workload type
+    
+    # TODO: Classify VMs and assign labels
+    # Example classification logic:
+    # - Small (<16 GiB): migration-policy=baseline-vm
+    # - Medium (16-64 GiB): migration-policy=enhanced-vm
+    # - Large (64-256 GiB): migration-policy=autoconverge-vm
+    # - Very Large (>256 GiB): migration-policy=postcopy-vm
+    
+    - name: Placeholder - Display classification instructions
+      ansible.builtin.debug:
+        msg: |
+          TODO: Implement classification logic
+          
+          For each VM, determine:
+          1. Memory size from VM spec
+          2. Workload type (database, application, etc.)
+          3. Dirty-rate profile (if measurable)
+          
+          Then apply labels:
+          - migration-policy: <policy-name>
+          - vm-class: <small|medium|large|very-large>
+          - dirty-rate-profile: <low|moderate|high|extreme>
+          
+          Example kubernetes.core.k8s task to label:
+          
+          - name: Label VM with migration policy
+            kubernetes.core.k8s:
+              state: present
+              definition:
+                apiVersion: kubevirt.io/v1
+                kind: VirtualMachine
+                metadata:
+                  name: "{{ vm.metadata.name }}"
+                  namespace: "{{ vm.metadata.namespace }}"
+                  labels:
+                    migration-policy: "baseline-vm"
+                    vm-class: "small"

@@ -1,0 +1,98 @@
+---
+type: Reference
+---
+# HyperConverged CR: Conservative Workload Update Strategy
+
+Cautious approach for critical workloads where VM restarts are not acceptable.
+
+## Configuration
+
+```yaml
+apiVersion: hco.kubevirt.io/v1beta1
+kind: HyperConverged
+metadata:
+  name: kubevirt-hyperconverged
+  namespace: openshift-cnv
+spec:
+  virtualization:
+    # Conservative workload update strategy
+    workloadUpdateStrategy:
+      workloadUpdateMethods:
+      - LiveMigrate    # ONLY: no Evict fallback
+      batchEvictionSize: 5            # Smaller batch: less impact
+      batchEvictionInterval: "2m0s"   # Longer interval: more time to stabilize
+
+    # Live migration configuration
+    liveMigrationConfig:
+      completionTimeoutPerGiB: 10     # More generous timeout
+      parallelMigrationsPerCluster: 3   # Fewer parallel migrations
+      parallelOutboundMigrationsPerNode: 1
+      bandwidthPerMigration: "0"      # Unlimited
+
+    # Additional virtualization settings
+    # TODO: Add any site-specific configurations
+```
+
+## Apply Configuration
+
+```bash
+oc apply -f conservative-workload-update.yml
+```
+
+Or patch existing HyperConverged CR:
+
+```bash
+oc patch -n openshift-cnv hco kubevirt-hyperconverged \
+  --type=merge \
+  -p '{"spec": {"virtualization": {"workloadUpdateStrategy": {"workloadUpdateMethods": ["LiveMigrate"], "batchEvictionSize": 5, "batchEvictionInterval": "2m0s"}}}}'
+```
+
+## Characteristics
+
+| Setting | Value | Rationale |
+|---------|-------|-----------|
+| Update methods | LiveMigrate ONLY | No VM restarts |
+| Batch size | 5 | Lower impact per batch |
+| Batch interval | 2 minutes | Allow stabilization |
+| Timeout | 10 sec/GiB | More generous for large VMs |
+| Parallel migrations | 3 cluster-wide | Reduced contention |
+
+## Important Notes
+
+**VMs without live migration support will NOT be updated.**
+
+Check which VMs support live migration:
+```bash
+oc get vm -A -o json | jq '.items[] | select(.spec.template.spec.evictionStrategy == "LiveMigrate") | {namespace: .metadata.namespace, name: .metadata.name}'
+```
+
+VMs without `evictionStrategy: LiveMigrate`:
+- Will remain on old `virt-launcher` pods after CNV update
+- May require manual restart after maintenance window
+- Will not block the CNV update itself
+
+## Use When
+
+- Critical production workloads
+- VM restarts not acceptable during maintenance
+- Sufficient maintenance window time available
+- All critical VMs support live migration
+
+## Trade-offs
+
+| Benefit | Trade-off |
+|---------|-----------|
+| No VM restarts | VMs without live migration support not updated |
+| Lower resource contention | Longer update duration |
+| More predictable behavior | Requires larger maintenance window |
+
+## Related
+
+- `baseline-workload-update.yml` — Standard configuration
+- `aggressive-workload-update.yml` — Faster updates
+- `../../hyperconverged-config.md` — Configuration guide
+
+## Red Hat Documentation
+
+- [Configuring workload update methods](https://docs.openshift.com/container-platform/latest/virt/virtual_machines/virt-node-maintenance-virt.html#virt-configuring-workload-update-methods_virt-node-maintenance-virt)
+- [VM eviction strategies](https://docs.openshift.com/container-platform/latest/virt/virtual_machines/virt-node-maintenance-virt.html)

@@ -1,0 +1,94 @@
+---
+# Playbook: Migrate VMs from Target Node
+# Purpose: Trigger live migrations for VMs on a specific node
+#
+# CUSTOMIZATION REQUIRED:
+# - Set target_node variable (required)
+# - Adjust migration parallelism and timeout handling
+# - Add validation logic for successful migrations
+# - Customize rollback behavior on failure
+#
+# USAGE:
+# ansible-playbook 02-migrate-vms.yml -e "target_node=worker-01"
+#
+# PREREQUISITES:
+# - kubernetes.core collection installed
+# - kubeconfig or token for OpenShift API access
+# - Read/write access to VirtualMachineInstanceMigration resources
+# - VMs should already be labeled with migration-policy
+
+- name: Migrate VMs from Target Node
+  hosts: localhost
+  gather_facts: false
+  vars:
+    # Target node to evacuate (REQUIRED)
+    target_node: ""
+    
+    # Maximum concurrent migrations
+    parallel_migrations: 3
+    
+    # Timeout for individual migration (seconds)
+    migration_timeout: 600
+    
+    # Fail fast on migration error, or continue with remaining VMs
+    fail_on_error: false
+    
+  tasks:
+    - name: Validate target_node is set
+      ansible.builtin.assert:
+        that:
+          - target_node | length > 0
+        fail_msg: "target_node variable is required. Use -e 'target_node=<node-name>'"
+        success_msg: "Target node: {{ target_node }}"
+    
+    - name: Get VirtualMachineInstances on target node
+      kubernetes.core.k8s_info:
+        api_version: kubevirt.io/v1
+        kind: VirtualMachineInstance
+      register: all_vmis
+    
+    - name: Filter VMIs on target node
+      ansible.builtin.set_fact:
+        target_vmis: "{{ all_vmis.resources | selectattr('status.nodeName', 'defined') | selectattr('status.nodeName', 'equalto', target_node) | list }}"
+    
+    - name: Display VMIs to migrate
+      ansible.builtin.debug:
+        msg: |
+          Found {{ target_vmis | length }} VMIs on node {{ target_node }}:
+          {{ target_vmis | map(attribute='metadata.name') | list | join(', ') }}
+    
+    # TODO: Implement migration logic
+    # For each VMI:
+    # 1. Create VirtualMachineInstanceMigration CR
+    # 2. Monitor migration status
+    # 3. Handle timeout and failures
+    # 4. Verify VM running on new node
+    
+    - name: Placeholder - Migration loop structure
+      ansible.builtin.debug:
+        msg: |
+          TODO: Implement migration logic
+          
+          For each VMI, create a migration CR:
+          
+          - name: Create migration for {{ item.metadata.name }}
+            kubernetes.core.k8s:
+              state: present
+              definition:
+                apiVersion: kubevirt.io/v1
+                kind: VirtualMachineInstanceMigration
+                metadata:
+                  name: "{{ item.metadata.name }}-migration"
+                  namespace: "{{ item.metadata.namespace }}"
+                spec:
+                  vmiName: "{{ item.metadata.name }}"
+            loop: "{{ target_vmis }}"
+            loop_control:
+              label: "{{ item.metadata.name }}"
+          
+          Then monitor migration status until completion.
+          Use `oc get vmim <name> -o yaml` to check status.phase:
+          - Pending: Migration queued
+          - Running: Migration in progress
+          - Succeeded: Migration completed
+          - Failed: Migration failed

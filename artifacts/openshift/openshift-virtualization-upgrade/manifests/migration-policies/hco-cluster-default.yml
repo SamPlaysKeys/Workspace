@@ -1,0 +1,48 @@
+---
+type: Reference
+---
+# HyperConverged Cluster-Wide Migration Configuration
+# 
+# Sets default live migration settings for the entire cluster.
+# Individual MigrationPolicy CRs can override these settings per-VM.
+#
+# CALIBRATION NOTE:
+# Adjust completionTimeoutPerGiB based on your network configuration.
+# See ../../migration-timeout-calculation.md for methodology.
+#
+# This sets the cluster baseline. VMs without a specific MigrationPolicy
+# will use these defaults.
+#
+# Apply with: oc apply -f hco-cluster-default.yml -n openshift-cnv
+
+apiVersion: hco.kubevirt.io/v1beta1
+kind: HyperConverged
+metadata:
+  name: kubevirt-hyperconverged
+  namespace: openshift-cnv
+spec:
+  liveMigrationConfig:
+    # Cluster-wide default timeout per GiB of VM memory
+    # Individual MigrationPolicies can override this
+    completionTimeoutPerGiB: 5
+    
+    # Maximum concurrent migrations across the cluster
+    parallelMigrationsPerCluster: 5
+    
+    # Maximum concurrent outbound migrations per node
+    parallelOutboundMigrationsPerNode: 2
+    
+    # Bandwidth per migration: 0 = unlimited
+    # Set explicit value (e.g., "256Mi") to prevent network saturation
+    bandwidthPerMigration: "0"
+    
+    # Network attachment definition for dedicated migration network
+    # Uncomment and specify if using a dedicated migration network
+    # network: <namespace>/<network-attachment-definition-name>
+    
+    # Progress timeout in seconds
+    # Migration fails if no progress is made for this duration
+    progressTimeout: 150
+    
+    # Application-aware migration (requires guest agent)
+    # enableManagedPlacement: false

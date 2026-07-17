@@ -1,0 +1,100 @@
+---
+type: Reference
+---
+# ACM Policy: Maintenance Mode Trigger
+# Purpose: Detect maintenance mode and trigger VM migration workflow
+#
+# CUSTOMIZATION REQUIRED:
+# - Replace <PLACEHOLDERS> with your environment values
+# - Adjust compliance action to match your workflow
+# - Configure placement rules for target clusters
+#
+# ACM INTEGRATION:
+# This policy uses ACM Governance to detect when a cluster enters
+# maintenance mode and triggers an AAP job to migrate VMs.
+#
+# PREREQUISITES:
+# - ACM Hub installed and managing target clusters
+# - AAP Controller accessible from ACM Hub
+# - AnsibleJob CRD installed on managed clusters
+#
+# DOCUMENTATION:
+# - https://docs.openshift.com/container-platform/latest/multicluster_engine/multicluster_engine/mce_policies/policies.html
+
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: openshift-virtualization-maintenance-policy
+  namespace: <POLICY_NAMESPACE>  # e.g., "open-cluster-management-policies"
+  annotations:
+    policy.open-cluster-management.io/standards: NIST-CSF
+    policy.open-cluster-management.io/categories: PR.IP Information Protection
+    policy.open-cluster-management.io/controls: PR.IP-1 Data Protection
+spec:
+  disabled: false
+  policy-templates:
+    # Template 1: Detect maintenance mode
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: maintenance-mode-detection
+        spec:
+          remediationAction: inform  # inform or enforce
+          severity: medium
+          object-templates:
+            # Check for maintenance label on cluster
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: cluster.open-cluster-management.io/v1
+                kind: ManagedCluster
+                metadata:
+                  name: "{{ .ManagedClusterName }}"
+                  labels:
+                    maintenance-mode: "true"  # Add this label to trigger migration
+    
+    # Template 2: Trigger AAP job when in maintenance mode
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: trigger-vm-migration
+        spec:
+          remediationAction: enforce
+          severity: high
+          object-templates:
+            # Create AnsibleJob to trigger AAP workflow
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: tower.ansible.com/v1alpha1
+                kind: AnsibleJob
+                metadata:
+                  name: vm-migration-{{ .ManagedClusterName }}
+                  namespace: <AAP_NAMESPACE>  # Namespace with AnsibleJob CRD
+                spec:
+                  # AAP Controller connection
+                  tower_auth_secret: <TOWER_AUTH_SECRET>  # Secret with AAP credentials
+                  
+                  # Job template to run
+                  job_template_name: "VM Migration - Node Evacuation"
+                  
+                  # Extra variables passed to job
+                  extra_vars:
+                    target_node: "{{ .ManagedClusterName }}-worker-01"  # Customize
+                    parallel_migrations: "3"
+                    fail_on_error: false
+---
+# PlacementBinding: Attach policy to specific clusters
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: openshift-virtualization-maintenance-binding
+  namespace: <POLICY_NAMESPACE>
+placementRef:
+  name: openshift-virtualization-clusters
+  kind: PlacementRule
+  apiGroup: apps.open-cluster-management.io
+subjects:
+  - name: openshift-virtualization-maintenance-policy
+    kind: Policy
+    apiGroup: policy.open-cluster-management.io
