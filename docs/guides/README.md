@@ -20,3 +20,6 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 
 ### OpenShift Virtualization
 - [VM Migration & Upgrade Strategy](./openshift-virtualization-upgrade/README.md) - Minimize downtime during cluster upgrades with live migration tuning, VM classification, and orchestration workflows (Ansible, AAP, ACM).
+
+### HCL BigFix
+- [Planning & Architecture Guide](./bigfix/planning.md) - Sizing, network ports, database selection, and discovery checklists for deployment.

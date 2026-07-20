@@ -24,6 +24,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **HCL BigFix Setup & Planning Guide**: Created a comprehensive guide under `docs/guides/bigfix/planning.md` detailing architecture, sizing, prerequisites, configuration flow, and consulting discovery questions.
 - [x] **AI VM Management**: ADR 0001 (LlamaFarm over Ansible), architecture plan, Ansible draft — graduated from `wip/ai-vm-management/` to `docs/homelab/ai-vm/`
 - [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [x] **Git History Refactor**: Change commit author from `vault@tolaria.md` to `sam@samplayskeys.com`
@@ -82,6 +83,24 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [ ] **"Scratch Pad" Workspace Concept** — write up this workspace approach as a shareable concept for others who want a collaborative AI workspace; frame it as a "scratch pad" for brainstorming, troubleshooting, and building with AI as a supporting tool
 
 ## Active Sessions
+
+# Dead Drop — 2026-07-20
+
+**In progress:** Nothing active — session complete.
+
+**Just completed:**
+- Researched HCL BigFix setup and architecture.
+- Drafted and finalized a comprehensive BigFix setup and planning guide at `docs/guides/bigfix/planning.md`, which includes architecture reviews, sizing constraints, prerequisites, installation sequence, and a consultant discovery checklist.
+- Added HCL BigFix to `docs/guides/README.md` and indexed the guide.
+- Logged guide creation in `BACKLOG.md`.
+
+**Next step:** Conduct the client discovery meeting using the checklist, then proceed to the licensing/masthead creation stage when the client is ready.
+
+**Key decision:** Chose to construct the central server planning around a DNS CNAME alias rather than hardcoded hostnames to ensure seamless future migrations.
+
+**Git state:** uncommitted changes (modified `BACKLOG.md` and `docs/guides/README.md`, untracked `docs/guides/bigfix/`)
+
+**Open threads:** none
 
 # Dead Drop — 2026-06-10
 
