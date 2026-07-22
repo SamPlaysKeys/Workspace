@@ -74,3 +74,10 @@ This documentation set is self-contained — no external example is required. If
 
 <!-- Optional: link a public worked example of this method here, e.g.
      For a fully worked example, see <https://your-domain.example/docs/homelab.html>. -->
+
+## Caveats (read before relying on this)
+
+- **Tested on Linux (`sh`/dash) only.** The `cp`/`find`/`sed` usage is POSIX-standard and should work on macOS/BSD, but the kit has not been run there yet. If you hit a `sed -i` or `find` quirk on BSD, report it.
+- **Slugify is naive.** Names are lowercased and reduced to alphanumerics + dashes; accented characters and symbols are dropped (e.g. `Café Lab` → `caf-lab`). Fine for English lab names; rename the slug manually if needed.
+- **Token substitution is a global string replace.** If your lab name contains characters special to `sed` (notably `&` or `/`), substitution can misbehave. Avoid `&`/`/` in `--name`; use a plain name like `"Smith Homelab"`.
+- **The kit overwrites without prompt** unless you pass a target that already exists (then it refuses unless `--force`). It never touches files outside the target directory.
