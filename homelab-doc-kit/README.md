@@ -59,4 +59,7 @@ Every file links to the others with **relative paths**, so the set is fully self
 
 ## Worked example (optional)
 
-For a fully worked example of this method applied to a real, populated lab, see <https://samplayskeys.com/docs/homelab.html>. External and optional — the kit stands on its own.
+This kit is self-contained — no external example is required to use it. If you publish your own populated lab docs as a worked example, drop the link here so others can see the method applied:
+
+<!-- Optional: link a public worked example of this method here, e.g.
+     For a fully worked example, see <https://your-domain.example/docs/homelab.html>. -->

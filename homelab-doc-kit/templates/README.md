@@ -68,6 +68,9 @@ The assistant's highest-value role is **structured interviewer**: it runs the pe
 4. Render the visual for that phase (start with [overview/lab-map.template.md](overview/lab-map.template.md)).
 5. Loop to Fit, then back to Goal as the lab evolves.
 
-## Worked example (optional, external)
+## Worked example (optional)
 
-For a fully worked example of this method applied to a real, populated lab, see <https://samplayskeys.com/docs/homelab.html>. Optional and external — this documentation set stands on its own.
+This documentation set is self-contained — no external example is required. If you publish your own populated lab docs as a worked example, drop the link here so others can see the method applied:
+
+<!-- Optional: link a public worked example of this method here, e.g.
+     For a fully worked example, see <https://your-domain.example/docs/homelab.html>. -->
