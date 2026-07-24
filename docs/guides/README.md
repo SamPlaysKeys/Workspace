@@ -19,6 +19,7 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 - [OpenShift Guides Index](./openshift/README.md) - Setup instructions for GPU, internal registries, and cluster prep.
 
 ### OpenShift Virtualization
+- [OpenShift Virtualization Guides Index](./openshift-virtualization/README.md) - Storage configurations, PVC verification, and VM scheduling/balancing.
 - [VM Migration & Upgrade Strategy](docs/guides/openshift-virtualization/openshift-virtualization-upgrade/README.md) - Minimize downtime during cluster upgrades with live migration tuning, VM classification, and orchestration workflows (Ansible, AAP, ACM).
 
 ### HCL BigFix

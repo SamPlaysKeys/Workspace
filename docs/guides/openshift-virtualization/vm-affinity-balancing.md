@@ -2,8 +2,12 @@
 type: Guide
 status: Active
 system: OpenShift Virtualization
-related_to: [KubeVirt, VM Scheduling, Affinity Rules]
-references: []
+related_to:
+  - KubeVirt
+  - VM Scheduling
+  - Affinity Rules
+references:
+  - https://www.redhat.com/en/blog/node-selection-and-affinity-for-virtual-machines-in-openshift
 ---
 
 # VM Affinity Balancing for Multi-Group Deployment
