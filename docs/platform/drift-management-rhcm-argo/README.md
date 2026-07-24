@@ -48,7 +48,7 @@ Heart of the system is a renderer plus normalizer plus diff classifier plus PR a
 
 | Document | Role |
 |----------|------|
-| [design.md](design.md) | Architecture and data flow. |
+| [design.md](docs/platform/drift-management-rhcm-argo/design.md) | Architecture and data flow. |
 | [normalizer-contract.md](normalizer-contract.md) | How rendered and live manifests are shaped into comparable, deterministic outputs. |
 | [process-plan.md](process-plan.md) | Implementation steps and validation plan. |
 | [adr-app-of-apps-child-dispatch.md](adr-app-of-apps-child-dispatch.md) | ADR for rendering and dispatching at the child Application level. |

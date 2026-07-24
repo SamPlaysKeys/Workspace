@@ -258,7 +258,7 @@ Use machine learning to predict migration behavior based on historical data.
 
 ## References
 
-- **[Migration Timeout Calculation](../migration-timeout-calculation.md)** — Detailed methodology for calibrating `completionTimeoutPerGiB`
+- **[Migration Timeout Calculation](migration-timeout-calculation.md)** — Detailed methodology for calibrating `completionTimeoutPerGiB`
 - [KubeVirt Live Migration Documentation](https://kubevirt.io/user-guide/operations/live_migration/)
 - [OpenShift Virtualization: Configuring Live Migration Policies](https://docs.openshift.com/container-platform/latest/virt/virtual_machines/virt-node-maintenance-virt.html#virt-configuring-live-migration-policies_virt-node-maintenance-virt)
 - [QEMU Migration: Pre-copy vs Post-copy](https://wiki.qemu.org/Features/PostCopyLiveMigration)
