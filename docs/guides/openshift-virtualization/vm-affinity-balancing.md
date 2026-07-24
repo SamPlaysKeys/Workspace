@@ -10,7 +10,7 @@ references: []
 
 ## Overview
 
-This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only **one VM from each group (GRP01, GRP02)** lands on each node, maximizing redundancy and preventing single points of failure.
+This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only **one VM from each group (GRP01, GRP02)** lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes.
 
 ## How It Works
 
@@ -535,6 +535,8 @@ oc get vmi -L vm-group -o custom-columns=NAME:.metadata.name,NODE:.status.nodeNa
 ```
 
 ## References
-
+#### Primary Documentation
+- [Node Selection and Affinity on OpenShift](https://www.redhat.com/en/blog/node-selection-and-affinity-for-virtual-machines-in-openshift)
+#### Additional References
 - [Kubernetes Affinity Documentation](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity)
 - [KubeVirt VM Scheduling](https://kubevirt.io/user-guide/virtual_machines/scheduling/)
