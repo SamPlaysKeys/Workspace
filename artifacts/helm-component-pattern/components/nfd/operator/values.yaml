@@ -1,0 +1,12 @@
+enabled: true
+namespace: openshift-nfd
+
+olm:
+  channel: stable
+  approval: Automatic
+  catalogSource: redhat-operators
+  catalogSourceNamespace: openshift-marketplace
+  startingCSV: nfd-operator.v4.18.0
+  operatorGroup: ""
+
+cluster: {}

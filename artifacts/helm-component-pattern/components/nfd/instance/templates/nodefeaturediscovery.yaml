@@ -1,0 +1,18 @@
+---
+apiVersion: nfd.openshift.io/v1
+kind: NodeFeatureDiscovery
+metadata:
+  name: {{ .Values.instance.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  namespace: {{ .Values.namespace }}
+  topologyUpdater: {{ .Values.instance.topologyUpdater }}
+  operand:
+    image: {{ .Values.instance.operand.image }}
+  workerConfig:
+    configData: |
+      {{ .Values.instance.workerConfig.configData | nindent 6 }}
+  {{- if .Values.instance.extraLabelNamespace }}
+  extraLabelNs:
+    - {{ .Values.instance.extraLabelNamespace }}
+  {{- end }}

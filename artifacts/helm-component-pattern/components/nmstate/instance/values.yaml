@@ -1,0 +1,10 @@
+enabled: true
+namespace: openshift-nmstate
+
+nmstate:
+  name: nmstate
+  # Uncomment to define node selector for the NMState handler daemonset:
+  # nodeSelector:
+  #   node-role.kubernetes.io/worker: ""
+
+cluster: {}

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: nmstate-instance
+description: NMState instance component chart — creates the NMState CR
+version: 0.1.0
+type: application
