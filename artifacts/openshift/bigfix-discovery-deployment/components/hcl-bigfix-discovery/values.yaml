@@ -12,5 +12,6 @@ serviceAccount:
 tokenSecret:
   name: bfi-service-account-token
 
-# Target namespace where the NFD operator is running and where NodeFeatureRule should be deployed
-nfdNamespace: openshift-nfd
+# Namespace where the NodeFeatureRule should be deployed. Defaults to the bigfix namespace.
+# Relocating this to the bigfix namespace avoids potential conflicts with other teams sharing NFD.
+nodeFeatureRuleNamespace: "bigfix"

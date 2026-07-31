@@ -2,7 +2,7 @@ apiVersion: nfd.openshift.io/v1alpha1
 kind: NodeFeatureRule
 metadata:
   name: ibm.ilmt.capacity-sockets
-  namespace: {{ .Values.nfdNamespace }}
+  namespace: {{ .Values.nodeFeatureRuleNamespace }}
 spec:
   rules:
     - name: "ibm.ilmt.capacity-sockets"
