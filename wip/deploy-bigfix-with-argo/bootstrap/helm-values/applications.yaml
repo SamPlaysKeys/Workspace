@@ -1,0 +1,12 @@
+availableApplications:
+  openshift-nfd:
+    annotations:
+      argocd.argoproj.io/sync-wave: '2' # Phase 1: Deploy Operator first
+    source:
+      path: components/openshift-nfd
+
+  hcl-bigfix-discovery:
+    annotations:
+      argocd.argoproj.io/sync-wave: '4' # Phase 2: Deploy CRD-dependent resources later
+    source:
+      path: components/hcl-bigfix-discovery
