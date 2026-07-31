@@ -14,6 +14,8 @@ references:
 
 This guide details the architecture, design decisions, and configuration required to deploy the **HCL BigFix Inventory (BFI)** discovery and sub-capacity licensing integration on Red Hat OpenShift Container Platform (OCP).
 
+This implementation rigorously adheres to and matches the standardized Helm component structures, sync-waves, and folder layouts defined in the **[helm-component-pattern](../../../artifacts/helm-component-pattern/README.md)** artifact collection.
+
 The BFI discovery integration is a **headless, API-level integration**. It does not install a resident server. Instead, it deploys a `ServiceAccount` and a long-lived API token that allows the external BigFix Inventory server to query OpenShift APIs. It also deploys the **Red Hat Node Feature Discovery (NFD) Operator** to map and label host CPU sockets and cores, which BFI queries to calculate Processor Value Unit (PVU) licensing.
 
 ---
