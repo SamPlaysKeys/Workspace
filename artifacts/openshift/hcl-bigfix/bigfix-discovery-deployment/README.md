@@ -2,7 +2,7 @@
 
 This folder contains reusable Helm components and GitOps environment wiring files for deploying the **Red Hat Node Feature Discovery (NFD) Operator** and the **HCL BigFix Discovery Integration** to an OpenShift cluster using Argo CD. This is designed for Virtual Machine and licensing sub-capacity node discovery.
 
-This implementation rigorously adheres to and matches the core component structures and conventions in the **[helm-component-pattern](../../../artifacts/helm-component-pattern/README.md)** artifact collection.
+This implementation rigorously adheres to and matches the core component structures and conventions in the **[helm-component-pattern](artifacts/openshift/helm-component-pattern/README.md)** artifact collection.
 
 ## Directory Structure
 
@@ -38,4 +38,4 @@ To register and activate these components in your Argo CD GitOps repository:
 ## Detailed Guide
 
 For full architecture details, OpenShift security postures, and sub-capacity licensing calculations, refer to the prose guide:
-* **[docs/guides/openshift/bigfix-discovery-deployment.md](../../../docs/guides/openshift/bigfix-discovery-deployment.md)**
+* **[docs/guides/openshift/bigfix-discovery-deployment.md](bigfix-discovery-deployment.md)**

@@ -2,7 +2,7 @@
 
 This folder contains reusable Helm components and GitOps environment wiring files for deploying the **HCL BigFix Client Host Agent** to an OpenShift cluster using Argo CD.
 
-This implementation rigorously adheres to and matches the core component structures and conventions in the **[helm-component-pattern](../../../artifacts/helm-component-pattern/README.md)** artifact collection.
+This implementation rigorously adheres to and matches the core component structures and conventions in the **[helm-component-pattern](artifacts/openshift/helm-component-pattern/README.md)** artifact collection.
 
 The agent runs as a privileged node-level `DaemonSet` on every OpenShift node (including control-plane nodes) to allow host OS auditing, inventory, and patching.
 
@@ -35,4 +35,4 @@ To register and activate this component in your Argo CD GitOps repository:
 ## Detailed Guide
 
 For full architecture details, OpenShift security contexts (SCCs), and privileged host access, refer to the prose guide:
-* **[docs/guides/openshift/bigfix-agent-deployment.md](../../../docs/guides/openshift/bigfix-agent-deployment.md)**
+* **[docs/guides/openshift/bigfix-agent-deployment.md](bigfix-agent-deployment.md)**

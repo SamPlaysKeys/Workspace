@@ -14,7 +14,7 @@ references:
 
 This guide details the architecture, design decisions, and configuration required to deploy the **HCL BigFix Host Agent Client** onto a Red Hat OpenShift Container Platform (OCP) cluster using Argo CD.
 
-This implementation rigorously adheres to and matches the standardized Helm component structures, sync-waves, and folder layouts defined in the **[helm-component-pattern](../../../artifacts/helm-component-pattern/README.md)** artifact collection.
+This implementation rigorously adheres to and matches the standardized Helm component structures, sync-waves, and folder layouts defined in the **[helm-component-pattern](artifacts/openshift/helm-component-pattern/README.md)** artifact collection.
 
 The Host Agent Client runs directly on each physical/virtual cluster node. It monitors host operating system settings, hardware properties, and installed package inventories, and applies host-level configuration patches.
 

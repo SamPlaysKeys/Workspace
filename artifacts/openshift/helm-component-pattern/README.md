@@ -8,7 +8,7 @@
 
 **Platform engineers and consultants** rolling out or managing a fleet of OpenShift clusters, looking for a structured GitOps-native way to manage platform components across clusters that share most config but differ in meaningful ways.
 
-**CoP maintainers** — this pattern builds on the conventions established in [redhat-cop/gitops-standards-repo-template](https://github.com/redhat-cop/gitops-standards-repo-template). The folder structure and composable groups model are the same; the implementation choices differ. See [docs/cop-maintainers.md](docs/cop-maintainers.md) for a full comparison, trade-off analysis, and guidance on choosing between them.
+**CoP maintainers** — this pattern builds on the conventions established in [redhat-cop/gitops-standards-repo-template](https://github.com/redhat-cop/gitops-standards-repo-template). The folder structure and composable groups model are the same; the implementation choices differ. See [docs/cop-maintainers.md](cop-maintainers.md) for a full comparison, trade-off analysis, and guidance on choosing between them.
 
 ---
 
@@ -16,11 +16,11 @@
 
 | Document | Audience |
 |---|---|
-| [docs/architecture-opinions.md](docs/architecture-opinions.md) | The problem, the principle, the Hub concept, and the 9 design opinions with full trade-offs |
-| [docs/cop-maintainers.md](docs/cop-maintainers.md) | CoP maintainers: relationship to gitops-standards, Helm vs Kustomize trade-offs, choosing between them |
-| [docs/diffing-and-visibility.md](docs/diffing-and-visibility.md) | PR-level desired-state diffs, fleet-wide live-to-desired diffs, argocd-diff-preview integration |
-| [docs/convergence.md](docs/convergence.md) | *(Aspirational)* How this pattern and gitops-standards could converge; `sourceType` per component; open questions |
-| [docs/operator-management.md](docs/operator-management.md) | Operator installation via OLM, `operators-installer` integration, version pinning, operator+instance split |
+| [docs/architecture-opinions.md](architecture-opinions.md) | The problem, the principle, the Hub concept, and the 9 design opinions with full trade-offs |
+| [docs/cop-maintainers.md](cop-maintainers.md) | CoP maintainers: relationship to gitops-standards, Helm vs Kustomize trade-offs, choosing between them |
+| [docs/diffing-and-visibility.md](diffing-and-visibility.md) | PR-level desired-state diffs, fleet-wide live-to-desired diffs, argocd-diff-preview integration |
+| [docs/convergence.md](convergence.md) | *(Aspirational)* How this pattern and gitops-standards could converge; `sourceType` per component; open questions |
+| [docs/operator-management.md](operator-management.md) | Operator installation via OLM, `operators-installer` integration, version pinning, operator+instance split |
 
 ---
 
