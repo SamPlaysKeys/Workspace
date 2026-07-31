@@ -11,7 +11,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [x] **AI VM Management**: LlamaFarm-based AI model management layer on Debian + Quadro P5000 — ADR 0001, architecture plan, and Ansible draft → graduated to `docs/homelab/ai-vm/`
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [ ] **Storm Session: OpenShift Virtualization VM Migration**: Develop tuning profiles, orchestration pathways, and decision trees for near-zero-downtime upgrades (`wip/openshift-virtualization-VM-migration/`)
-- [x] **Storm Session: RHACM/Argo Drift Management System**: Design drift detection, classification, and remediation workflows → graduated to `docs/platform/argo-rhacm-drift-management/`
+- [x] **Storm Session: RHACM/Argo Drift Management System**: Design drift detection, classification, and remediation workflows → graduated to `docs/gitops/drift-management/`
 
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
@@ -24,6 +24,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **GitOps Cluster Consolidation Roadmap**: Created a strategic phased roadmap and Mermaid flowchart under `docs/gitops/consolidation-roadmap.md` to guide the consolidation of tag-drifted and unmanaged clusters onto `main`, a dedicated `Testing` branch, and a `v2.0` release tag.
 - [x] **HCL BigFix Setup & Planning Guide**: Created a comprehensive guide under `docs/guides/bigfix/planning.md` detailing architecture, sizing, prerequisites, configuration flow, and consulting discovery questions.
 - [x] **AI VM Management**: ADR 0001 (LlamaFarm over Ansible), architecture plan, Ansible draft — graduated from `wip/ai-vm-management/` to `docs/homelab/ai-vm/`
 - [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
