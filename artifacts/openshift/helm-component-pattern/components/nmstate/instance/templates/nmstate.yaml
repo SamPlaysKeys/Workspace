@@ -1,0 +1,11 @@
+---
+apiVersion: nmstate.io/v1
+kind: NMState
+metadata:
+  name: {{ .Values.nmstate.name }}
+  namespace: {{ .Values.namespace }}
+spec:
+  {{- if .Values.nmstate.nodeSelector }}
+  nodeSelector:
+    {{- .Values.nmstate.nodeSelector | toYaml | nindent 4 }}
+  {{- end }}

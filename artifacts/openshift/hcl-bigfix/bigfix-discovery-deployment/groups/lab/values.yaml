@@ -1,0 +1,4 @@
+components-lab:
+  openshift-nfd-operator: {}
+  openshift-nfd-instance: {}
+  hcl-bigfix-discovery: {}

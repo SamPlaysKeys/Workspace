@@ -1,0 +1,18 @@
+availableApplications:
+  openshift-nfd-operator:
+    annotations:
+      argocd.argoproj.io/sync-wave: '2' # Phase 1: Deploy NFD Operator
+    source:
+      path: components/openshift-nfd/operator
+
+  openshift-nfd-instance:
+    annotations:
+      argocd.argoproj.io/sync-wave: '3' # Phase 2: Deploy NFD CRD Instance
+    source:
+      path: components/openshift-nfd/instance
+
+  hcl-bigfix-discovery:
+    annotations:
+      argocd.argoproj.io/sync-wave: '4' # Phase 3: Deploy BFI ServiceAccount & NodeFeatureRule
+    source:
+      path: components/hcl-bigfix-discovery

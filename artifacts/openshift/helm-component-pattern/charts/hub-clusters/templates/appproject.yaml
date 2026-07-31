@@ -1,0 +1,46 @@
+{{- /*
+  hub-clusters / appproject.yaml
+
+  Generates one ArgoCD AppProject per managed cluster when appProject.enabled is true.
+*/ -}}
+
+{{- if $.Values.appProject.enabled -}}
+{{- $currentHub := .Values.currentHub | required "currentHub is required" -}}
+
+{{- range .Values.clusters -}}
+{{- if eq .hub $currentHub -}}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: {{ .name }}
+  namespace: {{ $.Values.argocd.namespace }}
+  labels:
+    managed-by: hub-clusters
+    hub: {{ $currentHub }}
+    cluster: {{ .name }}
+    env: {{ .environment | default "unknown" }}
+spec:
+  description: "Platform components for {{ .name }} ({{ .environment | default "unknown" }}, hub: {{ $currentHub }})"
+
+  sourceRepos:
+    {{- $.Values.appProject.sourceRepos | toYaml | nindent 4 }}
+
+  destinations:
+    - server: {{ .server }}
+      namespace: "*"
+
+  clusterResourceWhitelist:
+    {{- $.Values.appProject.clusterResourceWhitelist | toYaml | nindent 4 }}
+
+  {{- if $.Values.appProject.namespaceResourceWhitelist }}
+  namespaceResourceWhitelist:
+    {{- $.Values.appProject.namespaceResourceWhitelist | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if $.Values.appProject.roles }}
+  roles:
+    {{- $.Values.appProject.roles | toYaml | nindent 4 }}
+  {{- end }}
+{{ end -}}
+{{ end -}}
+{{- end }}

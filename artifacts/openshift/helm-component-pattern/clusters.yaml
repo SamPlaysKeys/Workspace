@@ -1,0 +1,167 @@
+# clusters.yaml — central cluster inventory
+#
+# Single authoritative source for:
+#   - Which clusters exist (including the hub clusters themselves)
+#   - Which ArgoCD instance manages each cluster (hub: field — matches currentHub
+#     parameter on each hub's hub-clusters Application)
+#   - Which groups the cluster belongs to (drives mustMergeOverwrite order)
+#   - Shared cluster attributes pushed into every component's cluster: block
+#
+# ── Hub clusters are just clusters ────────────────────────────────────────────
+#
+# Hub clusters (where ArgoCD runs) can be listed here like any managed cluster.
+# Point their server: to https://kubernetes.default.svc for in-cluster access.
+# This means the hub itself can have platform components managed by the same
+# ArgoCD instance that manages the fleet.
+#
+# The hub: field determines WHICH hub's ArgoCD instance manages a given cluster.
+# A cluster with hub: prod-a is managed by the ArgoCD running on prod-a.
+# A hub cluster managing itself uses hub: <its own hub name>.
+#
+# ── No separate hubConfig ─────────────────────────────────────────────────────
+#
+# Group merge priority is determined entirely by the order of entries in the
+# cluster's groups: list — earlier entries have lower priority, later entries
+# have higher priority.  There is no separate groupOrder configuration.
+# The cluster's component-<name> layer (clusters/<name>/values.yaml) always
+# wins regardless of group order.
+#
+# ── targetRevision — three-level resolution (last wins) ───────────────────────
+#
+#   1. Hub Application targetRevision (typically "main") — fleet default.
+#
+#   2. Group-level targetRevision — set on a group entry as an object:
+#        groups:
+#          - all
+#          - name: edge-sno
+#            targetRevision: release/v2.0    # all edge-sno clusters track this
+#      Plain string entries carry no targetRevision (backward compatible).
+#      Groups are walked in declaration order; later groups win.
+#
+#   3. Cluster-level targetRevision — field on this cluster entry.
+#      Overrides group-level and hub default.
+#      Use to pin one specific cluster independent of its groups.
+#
+# Common patterns:
+#   Canary:   one cluster → targetRevision: feature/cert-manager-upgrade
+#   Ring:     group object edge-sno → targetRevision: release/v1.3
+#             then site-edge-1 → targetRevision: release/v1.3-rc1 (further ahead)
+#   Rollback: add targetRevision: release/v1.2 to a cluster to hold it back
+#
+# ── Component-level overrides ─────────────────────────────────────────────────
+#
+# Component-level overrides (e.g. installPlanApproval: Manual for cert-manager)
+# belong in clusters/<name>/values.yaml as component-<clusterName>.apps overrides.
+# This file owns identity and topology; cluster value files own deviations.
+
+clusters:
+
+  # ── prod-a hub ─────────────────────────────────────────────────────────────
+
+  - name: site-dc1
+    hub: prod-a
+    environment: production
+    region: us-east
+    server: https://api.site-dc1.example.com:6443
+    groups:
+      - all
+      - virt-enabled
+      - gpu-enabled   # bare-metal cluster with NVIDIA A100 GPU workers
+    # Shared attributes — pushed into every component Application's cluster: block.
+    # Component charts use .Values.cluster.vault, .Values.cluster.monitoring, etc.
+    vault:
+      server: https://vault.prod-a.example.com
+      clusterSecretStoreName: vault-backend
+    monitoring:
+      remoteWriteEndpoint: https://mimir.prod-a.example.com/api/v1/push
+
+  - name: site-edge-1
+    hub: prod-a
+    environment: production
+    region: edge-us-east
+    server: https://api.site-edge-1.example.com:6443
+    groups:
+      - all
+      # Group object format — pins all edge-sno clusters to a release candidate
+      # while the rest of the fleet stays on main.  Other edge clusters that
+      # belong to edge-sno will also pick up this targetRevision automatically.
+      # Remove the object form (revert to "- edge-sno") once the release is stable.
+      - name: edge-sno
+        targetRevision: release/v2.0-rc1
+    vault:
+      server: https://vault.prod-a.example.com
+      clusterSecretStoreName: vault-backend
+    monitoring:
+      remoteWriteEndpoint: https://mimir.prod-a.example.com/api/v1/push
+
+  # ── prod-b hub ─────────────────────────────────────────────────────────────
+
+  - name: site-dc2
+    hub: prod-b
+    environment: production
+    region: us-west
+    server: https://api.site-dc2.example.com:6443
+    groups:
+      - all
+      - virt-enabled
+    vault:
+      server: https://vault.prod-b.example.com
+      clusterSecretStoreName: vault-backend
+    monitoring:
+      remoteWriteEndpoint: https://mimir.prod-b.example.com/api/v1/push
+
+  # ── prod-a: GPU-only cluster (no Virt) ─────────────────────────────────────
+  # Example: bare-metal HPC cluster — only GPU workloads, no VM scheduling.
+  # Enables gpu-enabled group; does not include virt-enabled.
+
+  - name: site-gpu-1
+    hub: prod-a
+    environment: production
+    region: us-east
+    server: https://api.site-gpu-1.example.com:6443
+    groups:
+      - all
+      - gpu-enabled
+    vault:
+      server: https://vault.prod-a.example.com
+      clusterSecretStoreName: vault-backend
+    monitoring:
+      remoteWriteEndpoint: https://mimir.prod-a.example.com/api/v1/push
+
+  # ── dev hub ────────────────────────────────────────────────────────────────
+
+  - name: site-dev-1
+    hub: dev
+    environment: development
+    region: us-east
+    server: https://api.site-dev-1.example.com:6443
+    groups:
+      - all
+    # Cluster-level override — uncomment to pin this cluster to a specific ref
+    # while the hub default (main) remains in effect for all other clusters.
+    # This takes priority over any group-level targetRevision.
+    # targetRevision: feature/new-component
+    vault:
+      server: https://vault.dev.example.com
+      clusterSecretStoreName: vault-backend
+    monitoring:
+      remoteWriteEndpoint: https://mimir.dev.example.com/api/v1/push
+
+  # ── Hub clusters managing themselves ───────────────────────────────────────
+  # Hub clusters can be listed as regular cluster entries using
+  # https://kubernetes.default.svc so ArgoCD manages their own platform
+  # components through the same pipeline as managed clusters.
+  # Uncomment to activate.
+
+  # - name: hub-prod-a
+  #   hub: prod-a
+  #   environment: production
+  #   region: us-east
+  #   server: https://kubernetes.default.svc   # in-cluster — the hub itself
+  #   groups:
+  #     - all
+  #   vault:
+  #     server: https://vault.prod-a.example.com
+  #     clusterSecretStoreName: vault-backend
+  #   monitoring:
+  #     remoteWriteEndpoint: https://mimir.prod-a.example.com/api/v1/push

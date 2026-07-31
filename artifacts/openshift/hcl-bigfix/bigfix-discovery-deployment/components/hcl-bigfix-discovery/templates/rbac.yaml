@@ -1,0 +1,76 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-nodes-list
+rules:
+  - verbs:
+      - list
+    apiGroups:
+      - ""
+    resources:
+      - nodes
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-nodes-list
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name }}
+    namespace: {{ .Values.namespace.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bfi-cluster-nodes-list
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-virtualmachineinstance-list
+rules:
+  - verbs:
+      - list
+      - get
+    apiGroups:
+      - kubevirt.io
+    resources:
+      - virtualmachineinstances
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-virtualmachineinstance-list
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name }}
+    namespace: {{ .Values.namespace.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bfi-cluster-virtualmachineinstance-list
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-namespaces-list
+rules:
+  - verbs:
+      - list
+      - get
+    apiGroups:
+      - ""
+    resources:
+      - namespaces
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: bfi-cluster-namespaces-list
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.serviceAccount.name }}
+    namespace: {{ .Values.namespace.name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: bfi-cluster-namespaces-list

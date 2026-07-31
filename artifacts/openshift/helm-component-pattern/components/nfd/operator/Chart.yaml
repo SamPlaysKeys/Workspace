@@ -1,0 +1,5 @@
+apiVersion: v2
+name: nfd-operator
+description: Node Feature Discovery Operator component chart (OLM)
+version: 0.1.0
+type: application

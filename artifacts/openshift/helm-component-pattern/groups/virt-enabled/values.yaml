@@ -1,0 +1,34 @@
+# Group: virt-enabled
+# Clusters running OpenShift Virtualization.
+#
+# Key convention: component-virt-enabled
+#
+# Enables kubevirt-hyperconverged (disabled in component-all by default).
+# Also pins the NMState channel — live migration requires NMState for
+# secondary bridge networks and specific channel compatibility.
+#
+# Merged on top of component-all by mustMergeOverwrite in the template.
+
+component-virt-enabled:
+  apps:
+    kubevirt-hyperconverged:
+      enabled: true
+
+    nmstate-operator:
+      # OCP Virt requires NMState for bridge network configuration.
+      # Pin channel for compatibility — overrides the channel in component-all.
+      # Note: overriding operators-installer.operators replaces the entire list.
+      # Repeat all required fields when pinning (channel, source, namespace, etc.)
+      operators-installer:
+        operators:
+          - name: kubernetes-nmstate-operator
+            source: redhat-operators
+            sourceNamespace: openshift-marketplace
+            namespace: openshift-nmstate
+            channel: stable-4.16
+            installPlanApproval: Automatic
+            csv: ""
+        operatorGroups:
+          - name: openshift-nmstate
+            createNamespace: true
+            targetOwnNamespace: true
