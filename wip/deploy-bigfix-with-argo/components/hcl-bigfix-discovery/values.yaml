@@ -1,0 +1,16 @@
+namespace:
+  name: bigfix
+  labels:
+    app: bigfix
+    environment: test
+  annotations:
+    description: "Namespace for BigFix-related workloads"
+
+serviceAccount:
+  name: big-fix-serviceaccount
+
+tokenSecret:
+  name: bfi-service-account-token
+
+# Target namespace where the NFD operator is running and where NodeFeatureRule should be deployed
+nfdNamespace: openshift-nfd
