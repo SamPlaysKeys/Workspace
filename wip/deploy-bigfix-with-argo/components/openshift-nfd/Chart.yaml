@@ -1,6 +1,0 @@
-apiVersion: v2
-name: openshift-nfd
-description: Helm chart to deploy Red Hat Node Feature Discovery (NFD) Operator
-type: application
-version: 1.0.0
-appVersion: "1.0.0"

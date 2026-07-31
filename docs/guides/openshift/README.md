@@ -12,6 +12,8 @@ Prose guides for OpenShift Container Platform workflows used in this workspace. 
 | [Checking OpenShift Certificates](checking-certificates.md) | Verify expiration dates of API, Ingress, and other internal certificates |
 | [Using the integrated OpenShift container image registry](using-integrated-openshift-registry.md) | Push/pull, in-cluster image references |
 | [NVIDIA vGPU Manager: integrated registry and ClusterPolicy](nvidia-vgpu-manager-internal-registry-and-clusterpolicy.md) | Build vGPU Manager image, integrated registry, GPU Operator `ClusterPolicy` |
+| [BigFix Host Agent Client Deployment via GitOps](bigfix-agent-deployment.md) | Deploy host-level auditing, patching, and discovery DaemonSet onto RHCOS / RHEL nodes |
+| [BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps](bigfix-discovery-deployment.md) | Deploy Node Feature Discovery (NFD) operator/instance and API token/RBAC mappings for sub-capacity licensing calculations |
 
 ## Related artifacts
 

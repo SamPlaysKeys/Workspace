@@ -1,0 +1,6 @@
+apiVersion: v2
+name: hcl-bigfix-agent
+description: A Helm Chart to deploy the HCL BigFix Host Agent Client on OpenShift nodes as a privileged DaemonSet
+type: application
+version: 1.0.0
+appVersion: "11.0.0"

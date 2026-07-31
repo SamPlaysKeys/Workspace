@@ -15,6 +15,8 @@ artifacts/
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
 └── openshift/            # OpenShift automation (YAML, Ansible, scripts)
+    ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
+    ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
     └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
 ```
 
