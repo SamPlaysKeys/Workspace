@@ -1,5 +1,7 @@
 ---
 type: Roadmap
+status: Active
+Date: 2026-07-31
 ---
 # GitOps Cluster Consolidation & Version Control Roadmap
 
@@ -45,12 +47,12 @@ flowchart TD
     end
 
     %% Transitions
-    Current -->|1. Align and Point to main| P1_Sync
-    P1_Sync -->|2. Prune old Git refs| P1_Clean
-    P1_Clean -->|3. Create 'Testing' from main| Test_Branch
-    Test_Branch -->|4. Configure Sync| P2_Sync
-    P1_Clean -->|5. Tag main as v2.0| V2_Tag
-    V2_Tag -->|6. Configure Sync| P3_Sync
+    Current -->|Align and Point to main| P1_Sync
+    P1_Sync -->|Prune old Git refs| P1_Clean
+    P1_Clean -->|Create 'Testing' from main| Test_Branch
+    Test_Branch -->|Configure Sync| P2_Sync
+    P1_Clean -->|Tag main as v2.0| V2_Tag
+    V2_Tag -->|Configure Sync| P3_Sync
 
     %% Styling
     style Current fill:#fdd,stroke:#f66,stroke-width:2px;
@@ -101,3 +103,46 @@ flowchart TD
 * **Clean Git Slate:** Drastically reduces active git refs, making branch history easy to read and manage.
 * **Predictable Promotion:** Features move from `main` $\rightarrow$ `Testing` branch $\rightarrow$ `v2.0` tag.
 * **Auditability:** Clear division of what is being tested versus what is running in production based purely on git references.
+
+
+---
+
+## Long-Term Management
+
+To ensure continuous operational stability and transparency, clusters are categorized by environment type and mapped to specific Git target references, utilizing a flat repository structure for environment settings.
+
+### Cluster Target References
+
+Different environments track different Git references depending on their operational requirements and strictness levels:
+
+1. **Test Clusters:**
+   - **Target Reference:** `Testing` branch.
+   - **Usage:** Serves as the immediate validation target for developers and GitOps sync, ensuring new features and configurations are continuously integrated and tested.
+
+2. **Pre-Production and Normal Production Clusters:**
+   - **Target Reference:** `Main` branch.
+   - **Usage:** Serves as the primary stable branch. Pre-production acts as the final validation gate, while normal production tracks the main trunk directly for rapid, reliable delivery of verified features.
+
+3. **Strictly Managed Clusters:**
+   - **Target Reference:** Tagged releases (e.g., `v2.x`).
+   - **Usage:** Pin to immutable release tags to guarantee absolute control over rollout schedules and facilitate rigorous change management.
+
+### Flat Repository Structure
+
+Instead of deep hierarchies or branching drift for configuration variants, the repository is organized with a **flat directory structure** at its root or specific config directory (e.g., `komodo/` or `gitops/`). 
+
+For each environment, a dedicated, self-contained subdirectory contains all specific configurations and override settings:
+
+```text
+gitops-repo/
+├── test/                # Settings specific to Test clusters (tracks 'Testing' branch)
+├── preprod/             # Settings specific to Pre-production (tracks 'Main' branch)
+├── prod/                # Settings specific to Normal Production (tracks 'Main' branch)
+├── prod-strict/         # Settings specific to Strictly Managed Production (tracks immutable tags)
+└── shared/              # Shared base resources or templates referenced by environments
+```
+
+This flat design guarantees that:
+* **High Visibility:** All environment-specific settings are completely visible in their respective subdirectories.
+* **No Hidden Overrides:** Eliminates nested inheritance or complex drift, making configurations easy to audit, compare, and modify.
+* **Declarative Consistency:** All target references can read from the same commit or release tag while cleanly resolving environment-specific configurations via their designated subdirectory.
