@@ -1,5 +1,0 @@
----
-type: Outline
-status: draft
----
-
