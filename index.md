@@ -21,22 +21,74 @@ Welcome to the personal documentation workspace. Below is the documentation orga
     <div class="category-section">
       <h2 id="{{ cat | slugify }}">{{ cat }}</h2>
       <hr>
-      <ul class="docs-list">
+
+      <!-- Top-level documents (no subcategory) -->
+      {% assign top_level_found = false %}
       {% for p in sorted_pages %}
         {% if p.category == cat %}
-          <li>
-            <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
-            {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
-            {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
-            {% if p.tags %}
-              {% for tag in p.tags %}
-                <span class="badge badge-tag">{{ tag }}</span>
-              {% endfor %}
-            {% endif %}
-          </li>
+          {% unless p.subcategory %}
+            {% assign top_level_found = true %}
+          {% endunless %}
         {% endif %}
       {% endfor %}
-      </ul>
+
+      {% if top_level_found %}
+        <ul class="docs-list">
+        {% for p in sorted_pages %}
+          {% if p.category == cat %}
+            {% unless p.subcategory %}
+              <li>
+                <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
+                {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
+                {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+                {% if p.tags %}
+                  {% for tag in p.tags %}
+                    <span class="badge badge-tag">{{ tag }}</span>
+                  {% endfor %}
+                {% endif %}
+              </li>
+            {% endunless %}
+          {% endif %}
+        {% endfor %}
+        </ul>
+      {% endif %}
+
+      <!-- Subcategorized documents -->
+      {% assign subcats = "" %}
+      {% for p in sorted_pages %}
+        {% if p.category == cat %}
+          {% if p.subcategory %}
+            {% assign subcats = subcats | append: p.subcategory | append: "|" %}
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+
+      {% assign subcats_arr = subcats | split: "|" | uniq | sort %}
+      {% for subcat in subcats_arr %}
+        {% if subcat != "" %}
+          <div class="subcategory-section">
+            <h3 class="subcategory-title">{{ subcat }}</h3>
+            <ul class="docs-list">
+            {% for p in sorted_pages %}
+              {% if p.category == cat %}
+                {% if p.subcategory == subcat %}
+                  <li>
+                    <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
+                    {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
+                    {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+                    {% if p.tags %}
+                      {% for tag in p.tags %}
+                        <span class="badge badge-tag">{{ tag }}</span>
+                      {% endfor %}
+                    {% endif %}
+                  </li>
+                {% endif %}
+              {% endif %}
+            {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
   {% endif %}
 {% endfor %}
@@ -49,22 +101,74 @@ Welcome to the personal documentation workspace. Below is the documentation orga
       <div class="category-section">
         <h2 id="{{ cat | slugify }}">{{ cat }}</h2>
         <hr>
-        <ul class="docs-list">
+
+        <!-- Top-level documents (no subcategory) -->
+        {% assign top_level_found = false %}
         {% for p in sorted_pages %}
           {% if p.category == cat %}
-            <li>
-              <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
-              {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
-              {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
-              {% if p.tags %}
-                {% for tag in p.tags %}
-                  <span class="badge badge-tag">{{ tag }}</span>
-                {% endfor %}
-              {% endif %}
-            </li>
+            {% unless p.subcategory %}
+              {% assign top_level_found = true %}
+            {% endunless %}
           {% endif %}
         {% endfor %}
-        </ul>
+
+        {% if top_level_found %}
+          <ul class="docs-list">
+          {% for p in sorted_pages %}
+            {% if p.category == cat %}
+              {% unless p.subcategory %}
+                <li>
+                  <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
+                  {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
+                  {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+                  {% if p.tags %}
+                    {% for tag in p.tags %}
+                      <span class="badge badge-tag">{{ tag }}</span>
+                    {% endfor %}
+                  {% endif %}
+                </li>
+              {% endunless %}
+            {% endif %}
+          {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- Subcategorized documents -->
+        {% assign subcats = "" %}
+        {% for p in sorted_pages %}
+          {% if p.category == cat %}
+            {% if p.subcategory %}
+              {% assign subcats = subcats | append: p.subcategory | append: "|" %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {% assign subcats_arr = subcats | split: "|" | uniq | sort %}
+        {% for subcat in subcats_arr %}
+          {% if subcat != "" %}
+            <div class="subcategory-section">
+              <h3 class="subcategory-title">{{ subcat }}</h3>
+              <ul class="docs-list">
+              {% for p in sorted_pages %}
+                {% if p.category == cat %}
+                  {% if p.subcategory == subcat %}
+                    <li>
+                      <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
+                      {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
+                      {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+                      {% if p.tags %}
+                        {% for tag in p.tags %}
+                          <span class="badge badge-tag">{{ tag }}</span>
+                        {% endfor %}
+                      {% endif %}
+                    </li>
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+              </ul>
+            </div>
+          {% endif %}
+        {% endfor %}
       </div>
     {% endunless %}
   {% endif %}
@@ -82,4 +186,6 @@ Welcome to the personal documentation workspace. Below is the documentation orga
   .badge-type { background-color: #f4f6fa; color: #5c6bc0; border-color: #d2d7f3; }
   .badge-status { background-color: #f1f8e9; color: #4caf50; border-color: #c5e1a5; }
   .badge-tag { background-color: #fafafa; color: #757575; border-color: #e0e0e0; }
+  .subcategory-section { margin-left: 1.5rem; border-left: 2px solid #eee; padding-left: 1rem; margin-top: 1rem; margin-bottom: 1rem; }
+  .subcategory-title { font-size: 1.2rem; color: #555; margin-bottom: 0.5rem; margin-top: 1rem; }
 </style>

@@ -1,5 +1,6 @@
 ---
 type: Note
+subcategory: IoT & Automation
 layout: page
 title: Home Assistant Automations
 category: Homelab
