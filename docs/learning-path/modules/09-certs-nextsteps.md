@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # Module 9 — Certifications & Next Steps
 
 **Audience:** Engineers planning formal credentials alongside the learning path.

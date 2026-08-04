@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # Module 7 — Observability & Day-2 Operations
 
 **Audience:** Engineers responsible for keeping workloads and clusters healthy, observable, and recoverable.

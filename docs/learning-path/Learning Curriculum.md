@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # OpenShift Learning Curriculum
 
 ## Purpose

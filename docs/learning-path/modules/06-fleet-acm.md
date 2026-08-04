@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # Module 6 — Fleet Management with ACM
 
 **Audience:** Engineers operating multiple clusters who need consistency, compliance, and declarative correction at fleet scale.

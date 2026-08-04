@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # Module 1 — Git, GitHub & GitLab Best Practices
 
 **Audience:** Anyone using Git day to day — developers, writers, infrastructure and platform engineers. If you've used Git but not internalized *why* the model works, this module is for you.

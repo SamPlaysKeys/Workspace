@@ -1,3 +1,9 @@
+---
+type: Guide
+category: Guides
+subcategory: OpenShift Learning Path
+status: Active
+---
 # Module 4 — OpenShift Virtualization
 
 **Audience:** Platform engineers who need to run and migrate VMs on Kubernetes/OpenShift.
