@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: Platform Engineering Team
-  description: Validates BareMetalHost rootDeviceHints resolve to RAID-backed storage.
-  license: proprietary
-  min_ansible_version: "2.14"
-dependencies: []

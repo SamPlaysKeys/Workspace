@@ -1,6 +1,0 @@
-apiVersion: v2
-name: hcl-bigfix-discovery
-description: Helm chart to deploy BigFix Inventory (BFI) Cluster Discovery Integration
-type: application
-version: 1.0.0
-appVersion: "1.0.0"

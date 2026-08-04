@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: Platform Engineering Team
-  description: Validates PersistentVolume health, PVC phase, and required StorageClass presence.
-  license: proprietary
-  min_ansible_version: "2.14"
-dependencies: []

@@ -1,5 +1,0 @@
-apiVersion: v2
-name: nfd-instance
-description: NFD instance component chart — creates the NodeFeatureDiscovery CR
-version: 0.1.0
-type: application

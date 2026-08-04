@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: Platform Engineering Team
-  description: Validates that all cluster nodes are Ready and free of resource pressure.
-  license: proprietary
-  min_ansible_version: "2.14"
-dependencies: []

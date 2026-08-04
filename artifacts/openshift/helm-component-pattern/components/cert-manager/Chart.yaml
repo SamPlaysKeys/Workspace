@@ -1,5 +1,0 @@
-apiVersion: v2
-name: cert-manager
-description: cert-manager operator component chart
-version: 0.1.0
-type: application

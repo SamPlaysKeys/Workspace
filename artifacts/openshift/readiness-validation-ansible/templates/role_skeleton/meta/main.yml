@@ -1,7 +1,0 @@
----
-galaxy_info:
-  author: Platform Engineering Team
-  description: <REPLACE: one-line description of what this role validates>
-  license: proprietary
-  min_ansible_version: "2.14"
-dependencies: []

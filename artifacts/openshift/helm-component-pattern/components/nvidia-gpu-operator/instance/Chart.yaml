@@ -1,5 +1,0 @@
-apiVersion: v2
-name: nvidia-gpu-operator-instance
-description: NVIDIA GPU Operator instance component chart — creates the ClusterPolicy CR
-version: 0.1.0
-type: application

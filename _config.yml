@@ -1,0 +1,10 @@
+title: "Workspace Docs"
+description: "Personal documentation workspace for Homelab, Guides, GitOps, and more."
+theme: minima
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+exclude:
+  - README.md
+  - LICENSE
+  - .github/
