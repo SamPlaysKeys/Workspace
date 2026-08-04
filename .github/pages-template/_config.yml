@@ -1,9 +1,8 @@
 title: "Workspace Docs"
-description: "Personal documentation workspace for Homelab, Guides, GitOps, and more."
-theme: minima
-plugins:
-  - jekyll-feed
-  - jekyll-seo-tag
+description: "Personal documentation workspace for Homelab, Guides, Architecture, and Talks."
+# Using our own high-quality dark-themed custom layout, so no gem-based theme is needed.
+# theme: minima
+
 exclude:
   - README.md
   - LICENSE

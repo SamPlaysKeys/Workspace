@@ -238,7 +238,9 @@ def main():
             rel_path = os.path.relpath(file_path, target_dir)
 
             # Do not delete index.md, _config.yml, README.md or standard Jekyll templates
-            if rel_path in ["index.md", "_config.yml", "README.md"]:
+            rel_path_normalized = rel_path.replace("\\", "/")
+            protected_prefixes = ("_layouts/", "_includes/", "assets/", "css/", "js/")
+            if rel_path_normalized in ["index.md", "_config.yml", "README.md"] or rel_path_normalized.startswith(protected_prefixes):
                 continue
 
             if rel_path not in synced_files:

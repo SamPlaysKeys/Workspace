@@ -39,8 +39,7 @@ jobs:
 
       - name: Deploy Pages Templates
         run: |
-          cp main-source/.github/pages-template/_config.yml gh-pages-dest/_config.yml
-          cp main-source/.github/pages-template/index.md gh-pages-dest/index.md
+          cp -r main-source/.github/pages-template/. gh-pages-dest/
 
       - name: Run sync pages script
         run: |
