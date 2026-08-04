@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # Ansible Playbook: Monitor CNV Upgrade Progress
 
 Monitor OpenShift Virtualization operator upgrade status, VM migrations, and workload updates.

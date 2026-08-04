@@ -1,3 +1,4 @@
+---
 # AI VM configuration
 debian_release: "bookworm"
 

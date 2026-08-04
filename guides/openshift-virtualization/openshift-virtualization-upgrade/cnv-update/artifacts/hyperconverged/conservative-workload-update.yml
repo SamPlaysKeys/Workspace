@@ -1,3 +1,6 @@
+---
+type: Reference
+---
 # HyperConverged CR: Conservative Workload Update Strategy
 
 Cautious approach for critical workloads where VM restarts are not acceptable.

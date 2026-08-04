@@ -1,3 +1,4 @@
+---
 - name: Install base packages
   apt:
     name:

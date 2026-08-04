@@ -1,3 +1,4 @@
+---
 - name: Provision AI VM
   hosts: ai-vm
   become: yes
