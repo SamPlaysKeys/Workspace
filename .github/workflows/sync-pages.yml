@@ -53,30 +53,12 @@ jobs:
           cd hugo-build
           hugo --minify
 
-      - name: Checkout GH_Pages branch (Target)
-        uses: actions/checkout@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          ref: GH_Pages
-          path: gh-pages-dest
-
-      - name: Deploy Pre-built HTML to GH_Pages Branch
-        run: |
-          # Clean up existing files in gh-pages-dest (except .git)
-          find gh-pages-dest -maxdepth 1 ! -name 'gh-pages-dest' ! -name '.git' -exec rm -rf {} +
-          # Copy the built public files
-          cp -r hugo-build/public/. gh-pages-dest/
-          # Ensure .nojekyll exists so GitHub Pages doesn't run Jekyll on our raw static HTML
-          touch gh-pages-dest/.nojekyll
-
-      - name: Commit and push changes to GH_Pages
-        working-directory: gh-pages-dest
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if ! git diff-index --quiet HEAD --; then
-            git commit -m "docs: deploy Hugo static build [skip ci]"
-            git push origin GH_Pages
-          else
-            echo "No changes to deploy. Skipping push."
-          fi
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: GH_Pages
+          publish_dir: hugo-build/public
+          force_orphan: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'

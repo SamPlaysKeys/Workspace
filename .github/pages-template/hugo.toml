@@ -1,5 +1,6 @@
-baseURL = 'https://samplayskeys.com/docs/'
-relativeURLs = true
+baseURL = 'https://samplayskeys.github.io/Workspace/'
+relativeURLs = false
+disableDefaultRelref = true
 languageCode = 'en-us'
 title = 'Workspace Docs'
 theme = 'hugo-theme-relearn'
