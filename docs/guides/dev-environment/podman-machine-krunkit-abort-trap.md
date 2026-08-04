@@ -8,6 +8,8 @@ related_to:
 references:
   - https://github.com/containers/krunkit
   - https://github.com/containers/krunkit/blob/main/docs/usage.md
+category: Guides
+title: Fixing Podman Start issues with Krunkit on MacOS
 ---
 
 # Fixing Podman Machine Start Failure (krunkit abort trap) on macOS

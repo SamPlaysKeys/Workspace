@@ -1,5 +1,9 @@
 ---
 type: Reference
+category: Guides
+status: Active
+tags:
+  - CI/CD
 ---
 # Chaining GitHub Actions Workflows Without a PAT or GitHub App
 

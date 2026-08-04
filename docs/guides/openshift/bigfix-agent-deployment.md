@@ -2,10 +2,17 @@
 type: Guide
 status: Active
 system: OpenShift Container Platform
-related_to: [HCL BigFix, Security Context Constraints]
+related_to:
+  - HCL BigFix
+  - Security Context Constraints
 references:
-  - title: "HCL BigFix Client Installation Guides"
-    url: "https://help.hcl-software.com/bigfix/11.0/platform/Console/Installation_Guide/c_bes_client_installation.html"
+  - title: HCL BigFix Client Installation Guides
+    url: https://help.hcl-software.com/bigfix/11.0/platform/Console/Installation_Guide/c_bes_client_installation.html
+category: Architecture
+tags:
+  - OpenShift
+  - app-of-apps
+  - BigFix
 ---
 
 # BigFix Host Agent Client Deployment on OpenShift via GitOps

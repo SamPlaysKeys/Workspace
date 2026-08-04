@@ -1,5 +1,7 @@
 ---
 type: Note
+category: Guides
+status: Active
 ---
 
 # NVIDIA Container Toolkit & CDI Setup on Proxmox GPU Passthrough VMs

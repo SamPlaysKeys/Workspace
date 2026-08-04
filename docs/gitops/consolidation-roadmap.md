@@ -2,6 +2,7 @@
 type: Roadmap
 status: Active
 Date: 2026-07-31
+category: Architecture
 ---
 # GitOps Cluster Consolidation & Version Control Roadmap
 

@@ -2,10 +2,18 @@
 type: Guide
 status: Active
 system: OpenShift Container Platform
-related_to: [HCL BigFix, Node Feature Discovery Operator, Argo CD]
+related_to:
+  - HCL BigFix
+  - Node Feature Discovery Operator
+  - Argo CD
 references:
-  - title: "HCL BigFix Inventory OpenShift Integration"
-    url: "https://help.hcl-software.com/bigfix/11.0/inventory/Inventory/admin/red-hat-openshift-virtualization.html"
+  - title: HCL BigFix Inventory OpenShift Integration
+    url: https://help.hcl-software.com/bigfix/11.0/inventory/Inventory/admin/red-hat-openshift-virtualization.html
+category: Architecture
+tags:
+  - OpenShift
+  - BigFix
+  - app-of-apps
 ---
 
 # BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps

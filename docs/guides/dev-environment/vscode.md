@@ -1,5 +1,7 @@
 ---
 type: Reference
+status: Active
+category: Guides
 ---
 # VSCode Setup for Enterprise Development
 
