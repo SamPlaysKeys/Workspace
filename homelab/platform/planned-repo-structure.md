@@ -5,6 +5,7 @@ title: Homelab Repository Structure
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Homelab Repository Structure
@@ -258,3 +259,5 @@ The Komodo Controller (dedicated NUC) runs:
 - **Alerting integrations** — (optional) Slack, Discord, email notifications
 
 The Controller has network access to all managed environments (Prod, Test, Dev) but runs no workloads itself.
+
+{% endraw %}

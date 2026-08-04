@@ -7,6 +7,7 @@ tags:
 layout: page
 title: Checking OpenShift Certificates
 ---
+{% raw %}
 
 # Checking OpenShift Certificates
 
@@ -139,3 +140,4 @@ While scripts are helpful for point-in-time checks, OpenShift provides built-in 
 1. **Prometheus Alerts**: OpenShift's default monitoring stack includes Prometheus alerts for certificate expiration.
 2. **Web Console**: Check **Observe → Alerting** in the OpenShift web console for active certificate expiration warnings.
 3. **CSR Approval**: For pending Certificate Signing Requests (often relevant during node addition or cert rotation), check status with `oc get csr -w` and approve manually if necessary using `oc adm certificate approve <csr-name>`.
+{% endraw %}

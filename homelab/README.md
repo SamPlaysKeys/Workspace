@@ -5,6 +5,7 @@ title: Homelab Infrastructure
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Homelab Infrastructure
@@ -121,3 +122,5 @@ Dedicated Debian VM with Quadro P5000 GPU passthrough, running LlamaFarm as the 
 2. **Promotion via file movement** — Move/copy TOML files between `dev/` → `test/` → `prod/` directories  
 3. **Isolation for sandboxes** — DevNode and DevOCP have no GitOps integration; they're for experimentation  
 4. **Dedicated management plane** — Komodo Controller runs on separate hardware (NUC) with no workloads  
+
+{% endraw %}

@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 9 — Certifications & Next Steps
 ---
+{% raw %}
 
 # Module 9 — Certifications & Next Steps
 
@@ -59,3 +60,5 @@ title: Module 9 — Certifications & Next Steps
 - Track upstream changes (course renumbers, ZTP tooling, ACM policy API) and update this path.
 
 
+
+{% endraw %}

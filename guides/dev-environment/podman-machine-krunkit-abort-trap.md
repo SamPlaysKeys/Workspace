@@ -12,6 +12,7 @@ category: Guides
 title: Fixing Podman Start issues with Krunkit on MacOS
 layout: page
 ---
+{% raw %}
 
 
 # Fixing Podman Machine Start Failure (krunkit abort trap) on macOS
@@ -201,3 +202,5 @@ This issue was diagnosed on:
 
 - [containers/krunkit](https://github.com/containers/krunkit) — libkrun VM launcher for macOS; Homebrew install instructions
 - [krunkit usage docs](https://github.com/containers/krunkit/blob/main/docs/usage.md) — VM configuration and device options
+
+{% endraw %}

@@ -8,6 +8,7 @@ tags:
 layout: page
 title: Using the integrated OpenShift container image registry
 ---
+{% raw %}
 
 # Using the integrated OpenShift container image registry
 
@@ -106,3 +107,5 @@ oc get imagestream -n nvidia-gpu-operator   # if you use ImageStreams; direct pu
 - Red Hat: [Accessing the registry](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/registry/accessing-the-registry) (push/pull, routes, and authentication for your OCP version).
 
 **See also:** [NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy](nvidia-vgpu-manager-internal-registry-and-clusterpolicy.md) — end-to-end flow when hosting the vGPU Manager image on the integrated registry.
+
+{% endraw %}

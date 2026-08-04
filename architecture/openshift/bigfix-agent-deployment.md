@@ -16,6 +16,7 @@ tags:
 layout: page
 title: BigFix Host Agent Client Deployment on OpenShift via GitOps
 ---
+{% raw %}
 
 
 # BigFix Host Agent Client Deployment on OpenShift via GitOps
@@ -137,3 +138,5 @@ The deployment is self-contained under `artifacts/openshift/bigfix-agent-deploym
 
 ## References
 * [HCL BigFix Platform Documentation](https://help.hcl-software.com/bigfix/11.0/platform/index.html) - Platform features, command guides, and client management.
+
+{% endraw %}

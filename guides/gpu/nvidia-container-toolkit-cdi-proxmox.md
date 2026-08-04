@@ -5,6 +5,7 @@ status: Active
 layout: page
 title: NVIDIA Container Toolkit & CDI Setup on Proxmox GPU Passthrough VMs
 ---
+{% raw %}
 
 
 # NVIDIA Container Toolkit & CDI Setup on Proxmox GPU Passthrough VMs
@@ -90,3 +91,5 @@ You should see the GPU listed with driver version and CUDA capabilities.
 - [NVIDIA Container Toolkit Installation Guide](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
 - [NVIDIA CDI Support](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/cdi-support.html)
 - [OpenShell GPU Passthrough](https://openshell.dev/docs/gpu)
+
+{% endraw %}

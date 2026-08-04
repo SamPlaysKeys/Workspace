@@ -17,6 +17,7 @@ tags:
 layout: page
 title: BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps
 ---
+{% raw %}
 
 
 # BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps
@@ -155,3 +156,5 @@ This forces Helm to output the braces literally, allowing the NFD operator to in
 
 ## References
 * [HCL BigFix Inventory OpenShift Integration](https://help.hcl-software.com/bigfix/11.0/inventory/Inventory/admin/red-hat-openshift-virtualization.html) - Step-by-step configurations for sub-capacity reporting.
+
+{% endraw %}

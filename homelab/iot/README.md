@@ -5,6 +5,7 @@ title: IoT Plan — New House
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # IoT Plan — New House
@@ -168,3 +169,5 @@ When ready to grow:
 - [Home Assistant](https://www.home-assistant.io/)
 - [Zigbee2MQTT Supported Devices](https://www.zigbee2mqtt.io/supported-devices/)
 - [ratgdo](https://paulwieland.github.io/ratgdo/)
+
+{% endraw %}

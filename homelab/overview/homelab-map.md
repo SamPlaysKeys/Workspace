@@ -5,6 +5,7 @@ title: Homelab Map
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Homelab Map
@@ -146,3 +147,4 @@ Goals and acceptance criteria: [observability/status-and-operator-dashboard.md](
 |------------|---------|
 | **Public status** | `status.samplayskeys.com` on a VPS — user-facing service health (non-admin), available during local outages. |
 | **Operator dashboard** | Single pane (e.g. Glances ± link portal) with lab overview and links to Uptime Kuma, Komodo, and management UIs. |
+{% endraw %}

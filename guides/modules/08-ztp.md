@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 8 — Zero Touch Provisioning (Specialist Track)
 ---
+{% raw %}
 
 # Module 8 — Zero Touch Provisioning (Specialist Track)
 
@@ -72,3 +73,5 @@ Git commit (SiteConfig / PolicyGenTemplate)
 4. Walk the ESO flow: where the secret lives, how ESO auths to vault, when the K8s Secret appears.
 
 
+
+{% endraw %}

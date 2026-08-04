@@ -14,6 +14,7 @@ category: Guides
 title: Installing Podman on MacOS
 layout: page
 ---
+{% raw %}
 
 
 # Podman Desktop Setup on macOS
@@ -387,3 +388,5 @@ In Podman Desktop: **Settings → Resources** shows the machine as **Running**; 
 - [Managing Docker compatibility](https://podman-desktop.io/docs/migrating-from-docker/managing-docker-compatibility) — socket mapping and CLI setup
 - [Podman installation (macOS)](https://podman.io/docs/installation) — CLI and machine overview
 - [containers/krunkit](https://github.com/containers/krunkit) — libkrun VM backend for Apple Silicon
+
+{% endraw %}

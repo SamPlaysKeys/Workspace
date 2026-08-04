@@ -6,6 +6,7 @@ category: Architecture
 layout: page
 title: GitOps Cluster Consolidation & Version Control Roadmap
 ---
+{% raw %}
 
 # GitOps Cluster Consolidation & Version Control Roadmap
 
@@ -150,3 +151,5 @@ This flat design guarantees that:
 * **High Visibility:** All environment-specific settings are completely visible in their respective subdirectories.
 * **No Hidden Overrides:** Eliminates nested inheritance or complex drift, making configurations easy to audit, compare, and modify.
 * **Declarative Consistency:** All target references can read from the same commit or release tag while cleanly resolving environment-specific configurations via their designated subdirectory.
+
+{% endraw %}

@@ -7,6 +7,7 @@ title: 'ADR: Baremetal Docker Host OS Selection'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # ADR: Baremetal Docker Host OS Selection
@@ -181,3 +182,5 @@ The config template is rendered by Ansible with host-specific variables (core ad
 - Komodo — [Periphery installation docs](https://komo.do/docs/setup/connect-servers)
 - Komodo issue #504 — Podman compose network status mismatch
 - Komodo discussion #220 — Maintainer recommends systemd agent over containerized
+
+{% endraw %}

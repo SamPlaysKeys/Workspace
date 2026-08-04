@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 1 — Git, GitHub & GitLab Best Practices
 ---
+{% raw %}
 
 # Module 1 — Git, GitHub & GitLab Best Practices
 
@@ -136,3 +137,5 @@ Git makes governance faster, more traceable, and automatable at the enforcement 
 4. **Recover:** make a bad commit on a feature branch; `git revert` it; explain why not `git reset` on a shared branch.
 
 
+
+{% endraw %}

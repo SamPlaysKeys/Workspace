@@ -7,6 +7,7 @@ tags:
 layout: page
 title: Chaining GitHub Actions Workflows Without a PAT or GitHub App
 ---
+{% raw %}
 
 # Chaining GitHub Actions Workflows Without a PAT or GitHub App
 
@@ -252,3 +253,5 @@ After implementing:
 ## Summary
 
 The `workflow_run` trigger lets you chain workflows without PATs or GitHub Apps. It's slightly more complex than the token-based approaches, but works entirely within GitHub's default permission model — making it ideal for enterprise environments where token creation is restricted.
+
+{% endraw %}

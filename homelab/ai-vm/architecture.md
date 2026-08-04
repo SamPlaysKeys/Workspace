@@ -4,6 +4,7 @@ title: AI VM Architecture
 category: Homelab
 status: Active
 ---
+{% raw %}
 # AI VM Architecture
 
 ## Overview
@@ -257,3 +258,5 @@ Client ─── Tailscale ─── AI VM (:14345)
 - **Single GPU** — can serve one model at a time efficiently. For multi-model serving concurrently, split VRAM across instances or add a second GPU.
 - **LlamaFarm pre-1.0** — expect occasional breaking changes. Pin the `lf` version and test upgrades in a disposable LXC first.
 - **Monitoring** — not yet addressed. Consider Prometheus + node_exporter or Uptime Kuma for health checks.
+
+{% endraw %}

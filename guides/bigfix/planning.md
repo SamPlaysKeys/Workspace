@@ -9,6 +9,7 @@ category: Guides
 title: HCL BigFix Agent Architecture Guide
 layout: page
 ---
+{% raw %}
 
 
 # HCL BigFix Planning & Architecture Guide
@@ -201,3 +202,5 @@ Use these specific discovery questions during your initial meeting with the clie
 
 - [HCL BigFix Enterprise Support Portal](https://support.hcl-software.com/csm) - Central knowledge base and product updates.
 - [BigFix Developer Reference](https://developer.bigfix.com/) - Authoring guides, Relevance query guides, and REST API references.
+
+{% endraw %}

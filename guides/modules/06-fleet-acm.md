@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 6 — Fleet Management with ACM
 ---
+{% raw %}
 
 # Module 6 — Fleet Management with ACM
 
@@ -77,3 +78,5 @@ title: Module 6 — Fleet Management with ACM
 3. Scenario: Virt operator on all prod clusters (mandate) + Strimzi only on one team's clusters. Argue the tool for each; what changes if Virt becomes a regulatory requirement?
 
 
+
+{% endraw %}

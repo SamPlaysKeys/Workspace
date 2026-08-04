@@ -6,6 +6,7 @@ title: Home Assistant Automations
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Home Assistant Automations
@@ -369,3 +370,5 @@ mode: single
 ```
 
 Time-box the disable window so ad-blocking is re-enabled automatically. Surface the remaining time on the local status page so the household can see the countdown.
+
+{% endraw %}

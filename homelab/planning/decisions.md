@@ -5,6 +5,7 @@ title: Decisions
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Decisions
@@ -134,3 +135,5 @@ An opinionated migration guide covering a homelab with 5 servers, 20+ stacks, an
 - **Docker data agnostic location:** Using `$DOCKER_DATA` ENV per host for bind mount paths, making compose files portable across servers.
 
 **Follow-up post (also by FoxxMD):** [Komodo FAQ, Tips, and Tricks](https://blog.foxxmd.dev/posts/komodo-tips-tricks/) — covers container exec shortcuts, troubleshooting, and deeper operational patterns.
+
+{% endraw %}

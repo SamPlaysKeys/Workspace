@@ -7,6 +7,7 @@ layout: page
 title: Unifi Zone-Based Firewall (ZBF) Guide
 category: Homelab
 ---
+{% raw %}
 
 
 # Unifi Zone-Based Firewall (ZBF) Guide
@@ -187,3 +188,4 @@ The `External` zone represents the Internet.
   - **Destination Zone:** External
   - **Action:** Block
   - *(Optional: Create a higher-priority Allow rule for specific IoT devices that require cloud connectivity, like a smart vacuum).*
+{% endraw %}

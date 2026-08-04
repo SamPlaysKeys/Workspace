@@ -6,6 +6,7 @@ layout: page
 title: 'NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift
   Virtualization)'
 ---
+{% raw %}
 
 # NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)
 
@@ -114,3 +115,5 @@ When the **vGPU Manager** and **sandbox** operands are healthy and nodes are lab
 - [NVIDIA GPU Operator with OpenShift Virtualization](https://docs.nvidia.com/datacenter/cloud-native/openshift/latest/openshift-virtualization.html)
 - [NVIDIA driver container repository](https://gitlab.com/nvidia/container-images/driver)
 - [Red Hat: Accessing the registry](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/registry/accessing-the-registry)
+
+{% endraw %}

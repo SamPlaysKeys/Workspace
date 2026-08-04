@@ -5,6 +5,7 @@ title: Environments
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Environments
@@ -143,3 +144,5 @@ These are network segments without Komodo-managed workloads.
 | **Komodo managed** | Yes | Yes | Partial | No | No | No |
 | **Promotion path** | — | → Prod | → Test | — | — | — |
 | **Primary runtime** | Docker | Docker | Docker, VMs, OCP | Desktop | Embedded | Docker / baremetal |
+
+{% endraw %}

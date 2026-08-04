@@ -6,6 +6,7 @@ layout: page
 title: Tailscale Grants
 category: Homelab
 ---
+{% raw %}
 
 
 # Tailscale Grants
@@ -282,3 +283,5 @@ sudo tailscale up \
 - [x] `group:manager` — resolved: not used, removed
 - [x] Exit node grants — resolved: dedicated node handles this
 - [ ] IoT subnet (`10.0.50.0/24`) — likely will change, placeholder
+
+{% endraw %}

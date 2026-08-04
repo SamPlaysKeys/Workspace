@@ -5,6 +5,7 @@ title: Public status site and operator dashboard
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Public status site and operator dashboard
@@ -101,3 +102,5 @@ Plans for **user-facing** public status (`status.samplayskeys.com`) and a **priv
 - **Operator dashboard:** “I pasted every admin URL into git” — rotation and leak risk; prefer Tailscale MagicDNS names + no secrets in repo.
 
 When you name concrete software for Phase 1 or 2, run a short **Pre-Mortem** before locking in.
+
+{% endraw %}

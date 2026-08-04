@@ -7,6 +7,7 @@ title: 'ADR: Per-environment Git branches via Komodo ResourceSync'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # ADR: Per-environment Git branches via Komodo ResourceSync
@@ -78,3 +79,5 @@ An earlier sketch of this approach lived in `wip/komodo-artifact-templates/scrat
 - Komodo: [Sync resources](https://komo.do/docs/automate/sync-resources)
 - Homelab repo layout: [Planned repository structure](../../platform/planned-repo-structure.md) (includes promotion flow between environment folders)
 - Prior scratch note: `wip/komodo-artifact-templates/scratch/branch_management_ideas.md`
+
+{% endraw %}

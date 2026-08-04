@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 2 — Containers & Registries
 ---
+{% raw %}
 
 # Module 2 — Containers & Registries
 
@@ -60,3 +61,5 @@ Key shifts from VM thinking:
 4. Push an image to a registry; explain auth and how a cluster later pulls it (ties to Module 3 image pulls + Module 8 disconnected mirrors).
 
 
+
+{% endraw %}

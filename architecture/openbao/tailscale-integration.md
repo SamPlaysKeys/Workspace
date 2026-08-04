@@ -11,6 +11,7 @@ category: Architecture
 layout: page
 title: Tailscale Integration for OpenBao
 ---
+{% raw %}
 
 
 # Tailscale Integration for OpenBao
@@ -239,3 +240,5 @@ services:
 1. **Permission Denied (Execution)**: If OpenBao logs `fork/exec /Users/sam/Workspace/openbao-plugins/openbao-plugin-secrets-tailscale: permission denied`, verify that the plugin file is executable by running `chmod +x` on it.
 2. **Architecture Mismatch**: Ensure you copied the correct architecture binary. If OpenBao runs on Apple Silicon macOS, you must use the `darwin-arm64` binary. If it runs inside a Linux Docker container, you must use the `linux-amd64` or `linux-arm64` binary depending on your host.
 3. **Invalid Tag Prefix**: When requesting a token with tags, Tailscale API strictly requires tags to begin with `tag:` (e.g. `tag:docker`, not `docker`).
+
+{% endraw %}

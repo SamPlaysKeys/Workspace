@@ -5,6 +5,7 @@ title: Homelab Hardware
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Homelab Hardware
@@ -48,3 +49,4 @@ Hosted on **ProxMox** (Tailscale installed on ProxMox host):
 - **Switch**: Unifi 16-port PoE
 - **Uplink**: GFiber (1Gbps symmetrical)
 - **Overlays**: Tailscale for remote management/access
+{% endraw %}

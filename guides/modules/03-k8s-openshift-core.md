@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 3 — Kubernetes & OpenShift Core
 ---
+{% raw %}
 
 # Module 3 — Kubernetes & OpenShift Core
 
@@ -135,3 +136,5 @@ Treat vCenter/ESXi analogies as a *temporary scaffold only*. They break:
 <!-- ORG-SPECIFIC: our StorageClasses, CSI drivers, backup/restore for PVs. -->
 
 
+
+{% endraw %}

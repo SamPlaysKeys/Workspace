@@ -5,6 +5,7 @@ title: 'Decision: Door Locks'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Decision: Door Locks
@@ -65,3 +66,5 @@ Revisit when one of these use cases becomes valuable:
 2. Integrate via Home Assistant
 3. Automate: auto-lock, lock-on-leave, alert if unlocked while away
 4. Tie to camera snapshots on unlock events
+
+{% endraw %}

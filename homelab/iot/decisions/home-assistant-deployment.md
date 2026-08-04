@@ -5,6 +5,7 @@ title: 'ADR: Home Assistant Deployment'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # ADR: Home Assistant Deployment
@@ -456,3 +457,5 @@ Before implementing:
 - [Zigbee2MQTT Coordinator Backup](https://www.zigbee2mqtt.io/guide/usage/backup_restore.html)
 - [Home Assistant Backup/Restore](https://www.home-assistant.io/common-tasks/os/#backups)
 - [Unifi API](https://ubntwiki.com/products/software/unifi-controller/api)
+
+{% endraw %}

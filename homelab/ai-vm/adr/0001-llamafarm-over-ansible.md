@@ -4,6 +4,7 @@ title: 'ADR 0001: LlamaFarm as AI model management layer'
 category: Homelab
 status: Active
 ---
+{% raw %}
 # ADR 0001: LlamaFarm as AI model management layer
 
 **Status:** Proposed  
@@ -113,3 +114,5 @@ LlamaFarm handles:
 - LlamaFarm docs: https://docs.llamafarm.dev
 - GitHub: https://github.com/llama-farm/llamafarm (Apache 2.0, 833 stars, v0.0.34)
 - AI VM architecture: `docs/homelab/ai-vm/architecture.md`
+
+{% endraw %}

@@ -6,6 +6,7 @@ title: 'ADR: Podman vs Docker for Container Runtime'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # ADR: Podman vs Docker for Container Runtime
@@ -63,3 +64,5 @@ We need a container runtime for local development, CI/CD pipelines, and homelab 
 - Podman's macOS experience relies on a Linux VM (via `podman machine` or `podman desktop`), similar to Docker Desktop but less polished. Volume mounts and port forwarding are slower on macOS.
 - If Kubernetes is the long-term target, Podman's pod-level semantics map more naturally to k8s concepts.
 - Docker is still the default for most CI/CD providers. Using Podman in CI requires explicit runner configuration.
+
+{% endraw %}

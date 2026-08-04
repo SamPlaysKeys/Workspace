@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 0 — Prerequisites & How to Use
 ---
+{% raw %}
 
 # Module 0 — Prerequisites & How to Use
 
@@ -50,3 +51,5 @@ This path deliberately teaches *models before commands*. The single biggest obst
 3. You know where to record completion and who reviews it.
 
 <!-- ORG-SPECIFIC: Define how completion is tracked (manager sign-off, badge, checklist in our LMS). -->
+
+{% endraw %}

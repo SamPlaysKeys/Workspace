@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 4 — OpenShift Virtualization
 ---
+{% raw %}
 
 # Module 4 — OpenShift Virtualization
 
@@ -61,3 +62,5 @@ OpenShift Virtualization runs VMs *inside* Kubernetes via KubeVirt. The hypervis
 3. Walk one MTV planning chapter: source inventory, network/storage maps, cutover — even if you migrate only one small VM.
 
 
+
+{% endraw %}

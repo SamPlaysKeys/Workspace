@@ -5,6 +5,7 @@ title: Architecture
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Architecture
@@ -195,3 +196,5 @@ Each managed environment is driven by Komodo **ResourceSync**, which can target 
 ## Network Topology
 
 *To be documented — network segmentation, VLANs, access controls between environments.*
+
+{% endraw %}

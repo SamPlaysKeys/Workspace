@@ -8,6 +8,7 @@ title: 'ADR: Container Runtime Tradeoffs — Docker (Rootful), Docker (Rootless)
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # ADR: Container Runtime Tradeoffs — Docker (Rootful), Docker (Rootless), and Podman
@@ -143,3 +144,5 @@ If the homelab expands to include untrusted or multi-tenant workloads, this shou
 - Podman: [Systemd integration](https://github.com/containers/podman/blob/main/docs/tutorials/systemd.md)
 - Komodo issue #504 — Podman compose network status mismatch
 - ADR 0002: [Baremetal Docker Host OS Selection](0002-baremetal-host-os.md)
+
+{% endraw %}

@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 5 — CI/CD & GitOps
 ---
+{% raw %}
 
 # Module 5 — CI/CD & GitOps
 
@@ -78,3 +79,5 @@ Groups are Kustomize `kind: Component` (composable, not inherited) — a cluster
 7. **Secrets:** a teammate committed a base64 `Secret`. Explain exposure, remediate with Sealed Secrets vs ESO (why), and prevent recurrence via pre-commit hook or CODEOWNERS.
 
 
+
+{% endraw %}

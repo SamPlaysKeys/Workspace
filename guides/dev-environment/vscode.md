@@ -5,6 +5,7 @@ category: Guides
 layout: page
 title: VSCode Setup for Enterprise Development
 ---
+{% raw %}
 
 # VSCode Setup for Enterprise Development
 
@@ -168,3 +169,5 @@ Ensure you select the correct Python interpreter:
 - **Dev Containers**: Use the **Remote - Containers** extension to define your development environment in a `Dockerfile` or `docker-compose.yaml` within the repo.
 - **Snippets**: Create custom snippets for common Ansible tasks or OpenShift manifest headers.
 - **Tasks**: Define VSCode Tasks (`tasks.json`) to run your playbooks or tests with a single shortcut.
+
+{% endraw %}

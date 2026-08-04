@@ -5,6 +5,7 @@ title: Roadmap
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Roadmap
@@ -136,3 +137,5 @@ Currently planning a single `infrastructure/` repo. Could split into:
 | DNS | Pi-hole, AdGuard, external | Tied to network topology |
 | Monitoring stack | Komodo + Uptime Kuma + log paths; metrics stack (Prometheus/Grafana, etc.) deferred | Env/power metrics also deferred |
 | Secrets | Komodo variables, Vault, SOPS | Depends on sensitivity |
+
+{% endraw %}

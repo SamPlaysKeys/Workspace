@@ -6,6 +6,7 @@ title: Tailscale
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Tailscale
@@ -468,3 +469,5 @@ A minimal node dedicated to exit node functionality:
 ## Related Guides
 
 - [OpenBao Tailscale Integration Guide](../../guides/openbao/tailscale-integration.md) - Secure, on-demand generation of Tailscale device auth keys for Docker containers.
+
+{% endraw %}

@@ -5,6 +5,7 @@ title: 'Decision: Smart Switch Protocol'
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 # Decision: Smart Switch Protocol
@@ -98,3 +99,5 @@ Neutral wire is present.
 - **Coordinator:** Sonoff Zigbee 3.0 USB Dongle Plus
 - **Integration:** ZHA or Zigbee2MQTT (both well-supported)
 - **Placement:** Central location or USB extension to avoid interference
+
+{% endraw %}

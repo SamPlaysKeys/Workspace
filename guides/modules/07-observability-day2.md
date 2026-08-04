@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: Module 7 — Observability & Day-2 Operations
 ---
+{% raw %}
 
 # Module 7 — Observability & Day-2 Operations
 
@@ -57,3 +58,5 @@ Day-2 operations is *detect and recover*, not *click and hope*. Observability te
 4. Explain the OADP backup flow for a Virt VM and why the KubeVirt Velero plugin is required for consistent VM backup.
 
 
+
+{% endraw %}

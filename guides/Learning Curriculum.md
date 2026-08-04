@@ -6,6 +6,7 @@ status: Active
 layout: page
 title: OpenShift Learning Curriculum
 ---
+{% raw %}
 
 # OpenShift Learning Curriculum
 
@@ -103,3 +104,5 @@ All modules live in [learning-path/modules/](learning-path/modules/). Each is se
 | 7 | [Observability & Day-2 Operations](learning-path/modules/07-observability-day2.md) | Prometheus, Loki, OADP, etcd backup/DR |
 | 8 | [Zero Touch Provisioning](learning-path/modules/08-ztp.md) | SiteConfig, PolicyGenTemplate, TALM — specialist track |
 | 9 | [Certifications & Next Steps](learning-path/modules/09-certs-nextsteps.md) | RHCSA, KCNA, CKA, CKAD, EX280, EX480 map |
+
+{% endraw %}

@@ -5,6 +5,7 @@ title: Scratchpad
 category: Homelab
 status: Active
 ---
+{% raw %}
 
 
 ---
@@ -61,3 +62,5 @@ Gaming PC - Not technically part of any environment (it will be part of a separa
 NOTE: At some point, it may become worth it to leverage on of my spare laptops as a stand-in device for running an image for work/testing, but that is a future problem. For now, I will not include a machine to use as a "daily work" machine in my plans.
 
 
+
+{% endraw %}
