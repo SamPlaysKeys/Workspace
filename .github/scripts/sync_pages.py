@@ -100,25 +100,28 @@ def main():
                 first_dir = rel_parts[0] if len(rel_parts) > 1 else ""
                 is_homelab = first_dir.lower() == "homelab"
 
-                category = None
-                status = None
+                category = frontmatter.get("category")
+                status = frontmatter.get("status")
 
                 if is_homelab:
                     # Homelab doesn't require frontmatter fields, has defaults
-                    category = frontmatter.get("category", "Homelab")
-                    status = frontmatter.get("status", "Active")
+                    if not category:
+                        category = "Homelab"
+                    if not status:
+                        status = "Active"
                 else:
-                    # Strict gatekeeper: Must have BOTH category and status
-                    category = frontmatter.get("category")
-                    status = frontmatter.get("status")
-
+                    # Strict gatekeeper: Outside Homelab must have BOTH category and status
                     if not category or not status:
-                        # Skip files outside homelab that lack both category and status
                         continue
 
                 # 3. Clean and normalize category and status
                 category = str(category).strip()
                 status = str(status).strip()
+
+                # Status gatekeeper: Only sync files with status 'Active' (case-insensitive)
+                if status.lower() != "active":
+                    print(f"Skipping {rel_path} (status is '{status}', not 'Active')")
+                    continue
 
                 # 4. Extract or determine Title
                 title = frontmatter.get("title")
