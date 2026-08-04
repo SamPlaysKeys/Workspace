@@ -89,6 +89,9 @@ def main():
                     continue
 
                 # 2. Determine default category based on directory name
+                # NOTE: For subcategories, we currently support manual 'subcategory' setting in frontmatter.
+                # Future expansion: Automatically extract subcategory from second-level directories
+                # (e.g., docs/homelab/ai-vm/ -> 'ai-vm' -> 'Ai Vm' as subcategory).
                 first_dir = rel_parts[0] if len(rel_parts) > 1 else ""
                 is_homelab = first_dir.lower() == "homelab"
 
