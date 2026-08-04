@@ -1,0 +1,36 @@
+---
+- name: Create project directory
+  file:
+    path: "/home/{{ lf_user }}/{{ lf_project_name }}"
+    state: directory
+    owner: "{{ lf_user }}"
+    group: "{{ lf_group }}"
+
+- name: Deploy llamafarm.yaml
+  template:
+    src: llamafarm.yaml.j2
+    dest: "/home/{{ lf_user }}/{{ lf_project_name }}/llamafarm.yaml"
+    owner: "{{ lf_user }}"
+    group: "{{ lf_group }}"
+    mode: 0644
+
+- name: Install systemd unit
+  template:
+    src: llamafarm.service.j2
+    dest: /etc/systemd/system/llamafarm.service
+    mode: 0644
+  notify: restart llamafarm
+
+- name: Enable and start LlamaFarm service
+  systemd:
+    name: llamafarm
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+  handlers:
+    - name: restart llamafarm
+      systemd:
+        name: llamafarm
+        state: restarted
+        daemon_reload: yes
