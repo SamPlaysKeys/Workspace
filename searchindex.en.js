@@ -5,7 +5,7 @@ var relearn_searchindex = [
     "description": "Documentation Graduated documentation from brainstorming sessions, troubleshooting investigations, and project work.\nStructure docs/ ├── gitops/ # GitOps consolidation, roadmaps, workflows, and drift management ├── platform/ # Platform architecture and operator models ├── homelab/ # Homelab planning (see homelab/README.md for topic index) │ ├── overview/ # Map + visual graphic │ ├── network/ # Tailscale, UniFi │ ├── platform/ # Architecture, environments, hardware, repo layout │ ├── observability/ # Public status + operator dashboard plans │ ├── planning/ # Decisions, roadmap, scratchpad │ └── iot/ # Smart home ├── troubleshooting/ # Remediation guides (from Troubleshoot sessions) ├── guides/ # Setup and prevention guides │ ├── openshift/ # OpenShift / OCP how-tos (registry, GPU Operator, etc.) │ └── dev-environment/ # VSCode setup, local tools, etc. └── notes/ # Personal notes (events, etc.) How Documentation Gets Here Documentation graduates from wip/ sessions:",
     "tags": [],
     "title": "Documentation",
-    "uri": "/docs/index.html"
+    "uri": "/Workspace/index.html"
   },
   {
     "breadcrumb": "Documentation",
@@ -13,7 +13,7 @@ var relearn_searchindex = [
     "description": "Homelab Infrastructure Design, architecture, and operations for a greenfield homelab rebuild. Documentation is grouped by topic; use this page as the index.\nAt a glance The homelab is organized into six logical environments (VLANs) with different purposes:\nEnvironment Purpose Management Prod Production workloads GitOps (Komodo) Test Pre-production validation GitOps (Komodo) Dev Development, experimentation, OCP cluster Mixed (Komodo for Docker, unmanaged for VMs/OCP) User Personal workstation N/A IoT Smart home, cameras Isolated DMZ Public-facing services (qBittorrent) Isolated, restricted Prod, Test, and Dev (Docker containers) form a promotion path managed by Komodo. Dev also contains unmanaged nodes (VMs, OCP cluster) for experimentation.",
     "tags": [],
     "title": "Homelab Infrastructure",
-    "uri": "/docs/homelab/index.html"
+    "uri": "/Workspace/homelab/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -21,7 +21,7 @@ var relearn_searchindex = [
     "description": "Tailscale Network connectivity strategy for the homelab using Tailscale mesh VPN.\nOverview Tailscale is a mesh VPN built on WireGuard that creates a secure network (called a “tailnet”) across devices regardless of their physical location. Unlike traditional VPNs, there’s no central server that all traffic flows through — devices connect directly to each other.",
     "tags": [],
     "title": "Tailscale",
-    "uri": "/docs/homelab/network/tailscale/index.html"
+    "uri": "/Workspace/homelab/network/tailscale/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -31,7 +31,7 @@ var relearn_searchindex = [
       "OpenShift"
     ],
     "title": "Checking OpenShift Certificates",
-    "uri": "/docs/guides/openshift/checking-certificates/index.html"
+    "uri": "/Workspace/guides/openshift/checking-certificates/index.html"
   },
   {
     "breadcrumb": "Documentation",
@@ -39,7 +39,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Guides",
-    "uri": "/docs/guides/index.html"
+    "uri": "/Workspace/guides/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Tags",
@@ -47,7 +47,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tag :: OpenShift",
-    "uri": "/docs/tags/openshift/index.html"
+    "uri": "/Workspace/tags/openshift/index.html"
   },
   {
     "breadcrumb": "Documentation",
@@ -55,7 +55,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tags",
-    "uri": "/docs/tags/index.html"
+    "uri": "/Workspace/tags/index.html"
   },
   {
     "breadcrumb": "Documentation",
@@ -63,7 +63,7 @@ var relearn_searchindex = [
     "description": "This section compiles primary system architecture blueprints, integration designs, and infrastructure roadmaps.\nArchitecture Blueprints Security \u0026 Integrations Tailscale Integration for OpenBao - Security architecture for generating secure, on-demand Tailscale authorization keys for Dockerized containers using HashiCorp Vault / OpenBao. Deployment Orchestration BigFix Discovery \u0026 Server Deployment - Architectural design for rolling out BigFix server and discovery engines inside specialized namespaces. BigFix Agent DaemonSet Deployment - DaemonSet design model for executing BigFix security agents on underlying OpenShift worker nodes. Consolidation Roadmaps Infrastructure Consolidation Roadmap - Multi-phase migration plan for transitioning core homelab services and workloads from independent virtual machines to unified Kubernetes/OpenShift containers.",
     "tags": [],
     "title": "Architecture \u0026 System Designs",
-    "uri": "/docs/architecture/index.html"
+    "uri": "/Workspace/architecture/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Architecture \u0026 System Designs",
@@ -71,7 +71,7 @@ var relearn_searchindex = [
     "description": "GitOps Cluster Consolidation \u0026 Version Control Roadmap This roadmap outlines the strategic phased approach for consolidating disparate, tag-drifted, or unmanaged GitOps clusters (environments) back into a fully version-controlled lifecycle managed off of a single main branch with tagging.\nObjective To eliminate repository drift, simplify environment configuration, and establish a clear promotion path by:",
     "tags": [],
     "title": "GitOps Cluster Consolidation \u0026 Version Control Roadmap",
-    "uri": "/docs/architecture/consolidation-roadmap/index.html"
+    "uri": "/Workspace/architecture/consolidation-roadmap/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e Architecture decision records (homelab)",
@@ -79,7 +79,7 @@ var relearn_searchindex = [
     "description": "ADR: Baremetal Docker Host OS Selection Context The homelab needs a host OS for baremetal Docker nodes (LenovoMini 1 for Prod, LenovoMini 2 for Test, and the DevDocker VM on ProxMox). Requirements:\nRPM/DNF-based — user preference, already familiar with the ecosystem. Komodo GitOps compatibility — Periphery agent must be able to manage container workloads. Low-maintenance — set once and forget; not something to constantly troubleshoot. Easily automatable — host provisioning should be reproducible via Ansible, including Periphery agent setup. Options Considered Host OS Option Release Cadence Support Window Notes Fedora Server ~6mo ~13mo Latest kernel + tooling, frequent upgrades Rocky / Alma Linux Major (9.x) ~10yr RHEL-compatible, boring \u0026 stable Fedora CoreOS Auto-updating streams Per stream Immutable, no package management at runtime CentOS Stream Rolling between RHEL releases Continuous Between Fedora and RHEL Container Runtime Factor Docker Podman Komodo Periphery support First-class (native socket or API) Rough — community workarounds only (DOCKER_HOST to socket emulation) Rootless Available (opt-in via dockerd-rootless-setuptool.sh) Built-in, rootless by default Compose Docker Compose v2 podman-compose or podman play kube Research Findings Podman + Komodo Compatibility After investigation, Podman support in Komodo relies on workarounds:",
     "tags": [],
     "title": "ADR: Baremetal Docker Host OS Selection",
-    "uri": "/docs/homelab/planning/adrs/0002-baremetal-host-os/index.html"
+    "uri": "/Workspace/homelab/planning/adrs/0002-baremetal-host-os/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e Architecture decision records (homelab)",
@@ -87,7 +87,7 @@ var relearn_searchindex = [
     "description": "ADR: Container Runtime Tradeoffs — Docker (Rootful), Docker (Rootless), and Podman Context Selecting a container runtime for baremetal Docker hosts involves balancing security, operational convenience, and tooling compatibility. This ADR breaks down three approaches and the fundamental tension between central-socket management and daemonless isolation.",
     "tags": [],
     "title": "ADR: Container Runtime Tradeoffs — Docker (Rootful), Docker (Rootless), and Podman",
-    "uri": "/docs/homelab/planning/adrs/0003-container-runtime-tradeoffs/index.html"
+    "uri": "/Workspace/homelab/planning/adrs/0003-container-runtime-tradeoffs/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -95,7 +95,7 @@ var relearn_searchindex = [
     "description": "Architecture decision records (homelab) ADRs capture decisions that are stable enough to reference later, with context and trade-offs. They supplement the narrative Decisions page.\nDocument Status Per-environment Git branches via Komodo ResourceSync Accepted Baremetal Docker Host OS Selection Proposed Container Runtime Tradeoffs Proposed",
     "tags": [],
     "title": "Architecture decision records (homelab)",
-    "uri": "/docs/homelab/planning/adrs/index.html"
+    "uri": "/Workspace/homelab/planning/adrs/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e Architecture decision records (homelab)",
@@ -103,7 +103,7 @@ var relearn_searchindex = [
     "description": "ADR: Per-environment Git branches via Komodo ResourceSync Context The homelab uses Komodo with ResourceSync to declare servers, stacks, deployments, and related resources from Git (an “app-of-apps” style flow: Git remains the audit trail; Komodo reconciles).\nGoals:\nmain shows the whole picture — dev/, test/, and prod/ (or equivalent komodo/{dev,test,prod}/) layouts exist together on main so reviews and long-lived docs match reality after merges. Per-environment steering — each environment’s sync can follow main or follow a named branch (for example to soak a stack change in Dev before it lands on main). Homelab-realistic ergonomics — accept some manual merge hygiene instead of building full release automation up front. An earlier sketch of this approach lived in wip/komodo-artifact-templates/scratch/branch_management_ideas.md.",
     "tags": [],
     "title": "ADR: Per-environment Git branches via Komodo ResourceSync",
-    "uri": "/docs/homelab/planning/adrs/0001-komodo-resourcesync-branch-per-environment/index.html"
+    "uri": "/Workspace/homelab/planning/adrs/0001-komodo-resourcesync-branch-per-environment/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e Architecture Decision Records — AI VM Management",
@@ -111,7 +111,7 @@ var relearn_searchindex = [
     "description": "ADR 0001: LlamaFarm as AI model management layer Status: Proposed\nDate: 2026-07-14\nContext The homelab has a dedicated AI VM running Ubuntu with assorted AI tools installed ad-hoc. There is no consistent model management layer — models are pulled manually, runtimes are configured individually (Ollama, vLLM, raw HuggingFace), and there is no unified API surface or RAG pipeline.",
     "tags": [],
     "title": "ADR 0001: LlamaFarm as AI model management layer",
-    "uri": "/docs/homelab/ai-vm/adr/0001-llamafarm-over-ansible/index.html"
+    "uri": "/Workspace/homelab/ai-vm/adr/0001-llamafarm-over-ansible/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e IoT Plan — New House",
@@ -119,7 +119,7 @@ var relearn_searchindex = [
     "description": "ADR: Home Assistant Deployment Date: 2026-05-11\nStatus: Accepted\nDeciders: Self\nContext Home Assistant (HA) is the central hub for IoT automation in the new house. It needs to integrate with:\nZigbee devices (switches, sensors, buttons) via USB coordinator Tapo cameras (RTSP/Tapo integration) Unifi Protect (running on UDM) Google Home (TTS announcements) Sensi thermostats (cloud API) The homelab has a defined Prod/Test/Dev architecture with Komodo-managed Docker hosts. Home Assistant must fit into this architecture while meeting its unique requirements.",
     "tags": [],
     "title": "ADR: Home Assistant Deployment",
-    "uri": "/docs/homelab/iot/decisions/home-assistant-deployment/index.html"
+    "uri": "/Workspace/homelab/iot/decisions/home-assistant-deployment/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -127,7 +127,7 @@ var relearn_searchindex = [
     "description": "ADR: Podman vs Docker for Container Runtime Status Draft\nContext We need a container runtime for local development, CI/CD pipelines, and homelab deployment. The ecosystem has two primary open-source contenders: Docker (the incumbent) and Podman (the rising alternative). Both implement OCI standards and can run the same container images, but differ significantly in architecture, security model, and ecosystem integration.",
     "tags": [],
     "title": "ADR: Podman vs Docker for Container Runtime",
-    "uri": "/docs/homelab/platform/adr-podman-vs-docker/index.html"
+    "uri": "/Workspace/homelab/platform/adr-podman-vs-docker/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -135,7 +135,7 @@ var relearn_searchindex = [
     "description": "AI VM Architecture Overview A dedicated Debian VM with an NVIDIA Quadro P5000 passed through, running LlamaFarm natively as the AI management layer. The VM is fully disposable — Ansible provisions the OS and installs tooling; models and data live on persistent storage. If the VM is destroyed, a fresh provision + persistent volume mount restores full capability in minutes.",
     "tags": [],
     "title": "AI VM Architecture",
-    "uri": "/docs/homelab/ai-vm/architecture/index.html"
+    "uri": "/Workspace/homelab/ai-vm/architecture/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Tags",
@@ -143,7 +143,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tag :: App-of-Apps",
-    "uri": "/docs/tags/app-of-apps/index.html"
+    "uri": "/Workspace/tags/app-of-apps/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -151,7 +151,7 @@ var relearn_searchindex = [
     "description": "Architecture System diagrams and visual documentation for the homelab infrastructure.\nEnvironment Map ┌─────────────────────────────────────────────────────────────────────────────┐ │ KOMODO CONTROLLER (NUC) │ │ ┌──────────────┬───────────┐ │ │ │ Komodo Core │ MongoDB │ │ │ └──────┬───────┴───────────┘ │ │ │ manages │ └────────────────────────────┼────────────────────────────────────────────────┘ │ ┌────────────────────┼────────────────────┐ │ │ │ ▼ ▼ ▼ ┌─────────────────────────────────────────────────────────────────────────────┐ │ GITOPS MANAGED ENVIRONMENTS │ │ │ │ ┌─────────────────────┐ ┌─────────────────────┐ ┌───────────────────────┐ │ │ │ PROD │ │ TEST │ │ DEV │ │ │ │ │ │ │ │ │ │ │ │ ┌───────────────┐ │ │ ┌───────────────┐ │ │ ┌─────────────────┐ │ │ │ │ │ Prod MiniPC │ │ │ │ Test MiniPC │ │ │ │ DevDocker VM │ │ │ │ │ │ [Periphery] │ │ │ │ [Periphery] │ │ │ │ (on ProxMox) │ │ │ │ │ │ │ │ │ │ │ │ │ │ [Periphery] │ │ │ │ │ │ • Plex │ │ │ │ • Plex (test) │ │ │ │ │ │ │ │ │ │ • *arr Suite │ │ │ │ • Test Apps │ │ │ │ • Experimental │ │ │ │ │ │ • ... │ │ │ │ │ │ │ │ containers │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ └───────────────┘ │ │ └───────────────┘ │ │ └─────────────────┘ │ │ │ │ ▲ │ │ ▲ │ │ │ │ │ │ │ NFS/SMB │ │ │ NFS/SMB │ │ │ │ │ │ ┌──────┴────────┐ │ │ ┌──────┴────────┐ │ │ │ │ │ │ │ UnRaid NAS │ │ │ │ Synology NAS │ │ │ │ │ │ │ │ (Media) │ │ │ │ (Test Data) │ │ │ │ │ │ │ └───────────────┘ │ │ └───────────────┘ │ │ │ │ │ └─────────────────────┘ └─────────────────────┘ └───────────────────────┘ │ │ │ │ Promotion path: DEV ──────────────▶ TEST ──────────────▶ PROD │ └─────────────────────────────────────────────────────────────────────────────┘ ┌─────────────────────────────────────────────────────────────────────────────┐ │ UNMANAGED / SANDBOX ENVIRONMENTS │ │ │ │ ┌────────────────────────────────────┐ ┌───────────────────────────────┐ │ │ │ DEVNODE (ProxMox VMs) │ │ DEVOCP (Isolated) │ │ │ │ │ │ │ │ │ │ • Test VM 1 │ │ 3x MiniPC Cluster: │ │ │ │ • Test VM 2 │ │ • Control Plane │ │ │ │ • ... │ │ • Worker 1 │ │ │ │ │ │ • Worker 2 │ │ │ │ (bugfixes, themes, ad-hoc) │ │ │ │ │ │ │ │ (OpenShift - work projects) │ │ │ └────────────────────────────────────┘ └───────────────────────────────┘ │ │ │ │ No Komodo. No GitOps. Just sandboxes. │ └─────────────────────────────────────────────────────────────────────────────┘ Key Points Komodo Controller sits outside the environment groups — it manages but is not part of workload infrastructure Managed Docker hosts (Prod, Test, DevDocker) have Periphery agents and are GitOps-controlled DevDocker VM runs on ProxMox but is still Komodo-managed — promotion path to Test → Prod Unmanaged nodes in Dev — DevNode VMs and OCP cluster have no Komodo integration Storage is accessed via network mounts from UnRaid NAS (Prod) and Synology NAS (Test) GitOps Flow Each managed environment is driven by Komodo ResourceSync, which can target main or a named branch independently (so Dev can track a feature branch while Prod tracks main). The full branch-steering workflow and merge hygiene are in the ADR on per-environment ResourceSync branches; repo layout and promotion folders are in Planned repository structure.",
     "tags": [],
     "title": "Architecture",
-    "uri": "/docs/homelab/platform/architecture/index.html"
+    "uri": "/Workspace/homelab/platform/architecture/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -159,7 +159,7 @@ var relearn_searchindex = [
     "description": "Architecture Decision Records — AI VM Management ADRs here capture decisions for the AI VM homelab project.\n# Title Status 0001 LlamaFarm as AI model management layer Proposed",
     "tags": [],
     "title": "Architecture Decision Records — AI VM Management",
-    "uri": "/docs/homelab/ai-vm/adr/index.html"
+    "uri": "/Workspace/homelab/ai-vm/adr/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Tags",
@@ -167,7 +167,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tag :: BigFix",
-    "uri": "/docs/tags/bigfix/index.html"
+    "uri": "/Workspace/tags/bigfix/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Architecture \u0026 System Designs",
@@ -179,7 +179,7 @@ var relearn_searchindex = [
       "BigFix"
     ],
     "title": "BigFix Host Agent Client Deployment on OpenShift via GitOps",
-    "uri": "/docs/architecture/openshift/bigfix-agent-deployment/index.html"
+    "uri": "/Workspace/architecture/openshift/bigfix-agent-deployment/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Architecture \u0026 System Designs",
@@ -191,7 +191,7 @@ var relearn_searchindex = [
       "App-of-Apps"
     ],
     "title": "BigFix Inventory (BFI) Discovery \u0026 NFD Deployment via GitOps",
-    "uri": "/docs/architecture/openshift/bigfix-discovery-deployment/index.html"
+    "uri": "/Workspace/architecture/openshift/bigfix-discovery-deployment/index.html"
   },
   {
     "breadcrumb": "Documentation",
@@ -199,7 +199,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Categories",
-    "uri": "/docs/categories/index.html"
+    "uri": "/Workspace/categories/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -209,7 +209,7 @@ var relearn_searchindex = [
       "CI/CD"
     ],
     "title": "Chaining GitHub Actions Workflows Without a PAT or GitHub App",
-    "uri": "/docs/guides/github-actions/chaining-workflows-without-pat/index.html"
+    "uri": "/Workspace/guides/github-actions/chaining-workflows-without-pat/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Tags",
@@ -217,7 +217,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tag :: CI/CD",
-    "uri": "/docs/tags/ci/cd/index.html"
+    "uri": "/Workspace/tags/ci/cd/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Tags",
@@ -225,7 +225,7 @@ var relearn_searchindex = [
     "description": "",
     "tags": [],
     "title": "Tag :: Containers",
-    "uri": "/docs/tags/containers/index.html"
+    "uri": "/Workspace/tags/containers/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e IoT Plan — New House",
@@ -233,7 +233,7 @@ var relearn_searchindex = [
     "description": "Decision: Door Locks Date: 2026-05-11\nStatus: Deferred\nDecision: No smart locks initially; rely on physical keys + camera detection\nContext Evaluating whether to include smart locks in the initial IoT deployment.\nDecision Defer smart locks. Focus on detection, not prevention.",
     "tags": [],
     "title": "Decision: Door Locks",
-    "uri": "/docs/homelab/iot/decisions/door-locks/index.html"
+    "uri": "/Workspace/homelab/iot/decisions/door-locks/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e IoT Plan — New House",
@@ -241,7 +241,7 @@ var relearn_searchindex = [
     "description": "Decision: Smart Switch Protocol Date: 2026-05-11\nStatus: Decided\nDecision: Zigbee (Inovelli Blue switches)\nContext Planning IoT lighting for new house. Requirements:\nWork in 3-way configurations with only ONE switch replaced Support wireless buttons for remote control Prioritize cost savings and upgradeability Integrate with self-hosted Home Assistant Neutral wire is present.",
     "tags": [],
     "title": "Decision: Smart Switch Protocol",
-    "uri": "/docs/homelab/iot/decisions/smart-switch-protocol/index.html"
+    "uri": "/Workspace/homelab/iot/decisions/smart-switch-protocol/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -249,7 +249,7 @@ var relearn_searchindex = [
     "description": "Decisions Key architectural and tooling decisions, with rationale.\nKomodo over Kubernetes (K3s + ArgoCD) Decision: Use Komodo for container GitOps instead of deploying K3s with ArgoCD.\nContext: Needed GitOps capabilities (drift detection, continuous reconciliation) for Prod/Test environments. Current approach (GitHub Actions → Ansible playbooks) works but lacks:",
     "tags": [],
     "title": "Decisions",
-    "uri": "/docs/homelab/planning/decisions/index.html"
+    "uri": "/Workspace/homelab/planning/decisions/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -257,7 +257,7 @@ var relearn_searchindex = [
     "description": "Environments Detailed breakdown of each environment (VLAN) in the homelab.\nManaged Environments (GitOps) These environments have Komodo Periphery agents on Docker hosts, managed via GitOps. Changes flow through Git → Komodo Core → Periphery Agent → Container.\nProd Purpose: Production workloads — services that need to be reliable and always available.",
     "tags": [],
     "title": "Environments",
-    "uri": "/docs/homelab/platform/environments/index.html"
+    "uri": "/Workspace/homelab/platform/environments/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -265,7 +265,7 @@ var relearn_searchindex = [
     "description": "Fixing Podman Machine Start Failure (krunkit abort trap) on macOS Podman on macOS can run its Linux VM through libkrun via the krunkit binary (installed from Homebrew). When required shared libraries are missing, krunkit crashes immediately and Podman reports an unhelpful abort-trap error instead of the underlying dyld failure.\nThis guide documents the symptoms, troubleshooting steps, fix, and prevention for that failure mode.",
     "tags": [],
     "title": "Fixing Podman Start issues with Krunkit on MacOS",
-    "uri": "/docs/guides/dev-environment/podman-machine-krunkit-abort-trap/index.html"
+    "uri": "/Workspace/guides/dev-environment/podman-machine-krunkit-abort-trap/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -273,7 +273,7 @@ var relearn_searchindex = [
     "description": "HCL BigFix Planning \u0026 Architecture Guide Overview HCL BigFix is a multi-platform endpoint management platform that enables IT operations and security teams to discover, manage, patch, and secure global IT estates. Whether operating on-premises, in the cloud, or in hybrid environments, BigFix uses a unique single-agent, hierarchical architecture to manage thousands of devices efficiently with minimal bandwidth overhead.",
     "tags": [],
     "title": "HCL BigFix Agent Architecture Guide",
-    "uri": "/docs/guides/bigfix/planning/index.html"
+    "uri": "/Workspace/guides/bigfix/planning/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e IoT Plan — New House",
@@ -281,7 +281,7 @@ var relearn_searchindex = [
     "description": "Home Assistant Automations Workflow definitions for IoT automations. Copy/adapt these for Home Assistant.\nDoor Sensor Automations Door Left Open Alert Announces via Google Home when a door has been open for 5 minutes.",
     "tags": [],
     "title": "Home Assistant Automations",
-    "uri": "/docs/homelab/iot/automations/index.html"
+    "uri": "/Workspace/homelab/iot/automations/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -289,7 +289,7 @@ var relearn_searchindex = [
     "description": "Homelab Hardware Overview Inventory of physical machines, virtual machines, and network-attached storage in the homelab.\nPhysical Machines Name Hardware Specs Role \u0026 Environment OS Notes LenovoMini 1 8th Gen i7, NVIDIA GPU, 16GB RAM Prod Docker host Fedora Komodo periphery, Tailscale LenovoMini 2 7th Gen i5, NVIDIA GPU, 16GB RAM Test Docker host Fedora Komodo periphery, Tailscale LenovoMini 3 i5, 16GB RAM Dev (OCP node 1) — Tailscale Operator LenovoMini 4 i5, 16GB RAM Dev (OCP node 2) — Tailscale Operator LenovoMini 5 i5, 16GB RAM Dev (OCP node 3) — Tailscale Operator JONSBO NAS 6th Gen i7, 16GB RAM, NVIDIA GPU, 10TB (8TB usable) Prod NAS — Tailscale container, mapped to LenovoMini 1 Intel NUC Celeron CPU, 8GB RAM Prod management — Komodo instance, GitHub runner, Tailscale ProxMox Host Ryzen 3700, 16GB RAM, NVIDIA GPU Mixed ProxMox Tailscale, hosts VMs below Synology NAS 4GB RAM, 6TB storage Test NAS — Tailscale, mapped to LenovoMini 2 Gaming PC Ryzen 5700, 16GB RAM, NVIDIA GPU User (future) Windows Remote Windows access Virtual Machines Hosted on ProxMox (Tailscale installed on ProxMox host):",
     "tags": [],
     "title": "Homelab Hardware",
-    "uri": "/docs/homelab/platform/hardware/index.html"
+    "uri": "/Workspace/homelab/platform/hardware/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -297,7 +297,7 @@ var relearn_searchindex = [
     "description": "Homelab Map Environments Environment Purpose Subnet Hardware \u0026 Services Prod Production services 10.0.1.0/24 LenovoMini 1, UnRaid NAS, Intel NUC, Komodo, Docker workloads Test Staging and validation 10.0.2.0/24 LenovoMini 2, Synology NAS, Komodo periphery Dev Development \u0026 experimentation 10.0.3.0/24 ProxMox Host (DevDocker VM, DevNode VMs), LenovoMini 3–5 (OCP cluster), Tailscale Operator User Personal workstation 10.0.10.0/24 Gaming PC IoT Smart home \u0026 cameras 10.0.4.0/24 Reolink cameras, Google Home DMZ Public-facing services 10.0.5.0/24 Shared NIC on existing hosts OR dedicated seed box; qBittorrent; shared storage mount VLANs \u0026 Subnets VLAN Description Subnet Firewall Rules Unifi SSID / Notes 1 Prod 10.0.1.0/24 Allow all internal; restrict IoT → Prod Wired only 2 Test 10.0.2.0/24 Allow all internal; restrict IoT → Test Wired only 3 Dev 10.0.3.0/24 Allow all internal Wired only 4 IoT 10.0.4.0/24 Isolate from prod/test/dev IoT (WPA2) 5 DMZ 10.0.5.0/24 DMZ → External allowed (specific ports); External → DMZ restricted; DMZ → all internal blocked (except DMZ → UnRaid NFS for shared storage) Wired only 10 User 10.0.10.0/24 Isolate from prod/test/dev/IoT Home (WPA3) Network Topology GFiber (1Gbps) → Unifi UDM → Unifi 16-port PoE Switch │ ├── LenovoMini 1 (Prod Docker) → UnRaid NAS ├── LenovoMini 2 (Test Docker) → Synology NAS ├── ProxMox Host (Dev) → DevDocker VM, DevNode VMs ├── LenovoMini 3–5 (Dev OCP cluster) ├── Intel NUC (Prod management / Komodo Controller) ├── Gaming PC (User) ├── IoT VLAN (Reolink, Google Home) └── DMZ VLAN (qBittorrent, shared storage mount) Tailscale Overlay: All nodes Services \u0026 Dependencies Tailscale Services (on all Docker hosts):",
     "tags": [],
     "title": "Homelab Map",
-    "uri": "/docs/homelab/overview/homelab-map/index.html"
+    "uri": "/Workspace/homelab/overview/homelab-map/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -305,7 +305,7 @@ var relearn_searchindex = [
     "description": "Homelab Repository Structure Layout for the infrastructure-as-code repository that manages the homelab.\nOverview The infrastructure repository has three main sections:\nSection Tool Purpose terraform/ Terraform Provision VMs, networks, base infrastructure ansible/ Ansible System configuration, package management, agent installation komodo/ Komodo Container definitions and GitOps configs Full Structure infrastructure/ ├── terraform/ │ ├── prod/ │ ├── test/ │ ├── dev/ │ └── modules/ │ ├── ansible/ │ ├── inventory/ │ │ ├── prod.yml │ │ ├── test.yml │ │ └── dev.yml │ ├── playbooks/ │ │ ├── base-setup.yml # Common system config │ │ ├── install-periphery.yml # Install Komodo Periphery agent │ │ └── ... │ └── roles/ │ └── komodo/ ├── prod/ │ ├── servers.toml # Server definitions │ ├── arr-suite/ │ │ ├── arr-suite.toml │ │ └── compose.yaml │ ├── plex/ │ │ ├── plex.toml │ │ └── compose.yaml │ └── homepage.toml # Simple apps can be flat │ ├── test/ │ ├── servers.toml │ └── ... │ ├── dev/ │ ├── servers.toml │ └── ... │ └── shared/ └── variables.toml # Shared variables across envs Terraform Section Provisions the underlying infrastructure.",
     "tags": [],
     "title": "Homelab Repository Structure",
-    "uri": "/docs/homelab/platform/planned-repo-structure/index.html"
+    "uri": "/Workspace/homelab/platform/planned-repo-structure/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -313,7 +313,7 @@ var relearn_searchindex = [
     "description": "Podman Desktop Setup on macOS Podman Desktop is the graphical front end for Podman on macOS. Containers do not run natively on macOS — Podman launches a lightweight Linux VM (a Podman machine) and runs containers inside it. The desktop app handles onboarding, machine management, and optional Docker compatibility so existing Docker workflows keep working.\nThis guide covers installation, first-run setup, Docker compatibility, rootless vs rootful mode, and common gotchas — including the krunkit abort trap failure on Homebrew installs.",
     "tags": [],
     "title": "Installing Podman on MacOS",
-    "uri": "/docs/guides/dev-environment/podman-desktop-macos/index.html"
+    "uri": "/Workspace/guides/dev-environment/podman-desktop-macos/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -321,7 +321,7 @@ var relearn_searchindex = [
     "description": "IoT Plan — New House Overview and project plan for IoT deployment at the new house.\nPhilosophy: Convenience first, security second. Self-hosted, local control where possible.\nPlatform Stack Layer Choice Status Notes Hub Home Assistant Planned Phase 1: RPi 4, Phase 2: Container on Prod Docker Primary Protocol Zigbee Planned Via Sonoff Zigbee 3.0 coordinator Voice Google Home Existing TTS announcements via HA Network Unifi Network On order UDM + switches, foundation for VLANs Cameras Unifi Protect + Tapo On order / Existing Protect on UDM, 3x Tapo (existing) Thermostats Sensi (2 zones) Existing Cloud integration via HA (acceptable trade-off) See decisions/home-assistant-deployment.md for deployment architecture.",
     "tags": [],
     "title": "IoT Plan — New House",
-    "uri": "/docs/homelab/iot/index.html"
+    "uri": "/Workspace/homelab/iot/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -329,7 +329,7 @@ var relearn_searchindex = [
     "description": "Module 0 — Prerequisites \u0026 How to Use Audience: Everyone starting the path — new hires and existing engineers upskilling.\nOutcomes: Set up a personal lab, understand how verification works in this path, and adopt the “model before commands” mindset that every later module assumes.\nChecklist — work through in order Read Why this module exists and adopt the “model before commands” mindset Stand up a lab you can reach by console + CLI Complete access onboarding (SSO, repo access, cluster access) Confirm you know where completion is recorded and who reviews it Pass the Verification checks at the bottom Why this module exists This path deliberately teaches models before commands. The single biggest obstacle to learning DevOps tooling is not missing knowledge — it is a mental model that needs rebuilding, not extending. Each module opens with the mental shift required. Treat the lab as non-negotiable: every concept should map to something you can inspect in a console or from a CLI.",
     "tags": [],
     "title": "Module 0 — Prerequisites \u0026 How to Use",
-    "uri": "/docs/guides/modules/00-prerequisites/index.html"
+    "uri": "/Workspace/guides/modules/00-prerequisites/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -337,7 +337,7 @@ var relearn_searchindex = [
     "description": "Module 1 — Git, GitHub \u0026 GitLab Best Practices Audience: Anyone using Git day to day — developers, writers, infrastructure and platform engineers. If you’ve used Git but not internalized why the model works, this module is for you.\nOutcomes: Understand how Git stores history (the inside-out mental model); use the daily workflow (clone → branch → commit → push → PR/MR → merge) without looking up commands; reason about git log, diff, revert; operate comfortably in both GitHub and GitLab with branch protection, CODEOWNERS, and SSO/SAML; and earn the GitHub Foundations certification.",
     "tags": [],
     "title": "Module 1 — Git, GitHub \u0026 GitLab Best Practices",
-    "uri": "/docs/guides/modules/01-git/index.html"
+    "uri": "/Workspace/guides/modules/01-git/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -345,7 +345,7 @@ var relearn_searchindex = [
     "description": "Module 2 — Containers \u0026 Registries Audience: Engineers new to containerization, or coming from VM-centric operations.\nOutcomes: Build and run container images; understand the layer model, image digests, and registries; reason about base images, tags vs digests, and registry authentication — the foundation for Kubernetes (Module 3).\nChecklist — work through in order Read the mental model below (images, layers, tags vs digests, Podman vs Docker) Learn containers before Kubernetes — do a Docker/Podman fundamentals course: KodeKloud “Docker for the Absolute Beginner” or Podman docs getting-started Build and run your first image from a minimal base (UBI/distroless) DO180 (Red Hat: Containers, Kubernetes \u0026 OpenShift) as the formal path — free Red Hat Developer tutorials as a no-cost alternative Practice registry push/pull, tags vs digests, and image scanning Pass the scenario-based Verification at the bottom Mental model A container is an isolated, runnable instance of an image — an immutable, layered filesystem plus metadata. Unlike a VM, a container shares the host kernel and has no hypervisor. The unit Kubernetes reasons about is the container (packed into Pods), not the VM.",
     "tags": [],
     "title": "Module 2 — Containers \u0026 Registries",
-    "uri": "/docs/guides/modules/02-containers/index.html"
+    "uri": "/Workspace/guides/modules/02-containers/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -353,7 +353,7 @@ var relearn_searchindex = [
     "description": "Module 3 — Kubernetes \u0026 OpenShift Core Audience: Infrastructure/platform engineers and developers operating or deploying on Kubernetes/OpenShift. (VMware admins: this is where you rebuild the mental model from Kubernetes up — see the mapping scaffold, then discard it.)\nOutcomes: Read and reason about YAML; navigate console + CLI; deploy and diagnose a stateless app; operate cluster-level concerns — cluster operators, MachineConfig, nodes, auth, SCCs, OLM, multi-tenancy, networking, storage, observability, and backup/DR.",
     "tags": [],
     "title": "Module 3 — Kubernetes \u0026 OpenShift Core",
-    "uri": "/docs/guides/modules/03-k8s-openshift-core/index.html"
+    "uri": "/Workspace/guides/modules/03-k8s-openshift-core/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -361,7 +361,7 @@ var relearn_searchindex = [
     "description": "Module 4 — OpenShift Virtualization Audience: Platform engineers who need to run and migrate VMs on Kubernetes/OpenShift.\nOutcomes: Create, start, stop, and migrate VMs; connect storage/networking; understand KubeVirt primitives (VirtualMachine, VirtualMachineInstance, DataVolume) as Kubernetes resources — because that is what they are; perform live migration and plan bulk migration from vSphere (MTV).\nPrerequisite: Module 3 substantially complete. A VirtualMachineInstance is a Pod — you cannot operate it without understanding Pods, scheduling, networking, and storage.",
     "tags": [],
     "title": "Module 4 — OpenShift Virtualization",
-    "uri": "/docs/guides/modules/04-openshift-virtualization/index.html"
+    "uri": "/Workspace/guides/modules/04-openshift-virtualization/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -369,7 +369,7 @@ var relearn_searchindex = [
     "description": "Module 5 — CI/CD \u0026 GitOps Audience: Engineers ready to apply Git-as-change-management to cluster configuration and application delivery.\nOutcomes: Build CI/CD pipelines; use Argo CD (OpenShift GitOps) as the reconciliation engine; structure a multi-cluster GitOps repo; handle secrets safely; diagnose sync/drift and failure modes.\nDepends on: Module 1 (Git) and Module 3 (cluster operations). Lab: one cluster + one Git repo is sufficient.",
     "tags": [],
     "title": "Module 5 — CI/CD \u0026 GitOps",
-    "uri": "/docs/guides/modules/05-cicd-gitops/index.html"
+    "uri": "/Workspace/guides/modules/05-cicd-gitops/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -377,7 +377,7 @@ var relearn_searchindex = [
     "description": "Module 6 — Fleet Management with ACM Audience: Engineers operating multiple clusters who need consistency, compliance, and declarative correction at fleet scale.\nOutcomes: Govern a fleet declaratively with RHACM — import clusters, target via labels, report compliance, enforce or inform, and bridge ACM + Argo CD (hybrid). Understand the decision framework: when should a config NOT be in Argo CD?",
     "tags": [],
     "title": "Module 6 — Fleet Management with ACM",
-    "uri": "/docs/guides/modules/06-fleet-acm/index.html"
+    "uri": "/Workspace/guides/modules/06-fleet-acm/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -385,7 +385,7 @@ var relearn_searchindex = [
     "description": "Module 7 — Observability \u0026 Day-2 Operations Audience: Engineers responsible for keeping workloads and clusters healthy, observable, and recoverable.\nOutcomes: Monitor with Prometheus/Alertmanager; aggregate logs with Loki; define SLO-style alerts; back up and recover workloads (OADP) and the control plane (etcd); reason about the two recovery models.\nBuilds on: Module 3.2 (observability + backup/DR sections).\nChecklist — work through in order Read the Day-2 mental model below (detect and recover, not click and hope) Metrics — Prometheus docs + OCP Monitoring; enable user-workload monitoring, write a PrometheusRule Dashboards \u0026 alerting — Grafana docs; wire Alertmanager routes Logs — deploy and query LokiStack (current logging backend) Diagnostics — practice oc adm must-gather vs oc adm inspect Backup \u0026 DR — OADP/Velero for workloads + etcd backup for the control plane; understand the two recovery models (restore vs rebuild) Complete the scenario-based verification at the bottom Mental model Day-2 operations is detect and recover, not click and hope. Observability tells you what’s wrong; backup/DR tells you how to get back. Both are declarative and version-controllable.",
     "tags": [],
     "title": "Module 7 — Observability \u0026 Day-2 Operations",
-    "uri": "/docs/guides/modules/07-observability-day2/index.html"
+    "uri": "/Workspace/guides/modules/07-observability-day2/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -393,7 +393,7 @@ var relearn_searchindex = [
     "description": "Module 8 — Zero Touch Provisioning (Specialist Track) Who this is for: Teams managing 50+ clusters, especially remote/edge sites where manual install isn’t viable (retail, utility, telco). This is a distinct engineering specialty — Day 0/1/2 automation — beyond fleet operations. If you manage 3–20 clusters in a datacenter, Module 6 is sufficient; return here when provisioning becomes a bottleneck.",
     "tags": [],
     "title": "Module 8 — Zero Touch Provisioning (Specialist Track)",
-    "uri": "/docs/guides/modules/08-ztp/index.html"
+    "uri": "/Workspace/guides/modules/08-ztp/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -401,7 +401,7 @@ var relearn_searchindex = [
     "description": "Module 9 — Certifications \u0026 Next Steps Audience: Engineers planning formal credentials alongside the learning path.\nOutcomes: Map each module to relevant public certifications, choose a sensible sequence, and identify deeper specializations.\nChecklist — choose your track Pick a vendor-neutral track (portable across employers) and/or a Red Hat track (matches our OCP stack) GitHub Foundations (after Module 1) — GitHub/PSI, $99, 75Q, no prereq Linux base (Red Hat): RH124 → RH134 → RHCSA (EX200) Kubernetes (CNCF, vendor-neutral): KCNA (entry) → CKAD or CKA (66%, $445) → CKS (requires CKA) OpenShift (Red Hat): DO180 → DO280 → EX280; then DO317 (Virt + EX316 included), DO432 → EX432 (fleet) Book one exam with a target date; the rest follow the module sequence below Certification map Certification Track After which module(s) Notes GitHub Foundations Vendor-neutral Module 1 Git + GitHub fundamentals; GitHub/PSI, $99, 75Q, no prereq; study via Microsoft Learn GitHub Fundamentals path RHCSA (EX200) Red Hat / Linux Module 0–2 (Linux base) RH124 → RH134 → EX200; the Linux foundation OCP assumes KCNA — Kubernetes \u0026 Cloud Native Associate CNCF (vendor-neutral) Module 3 (entry) Multiple-choice entry credential; good onboarding milestone CKAD — Certified Kubernetes Application Developer CNCF (vendor-neutral) Module 3 (app layer) Performance-based, 66%, $445; for those deploying apps to K8s CKA — Certified Kubernetes Administrator CNCF (vendor-neutral) Module 3 depth Performance-based, 66%, $445; the benchmark admin cert CKS — Certified Kubernetes Security Specialist CNCF (vendor-neutral) after CKA Requires a valid CKA; advanced security EX280 — Red Hat Certified OpenShift Administrator Red Hat Module 3 depth Core cluster admin; 3hr perf-based, 210/300; prep with DO180 → DO280 EX280 — Red Hat Certified OpenShift Administrator Red Hat Module 3 depth Core cluster admin; 3hr perf-based, 210/300; prep with DO180 → DO280 EX316 — Red Hat Certified Specialist in OpenShift Virtualization Red Hat Module 4 depth Included in DO317 bundle; covers VM management with KubeVirt EX432 — Red Hat Certified Specialist in OpenShift Advanced Cluster Management Red Hat Module 6 depth RHACM, policy, fleet governance; prep with DO432; replaces retired EX480. Red Hat lists DO380 (OpenShift Admin III) as a recommended prereq — optional but useful for deeper cluster-scaling context DO180 / DO280 / DO317 / DO432 Red Hat (courses) Modules 2 / 3 / 4 / 6 Formal Red Hat courses aligned to each module; DO317 bundles EX316 exam Suggested sequencing GitHub Foundations (Module 1) — early, low-cost, universally useful. RHCSA (EX200) — if Linux is new to you; the base OCP assumes (RH124 → RH134 → EX200). KCNA → CKA/CKAD after Module 3 — vendor-neutral, portable Kubernetes proof. EX280 after Module 3 — validates core OCP admin on our stack. EX432 after Module 6 — validates fleet governance for platform roles. Red Hat recommends DO280 → DO380 (optional) → DO432 as the prep path; DO380 covers cluster scaling and is useful but not required to attempt the exam. Role-specific: DO317 (Virt, includes EX316) for virtualization focus; CKS (after CKA) for security; ZTP/specialist for edge fleets. Beyond this path Contribute to internal runbooks; mentor the next cohort through Modules 0–1. Deepen weakest verification checks — they mark real operational gaps. Track upstream changes (course renumbers, ZTP tooling, ACM policy API) and update this path.",
     "tags": [],
     "title": "Module 9 — Certifications \u0026 Next Steps",
-    "uri": "/docs/guides/modules/09-certs-nextsteps/index.html"
+    "uri": "/Workspace/guides/modules/09-certs-nextsteps/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -409,7 +409,7 @@ var relearn_searchindex = [
     "description": "NVIDIA Container Toolkit \u0026 CDI Setup on Proxmox GPU Passthrough VMs Overview NVIDIA Container Toolkit with CDI (Container Device Interface) enables Docker containers to access physical GPUs. On Proxmox VMs with GPU PCI passthrough, CDI specs must be explicitly generated and Docker must be configured to use them.",
     "tags": [],
     "title": "NVIDIA Container Toolkit \u0026 CDI Setup on Proxmox GPU Passthrough VMs",
-    "uri": "/docs/guides/gpu/nvidia-container-toolkit-cdi-proxmox/index.html"
+    "uri": "/Workspace/guides/gpu/nvidia-container-toolkit-cdi-proxmox/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -417,7 +417,7 @@ var relearn_searchindex = [
     "description": "NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization) This note validates a common on-cluster workflow against NVIDIA’s published steps, then records that workflow when Quay (or another external registry) is not used and images land in the integrated OpenShift image registry instead.\nPrimary NVIDIA reference: NVIDIA GPU Operator with OpenShift Virtualization — Building the vGPU Manager image and Creating a ClusterPolicy.",
     "tags": [],
     "title": "NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)",
-    "uri": "/docs/guides/openshift/nvidia-vgpu-manager-internal-registry-and-clusterpolicy/index.html"
+    "uri": "/Workspace/guides/openshift/nvidia-vgpu-manager-internal-registry-and-clusterpolicy/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -425,7 +425,7 @@ var relearn_searchindex = [
     "description": "Observability Plans for public user-facing status and private operator dashboards (metrics, deep links, navigation to Komodo and Uptime Kuma).\nDocument Contents Status site \u0026 operator dashboard Phases, success criteria, sequencing, status.samplayskeys.com, single pane of glass For hardware, VLANs, and which services run where, start at the homelab map.",
     "tags": [],
     "title": "Observability",
-    "uri": "/docs/homelab/observability/index.html"
+    "uri": "/Workspace/homelab/observability/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -433,7 +433,7 @@ var relearn_searchindex = [
     "description": "OpenShift Learning Curriculum Purpose This curriculum provides structured, role-based learning paths for engineers and support staff working with the OpenShift / RHOSV platform. Each path draws from a shared set of modules; the modules differ in depth and scope by role.\nPhilosophy: Learn the model before the commands. Most failures come from a wrong mental model, not a missing command. Every module front-loads the mental shift, then the mechanics. Treat the lab as non-negotiable — concepts should map to something you can inspect in a console or from a CLI.",
     "tags": [],
     "title": "OpenShift Learning Curriculum",
-    "uri": "/docs/guides/learning-curriculum/index.html"
+    "uri": "/Workspace/guides/learning-curriculum/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure \u003e Observability",
@@ -441,7 +441,7 @@ var relearn_searchindex = [
     "description": "Public status site and operator dashboard Plans for user-facing public status (status.samplayskeys.com) and a private operator “single pane of glass,” with acceptance criteria, sequencing, and open decisions.\nPhase 1 — Public status site URL: status.samplayskeys.com\nAudience: Partner and other users of user-facing services (not homelab admins).\nTone / UX: Similar to GitHub Status: components (or service groups), overall status, recent incident history, minimal jargon.",
     "tags": [],
     "title": "Public status site and operator dashboard",
-    "uri": "/docs/homelab/observability/status-and-operator-dashboard/index.html"
+    "uri": "/Workspace/homelab/observability/status-and-operator-dashboard/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -449,7 +449,7 @@ var relearn_searchindex = [
     "description": "Roadmap Open questions, future work, and ideas for the homelab.\nOpen Questions These need to be resolved as the build progresses.\nNetwork Topology Network segmentation between environments (VLANs) — defined in homelab-map.md Firewall rules between Prod/Test/Dev/IoT/DMZ — defined in unifi-configurations.md DNS strategy (internal DNS, split-horizon?) Reverse proxy / ingress strategy (Traefik, Caddy, nginx?) Storage Strategy UnRaid NAS role in Prod — just media, or also app data? Synology NAS role in Test — mirror of UnRaid structure, or different? Backup strategy across environments How does DevDocker access test data (if at all)? Terraform + Ansible Boundary Exactly which resources does Terraform manage? Does Terraform manage the physical MiniPCs, or just VMs on ProxMox? How do we bootstrap the Komodo Controller itself? DMZ Strategy DMZ VLAN defined (VLAN 5, 10.0.5.0/24) — see homelab-map.md Decide on shared NIC vs dedicated seed box hardware qBittorrent deployment (Docker on shared NIC or baremetal on seed box) NFS export for shared storage (DMZ → UnRaid NAS) Lock down firewall rules — strictly limit DMZ → Internal to NFS only Monitoring \u0026 Alerting Where does monitoring live? (Separate from workloads?) Komodo has built-in alerting — is that sufficient? Do we need a dedicated metrics/visualization stack (e.g. Prometheus/Grafana), or is Komodo + Uptime Kuma (+ existing logging) enough for the foreseeable future? (Prometheus/Grafana/Influx-style stack explicitly deferred — not pursuing yet.) Secrets Management How do secrets get into Komodo configs? Komodo supports variables — are those sufficient for secrets? Do we need external secrets management (Vault, etc.)? Planned Workloads Apps and stacks to deploy once infrastructure is ready.",
     "tags": [],
     "title": "Roadmap",
-    "uri": "/docs/homelab/planning/roadmap/index.html"
+    "uri": "/Workspace/homelab/planning/roadmap/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -457,7 +457,7 @@ var relearn_searchindex = [
     "description": "type: Idea Machine List JONSBO NAS - 6th Gen i7, 16 GB RAM, NVIDIA GPU, 10TB of storage (8 usable)\nSynology NAS - 4GB RAM, 6TB storage\nIntel NUC - Celeron CPU, 8GB of RAM\nRaspberry Pi 4 - 4GB RAM\nLenovoMini 1 - 8th gen i7, NVIDIA GPU, 16GB RAM LenovoMini 2 - 7th gen i5, NVIDIA GPU, 16GB RAM LenovoMini 3 - i5, 16GB RAM LenovoMini 4 - i5, 16GB RAM LenovoMini 5 - i5, 16GB RAM",
     "tags": [],
     "title": "Scratchpad",
-    "uri": "/docs/homelab/planning/scratchpad/index.html"
+    "uri": "/Workspace/homelab/planning/scratchpad/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Architecture \u0026 System Designs",
@@ -465,7 +465,7 @@ var relearn_searchindex = [
     "description": "Tailscale Integration for OpenBao Plugin repository: https://github.com/SamPlaysKeys/openbao-plugin-secrets-tailscale\nThis guide details how to set up an on-demand, dynamic Tailscale integration in OpenBao. When a client (such as a Docker container) requests a secret from docker/tailscale/auth-token/\u003cname\u003e (for example, docker/tailscale/auth-token/nginx), OpenBao will automatically call the Tailscale API to generate a short-lived, preauthorized, and ephemeral authentication key labeled for that specific container, returning it to the client immediately.",
     "tags": [],
     "title": "Tailscale Integration for OpenBao",
-    "uri": "/docs/architecture/openbao/tailscale-integration/index.html"
+    "uri": "/Workspace/architecture/openbao/tailscale-integration/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
@@ -473,7 +473,7 @@ var relearn_searchindex = [
     "description": "Unifi Zone-Based Firewall (ZBF) Guide Overview This guide walks through configuring the homelab network using UniFi’s Zone-Based Firewalls (ZBF), available in UniFi Network 9.0+.\nZBF shifts away from traditional LAN In/Out rules by grouping networks into Zones and defining Policies that dictate traffic flow between those zones. This is visualized in the Zone Matrix and is vastly superior for environment segmentation.",
     "tags": [],
     "title": "Unifi Zone-Based Firewall (ZBF) Guide",
-    "uri": "/docs/homelab/network/unifi-configurations/index.html"
+    "uri": "/Workspace/homelab/network/unifi-configurations/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -484,7 +484,7 @@ var relearn_searchindex = [
       "Containers"
     ],
     "title": "Using the integrated OpenShift container image registry",
-    "uri": "/docs/guides/openshift/using-integrated-openshift-registry/index.html"
+    "uri": "/Workspace/guides/openshift/using-integrated-openshift-registry/index.html"
   },
   {
     "breadcrumb": "Documentation \u003e Guides",
@@ -492,6 +492,6 @@ var relearn_searchindex = [
     "description": "VSCode Setup for Enterprise Development This guide covers setting up Visual Studio Code (VSCode) as your primary development environment on enterprise devices for working with OpenShift, Ansible, Python, YAML, and Bash.\nPrerequisites Before configuring VSCode, ensure the following core tools are installed on your system. While VSCode is assumed to be installed, these underlying dependencies are required for functionality.",
     "tags": [],
     "title": "VSCode Setup for Enterprise Development",
-    "uri": "/docs/guides/dev-environment/vscode/index.html"
+    "uri": "/Workspace/guides/dev-environment/vscode/index.html"
   }
 ]
