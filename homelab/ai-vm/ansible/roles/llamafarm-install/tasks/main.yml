@@ -1,4 +1,3 @@
----
 - name: Download LlamaFarm CLI installer
   get_url:
     url: "https://raw.githubusercontent.com/llama-farm/llamafarm/main/install.sh"

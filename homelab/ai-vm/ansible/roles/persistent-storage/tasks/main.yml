@@ -1,4 +1,3 @@
----
 - name: Check if persistent device has a filesystem
   command: blkid -s TYPE -o value "{{ persistent_device }}"
   register: blkid_result

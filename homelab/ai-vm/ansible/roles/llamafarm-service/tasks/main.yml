@@ -1,4 +1,3 @@
----
 - name: Create project directory
   file:
     path: "/home/{{ lf_user }}/{{ lf_project_name }}"

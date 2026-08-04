@@ -1,6 +1,3 @@
----
-type: Reference
----
 #!/bin/bash
 # Check for outdated virt-launcher workloads after CNV upgrade
 #
