@@ -1,10 +1,13 @@
 ---
 type: Talk
-title: "How to Plan Out a Homelab"
+title: How to Plan Out a Homelab
 category: Talks
-status: Active
+status: exploring
 slides: ""
-tags: [homelab, planning, infrastructure]
+tags:
+  - homelab
+  - planning
+  - infrastructure
 ---
 
 # How to Plan Out a Homelab
