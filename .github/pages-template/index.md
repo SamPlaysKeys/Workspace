@@ -28,6 +28,11 @@ Welcome to the personal documentation workspace. Below is the documentation orga
             <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
             {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
             {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+            {% if p.tags %}
+              {% for tag in p.tags %}
+                <span class="badge badge-tag">{{ tag }}</span>
+              {% endfor %}
+            {% endif %}
           </li>
         {% endif %}
       {% endfor %}
@@ -51,6 +56,11 @@ Welcome to the personal documentation workspace. Below is the documentation orga
               <a href="{{ p.url | relative_url }}"><strong>{{ p.title | default: p.name }}</strong></a>
               {% if p.type %} <span class="badge badge-type">{{ p.type }}</span>{% endif %}
               {% if p.status %} <span class="badge badge-status">{{ p.status }}</span>{% endif %}
+              {% if p.tags %}
+                {% for tag in p.tags %}
+                  <span class="badge badge-tag">{{ tag }}</span>
+                {% endfor %}
+              {% endif %}
             </li>
           {% endif %}
         {% endfor %}
@@ -71,4 +81,5 @@ Welcome to the personal documentation workspace. Below is the documentation orga
   }
   .badge-type { background-color: #f4f6fa; color: #5c6bc0; border-color: #d2d7f3; }
   .badge-status { background-color: #f1f8e9; color: #4caf50; border-color: #c5e1a5; }
+  .badge-tag { background-color: #fafafa; color: #757575; border-color: #e0e0e0; }
 </style>

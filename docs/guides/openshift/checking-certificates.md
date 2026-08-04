@@ -1,5 +1,9 @@
 ---
 type: Reference
+category: Guides
+status: Active
+tags:
+  - OpenShift
 ---
 # Checking OpenShift Certificates
 
