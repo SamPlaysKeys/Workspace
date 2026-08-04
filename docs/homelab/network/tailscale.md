@@ -1,6 +1,9 @@
 ---
 type: Reference
 subcategory: Network
+category: Homelab
+status: Active
+date: 2026-08-03
 ---
 
 # Tailscale

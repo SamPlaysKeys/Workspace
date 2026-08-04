@@ -15,35 +15,58 @@ permissions:
   contents: write
 
 jobs:
-  sync-docs:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v4
-        with:
-          path: main-source
 
-      - name: Checkout GH_Pages branch
-        uses: actions/checkout@v4
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
         with:
-          ref: GH_Pages
-          path: gh-pages-dest
+          hugo-version: 'latest'
+          extended: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: pip install pyyaml
 
-      - name: Deploy Pages Templates
+      - name: Create Hugo Working Directory
         run: |
-          cp -r main-source/.github/pages-template/. gh-pages-dest/
+          mkdir -p hugo-build/content hugo-build/static hugo-build/themes
+          cp .github/pages-template/hugo.toml hugo-build/
 
-      - name: Run sync pages script
+      - name: Clone Relearn Theme
         run: |
-          python main-source/.github/scripts/sync_pages.py main-source/docs gh-pages-dest
+          git clone --depth 1 https://github.com/McShelby/hugo-theme-relearn.git hugo-build/themes/hugo-theme-relearn
+
+      - name: Run sync pages script (generates Hugo content & static)
+        run: |
+          python .github/scripts/sync_pages.py docs hugo-build
+
+      - name: Build Hugo Site
+        run: |
+          cd hugo-build
+          hugo --minify
+
+      - name: Checkout GH_Pages branch (Target)
+        uses: actions/checkout@v4
+        with:
+          ref: GH_Pages
+          path: gh-pages-dest
+
+      - name: Deploy Pre-built HTML to GH_Pages Branch
+        run: |
+          # Clean up existing files in gh-pages-dest (except .git)
+          find gh-pages-dest -maxdepth 1 ! -name 'gh-pages-dest' ! -name '.git' -exec rm -rf {} +
+          # Copy the built public files
+          cp -r hugo-build/public/. gh-pages-dest/
+          # Ensure .nojekyll exists so GitHub Pages doesn't run Jekyll on our raw static HTML
+          touch gh-pages-dest/.nojekyll
 
       - name: Commit and push changes to GH_Pages
         working-directory: gh-pages-dest
@@ -51,9 +74,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          # Check if there are unstaged or staged changes to commit
           if ! git diff-index --quiet HEAD --; then
-            git commit -m "docs: auto-sync from main [skip ci]"
+            git commit -m "docs: deploy Hugo static build [skip ci]"
             git push origin GH_Pages
           else
             echo "No changes to deploy. Skipping push."

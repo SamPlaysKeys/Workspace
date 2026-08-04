@@ -38,12 +38,9 @@ def write_markdown_file(file_path, frontmatter, body):
         # safe_dump preserves unicode and formats structures cleanly
         frontmatter_text = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True)
         
-        # Wrap body in {% raw %} and {% endraw %} to prevent Jekyll from attempting
-        # to parse any Liquid templates (like Jinja/Ansible double curlies) in the content.
-        wrapped_body = f"{{% raw %}}\n{body}\n{{% endraw %}}"
-        
+        # Hugo uses pure markdown without the need for Liquid wrapping {% raw %}
         with open(file_path, "w", encoding="utf-8") as f:
-            f.write(f"---\n{frontmatter_text}---\n{wrapped_body}")
+            f.write(f"---\n{frontmatter_text}---\n{body}")
     except Exception as e:
         print(f"Error writing to {file_path}: {e}")
 
@@ -59,15 +56,18 @@ def get_h1_title(body):
 
 def main():
     if len(sys.argv) < 3:
-        print("Usage: sync_pages.py <source_docs_dir> <target_pages_dir>")
+        print("Usage: sync_pages.py <source_docs_dir> <target_hugo_site_dir>")
         sys.exit(1)
 
     source_dir = os.path.abspath(sys.argv[1])
-    target_dir = os.path.abspath(sys.argv[2])
+    target_hugo_dir = os.path.abspath(sys.argv[2])
+    target_content_dir = os.path.join(target_hugo_dir, "content")
+    target_static_dir = os.path.join(target_hugo_dir, "static")
 
-    print(f"Syncing markdown from '{source_dir}' to '{target_dir}'...")
+    print(f"Syncing docs from '{source_dir}' into Hugo site structure inside '{target_hugo_dir}'...")
 
-    synced_files = set()  # Set of all relative file paths written/updated in this run
+    synced_content = set()  # Relative content paths written in this run
+    synced_static = set()   # Relative static paths written in this run
 
     # We will walk the source docs directory recursively
     for root, dirs, files in os.walk(source_dir):
@@ -93,26 +93,32 @@ def main():
                     print(f"Skipping {rel_path} (explicitly excluded/draft)")
                     continue
 
-                # 2. Determine default category based on directory name
-                # NOTE: For subcategories, we currently support manual 'subcategory' setting in frontmatter.
-                # Future expansion: Automatically extract subcategory from second-level directories
-                # (e.g., docs/homelab/ai-vm/ -> 'ai-vm' -> 'Ai Vm' as subcategory).
-                first_dir = rel_parts[0] if len(rel_parts) > 1 else ""
-                is_homelab = first_dir.lower() == "homelab"
+                # Special Gatekeeper: The root README.md is our portal homepage!
+                is_root_readme = rel_path.lower() == "readme.md"
 
                 category = frontmatter.get("category")
                 status = frontmatter.get("status")
 
-                if is_homelab:
-                    # Homelab doesn't require frontmatter fields, has defaults
+                if is_root_readme:
+                    # Root README bypasses strict rules to become Hugo's content/_index.md
                     if not category:
-                        category = "Homelab"
+                        category = "Home"
                     if not status:
                         status = "Active"
                 else:
-                    # Strict gatekeeper: Outside Homelab must have BOTH category and status
-                    if not category or not status:
-                        continue
+                    # 2. Determine default category based on directory name for homelab
+                    first_dir = rel_parts[0] if len(rel_parts) > 1 else ""
+                    is_homelab = first_dir.lower() == "homelab"
+
+                    if is_homelab:
+                        if not category:
+                            category = "Homelab"
+                        if not status:
+                            status = "Active"
+                    else:
+                        # Strict gatekeeper: Outside Homelab must have BOTH category and status
+                        if not category or not status:
+                            continue
 
                 # 3. Clean and normalize category and status
                 category = str(category).strip()
@@ -134,37 +140,47 @@ def main():
                 else:
                     title = str(title).strip()
 
-                # 5. Build target relative path for GH_Pages
-                category_kebab = category.lower().replace(" ", "-").replace("_", "-")
-                first_dir_normalized = first_dir.lower().replace(" ", "-").replace("_", "-")
-
-                if first_dir_normalized == category_kebab:
-                    # Preserving original path structure (e.g. docs/guides -> guides/)
-                    target_subpath = rel_parts[1:]
+                # 5. Build target relative path for Hugo Content
+                if is_root_readme:
+                    target_rel_path = "_index.md"
                 else:
-                    target_subpath = rel_parts[1:] if len(rel_parts) > 1 else rel_parts
+                    category_kebab = category.lower().replace(" ", "-").replace("_", "-")
+                    first_dir_normalized = first_dir.lower().replace(" ", "-").replace("_", "-")
 
-                # Deduplicate the folder name if the subpath already starts with the category kebab
-                if target_subpath and target_subpath[0].lower().replace(" ", "-").replace("_", "-") == category_kebab:
-                    target_subpath = target_subpath[1:]
+                    if first_dir_normalized == category_kebab:
+                        # Preserving original path structure (e.g. docs/guides -> guides/)
+                        target_subpath = rel_parts[1:]
+                    else:
+                        target_subpath = rel_parts[1:] if len(rel_parts) > 1 else rel_parts
 
-                target_rel_path = os.path.join(category_kebab, *target_subpath)
+                    # Deduplicate the folder name if the subpath already starts with the category kebab
+                    if target_subpath and target_subpath[0].lower().replace(" ", "-").replace("_", "-") == category_kebab:
+                        target_subpath = target_subpath[1:]
 
-                # Ensure layout is page
+                    # For Hugo section folders, README.md maps to _index.md
+                    target_subpath = list(target_subpath)
+                    if target_subpath and target_subpath[-1].lower() == "readme.md":
+                        target_subpath[-1] = "_index.md"
+                    target_subpath = tuple(target_subpath)
+
+                    target_rel_path = os.path.join(category_kebab, *target_subpath)
+
+                # Prepare final frontmatter for Hugo Relearn
                 final_frontmatter = frontmatter.copy()
-                final_frontmatter["layout"] = "page"
                 final_frontmatter["title"] = title
-                final_frontmatter["category"] = category
-                final_frontmatter["status"] = status
+                
+                # Exclude Home category itself from content pages if root
+                if not is_root_readme:
+                    final_frontmatter["category"] = category
+                    final_frontmatter["status"] = status
 
-                target_file_path = os.path.join(target_dir, target_rel_path)
+                target_file_path = os.path.join(target_content_dir, target_rel_path)
                 write_markdown_file(target_file_path, final_frontmatter, body)
-                print(f"Synced: {rel_path} -> {target_rel_path}")
-                synced_files.add(target_rel_path)
+                print(f"Synced Markdown: {rel_path} -> content/{target_rel_path}")
+                synced_content.add(target_rel_path)
 
             else:
-                # Support copying assets (png, jpg, pdf, html, etc.)
-                # Determine its default category folder based on parent dir
+                # Support copying assets (png, jpg, pdf, html, etc.) verbatim to static/
                 first_dir = rel_parts[0] if len(rel_parts) > 1 else ""
                 if first_dir:
                     category_kebab = first_dir.lower().replace(" ", "-").replace("_", "-")
@@ -172,90 +188,58 @@ def main():
                     target_subpath = rel_parts[1:]
                     target_rel_path = os.path.join(category_kebab, *target_subpath)
                     
-                    target_file_path = os.path.join(target_dir, target_rel_path)
+                    target_file_path = os.path.join(target_static_dir, target_rel_path)
                     os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
                     
-                    # If this is a text asset, check if it starts with frontmatter or a YAML document separator "---"
-                    # and strip/clean it to prevent Jekyll from attempting to parse it as a Liquid page.
-                    text_extensions = [".yml", ".yaml", ".sh", ".toml", ".json", ".conf", ".ini", ".txt", ".xml"]
-                    ext = os.path.splitext(file)[1].lower()
-                    
-                    stripped = False
-                    if ext in text_extensions:
-                        try:
-                            with open(file_path, "r", encoding="utf-8") as f:
-                                content = f.read()
-                            
-                            if content.startswith("---"):
-                                # Check if there is actual Jekyll frontmatter
-                                parts = content.split("---", 2)
-                                if len(parts) >= 3:
-                                    frontmatter_text = parts[1]
-                                    body = parts[2]
-                                    try:
-                                        frontmatter = yaml.safe_load(frontmatter_text) or {}
-                                    except Exception:
-                                        frontmatter = {}
-                                    
-                                    known_keys = {
-                                        "type", "category", "status", "tags", "title", "layout", "subcategory",
-                                        "published", "publish", "exclude", "pages", "sync", "draft", "system",
-                                        "related_to", "references", "date"
-                                    }
-                                    is_frontmatter = isinstance(frontmatter, dict) and any(
-                                        k.lower() in known_keys for k in frontmatter.keys()
-                                    )
-                                    
-                                    if is_frontmatter:
-                                        with open(target_file_path, "w", encoding="utf-8") as f:
-                                            f.write(body.lstrip())
-                                        print(f"Cleaned Asset Copied (frontmatter stripped): {rel_path} -> {target_rel_path}")
-                                        stripped = True
-                                
-                                if not stripped:
-                                    # Strip leading YAML --- separator so Jekyll doesn't parse it as frontmatter
-                                    stripped_content = content[3:].lstrip()
-                                    with open(target_file_path, "w", encoding="utf-8") as f:
-                                        f.write(stripped_content)
-                                    print(f"Cleaned Asset Copied (YAML separator stripped): {rel_path} -> {target_rel_path}")
-                                    stripped = True
-                        except Exception as e:
-                            print(f"Failed to strip leading dashes from {rel_path}: {e}")
-                    
-                    if not stripped:
-                        shutil.copy2(file_path, target_file_path)
-                        print(f"Asset Copied: {rel_path} -> {target_rel_path}")
-                        
-                    synced_files.add(target_rel_path)
+                    # Copy verbatim to Hugo static/ (no need for frontmatter stripping as static files are unparsed!)
+                    shutil.copy2(file_path, target_file_path)
+                    print(f"Synced Asset Verbatim: {rel_path} -> static/{target_rel_path}")
+                    synced_static.add(target_rel_path)
 
-    # 6. Cleanup obsolete files on GH_Pages
-    print("Performing obsolete files cleanup on target directory...")
-    # Scan target directory recursively for any .md or assets that we did NOT write in this run
-    for root, dirs, files in os.walk(target_dir):
-        # Skip hidden files/directories (like .git, .github) and templates
-        if any(part.startswith(".") for part in os.path.relpath(root, target_dir).split(os.sep)):
-            continue
-        
+    # 6. Cleanup obsolete files on Hugo Content and Static target directories
+    print("Performing obsolete files cleanup on Hugo directories...")
+    
+    # Content Cleanup
+    for root, dirs, files in os.walk(target_content_dir):
         for file in files:
             file_path = os.path.join(root, file)
-            rel_path = os.path.relpath(file_path, target_dir)
-
-            # Do not delete index.md, _config.yml, README.md or standard Jekyll templates
+            rel_path = os.path.relpath(file_path, target_content_dir)
             rel_path_normalized = rel_path.replace("\\", "/")
-            protected_prefixes = ("_layouts/", "_includes/", "assets/", "css/", "js/")
-            if rel_path_normalized in ["index.md", "_config.yml", "README.md"] or rel_path_normalized.startswith(protected_prefixes):
-                continue
 
-            if rel_path not in synced_files:
-                print(f"Deleting obsolete file: {rel_path}")
+            if rel_path_normalized not in synced_content:
+                print(f"Deleting obsolete content file: content/{rel_path_normalized}")
                 os.remove(file_path)
                 
-                # Clean up empty parent directories up to target_dir
+                # Clean up empty parent directories up to target_content_dir
                 parent_dir = os.path.dirname(file_path)
-                while parent_dir != target_dir:
+                while parent_dir != target_content_dir:
                     try:
                         if not os.listdir(parent_dir):
-                            print(f"Removing empty directory: {os.path.relpath(parent_dir, target_dir)}")
+                            print(f"Removing empty directory: content/{os.path.relpath(parent_dir, target_content_dir)}")
+                            os.rmdir(parent_dir)
+                            parent_dir = os.path.dirname(parent_dir)
+                        else:
+                            break
+                    except Exception:
+                        break
+
+    # Static Cleanup
+    for root, dirs, files in os.walk(target_static_dir):
+        for file in files:
+            file_path = os.path.join(root, file)
+            rel_path = os.path.relpath(file_path, target_static_dir)
+            rel_path_normalized = rel_path.replace("\\", "/")
+
+            if rel_path_normalized not in synced_static:
+                print(f"Deleting obsolete static file: static/{rel_path_normalized}")
+                os.remove(file_path)
+                
+                # Clean up empty parent directories up to target_static_dir
+                parent_dir = os.path.dirname(file_path)
+                while parent_dir != target_static_dir:
+                    try:
+                        if not os.listdir(parent_dir):
+                            print(f"Removing empty directory: static/{os.path.relpath(parent_dir, target_static_dir)}")
                             os.rmdir(parent_dir)
                             parent_dir = os.path.dirname(parent_dir)
                         else:

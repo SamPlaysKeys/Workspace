@@ -24,6 +24,8 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **Hugo Relearn Theme Documentation Portal**: Switched the static pages deployment branch `GH_Pages` from Jekyll to the modern, feature-rich Hugo `relearn` theme. Re-engineered `.github/scripts/sync_pages.py` to target Hugo's `content/` and `static/` directories (mapping `README.md` to `_index.md`, and writing pure, un-wrapped markdown). Overhauled `.github/workflows/sync-pages.yml` to compile the Hugo site using the extended Hugo builder and deploy flat, production-ready static HTML assets directly to `GH_Pages`, improving reliability and compile speed.
+
 - [x] **GitOps Cluster Consolidation Roadmap**: Created a strategic phased roadmap and Mermaid flowchart under `docs/gitops/consolidation-roadmap.md` to guide the consolidation of tag-drifted and unmanaged clusters onto `main`, a dedicated `Testing` branch, and a `v2.0` release tag. Added a long-term management strategy for test, pre-prod, prod, and strictly-managed environments with a flat repository directory structure.
 - [x] **HCL BigFix Setup & Planning Guide**: Created a comprehensive guide under `docs/guides/bigfix/planning.md` detailing architecture, sizing, prerequisites, configuration flow, and consulting discovery questions.
 - [x] **AI VM Management**: ADR 0001 (LlamaFarm over Ansible), architecture plan, Ansible draft — graduated from `wip/ai-vm-management/` to `docs/homelab/ai-vm/`
