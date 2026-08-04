@@ -2,7 +2,7 @@
 type: Talk
 title: How to Plan Out a Homelab
 category: Talks
-status: Active
+status: exploring
 slides: ''
 tags:
 - homelab
