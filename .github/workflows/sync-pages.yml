@@ -1,0 +1,61 @@
+name: Sync Pages Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - '.github/pages-template/**'
+      - '.github/scripts/**'
+      - '.github/workflows/sync-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          path: main-source
+
+      - name: Checkout GH_Pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: GH_Pages
+          path: gh-pages-dest
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Deploy Pages Templates
+        run: |
+          cp main-source/.github/pages-template/_config.yml gh-pages-dest/_config.yml
+          cp main-source/.github/pages-template/index.md gh-pages-dest/index.md
+
+      - name: Run sync pages script
+        run: |
+          python main-source/.github/scripts/sync_pages.py main-source/docs gh-pages-dest
+
+      - name: Commit and push changes to GH_Pages
+        working-directory: gh-pages-dest
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          # Check if there are unstaged or staged changes to commit
+          if ! git diff-index --quiet HEAD --; then
+            git commit -m "docs: auto-sync from main [skip ci]"
+            git push origin GH_Pages
+          else
+            echo "No changes to deploy. Skipping push."
+          fi
