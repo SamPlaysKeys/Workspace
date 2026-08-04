@@ -171,8 +171,58 @@ def main():
                     
                     target_file_path = os.path.join(target_dir, target_rel_path)
                     os.makedirs(os.path.dirname(target_file_path), exist_ok=True)
-                    shutil.copy2(file_path, target_file_path)
-                    print(f"Asset Copied: {rel_path} -> {target_rel_path}")
+                    
+                    # If this is a text asset, check if it starts with frontmatter or a YAML document separator "---"
+                    # and strip/clean it to prevent Jekyll from attempting to parse it as a Liquid page.
+                    text_extensions = [".yml", ".yaml", ".sh", ".toml", ".json", ".conf", ".ini", ".txt", ".xml"]
+                    ext = os.path.splitext(file)[1].lower()
+                    
+                    stripped = False
+                    if ext in text_extensions:
+                        try:
+                            with open(file_path, "r", encoding="utf-8") as f:
+                                content = f.read()
+                            
+                            if content.startswith("---"):
+                                # Check if there is actual Jekyll frontmatter
+                                parts = content.split("---", 2)
+                                if len(parts) >= 3:
+                                    frontmatter_text = parts[1]
+                                    body = parts[2]
+                                    try:
+                                        frontmatter = yaml.safe_load(frontmatter_text) or {}
+                                    except Exception:
+                                        frontmatter = {}
+                                    
+                                    known_keys = {
+                                        "type", "category", "status", "tags", "title", "layout", "subcategory",
+                                        "published", "publish", "exclude", "pages", "sync", "draft", "system",
+                                        "related_to", "references", "date"
+                                    }
+                                    is_frontmatter = isinstance(frontmatter, dict) and any(
+                                        k.lower() in known_keys for k in frontmatter.keys()
+                                    )
+                                    
+                                    if is_frontmatter:
+                                        with open(target_file_path, "w", encoding="utf-8") as f:
+                                            f.write(body.lstrip())
+                                        print(f"Cleaned Asset Copied (frontmatter stripped): {rel_path} -> {target_rel_path}")
+                                        stripped = True
+                                
+                                if not stripped:
+                                    # Strip leading YAML --- separator so Jekyll doesn't parse it as frontmatter
+                                    stripped_content = content[3:].lstrip()
+                                    with open(target_file_path, "w", encoding="utf-8") as f:
+                                        f.write(stripped_content)
+                                    print(f"Cleaned Asset Copied (YAML separator stripped): {rel_path} -> {target_rel_path}")
+                                    stripped = True
+                        except Exception as e:
+                            print(f"Failed to strip leading dashes from {rel_path}: {e}")
+                    
+                    if not stripped:
+                        shutil.copy2(file_path, target_file_path)
+                        print(f"Asset Copied: {rel_path} -> {target_rel_path}")
+                        
                     synced_files.add(target_rel_path)
 
     # 6. Cleanup obsolete files on GH_Pages
