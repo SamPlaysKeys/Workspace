@@ -37,8 +37,13 @@ def write_markdown_file(file_path, frontmatter, body):
         os.makedirs(os.path.dirname(file_path), exist_ok=True)
         # safe_dump preserves unicode and formats structures cleanly
         frontmatter_text = yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True)
+        
+        # Wrap body in {% raw %} and {% endraw %} to prevent Jekyll from attempting
+        # to parse any Liquid templates (like Jinja/Ansible double curlies) in the content.
+        wrapped_body = f"{{% raw %}}\n{body}\n{{% endraw %}}"
+        
         with open(file_path, "w", encoding="utf-8") as f:
-            f.write(f"---\n{frontmatter_text}---\n{body}")
+            f.write(f"---\n{frontmatter_text}---\n{wrapped_body}")
     except Exception as e:
         print(f"Error writing to {file_path}: {e}")
 
