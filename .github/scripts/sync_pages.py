@@ -54,6 +54,21 @@ def get_h1_title(body):
             return match.group(1).strip()
     return None
 
+def strip_first_h1(body):
+    """
+    Removes the first H1 header from the markdown body to avoid duplicate titles in Hugo.
+    """
+    lines = body.splitlines()
+    for i, line in enumerate(lines):
+        if re.match(r"^#\s+", line.strip()):
+            # Found the first H1 heading, remove it
+            lines.pop(i)
+            # Clean up any leading empty lines after stripping
+            while lines and not lines[0].strip():
+                lines.pop(0)
+            break
+    return "\n".join(lines)
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: sync_pages.py <source_docs_dir> <target_hugo_site_dir>")
@@ -174,8 +189,11 @@ def main():
                     final_frontmatter["category"] = category
                     final_frontmatter["status"] = status
 
+                # Strip the first H1 from the body to avoid duplicate titles in Hugo
+                stripped_body = strip_first_h1(body)
+
                 target_file_path = os.path.join(target_content_dir, target_rel_path)
-                write_markdown_file(target_file_path, final_frontmatter, body)
+                write_markdown_file(target_file_path, final_frontmatter, stripped_body)
                 print(f"Synced Markdown: {rel_path} -> content/{target_rel_path}")
                 synced_content.add(target_rel_path)
 
