@@ -1,7 +1,6 @@
 ---
 type: Guide
-category: Guides
-subcategory: OpenShift Learning Path
+category: OpenShift Learning Path
 status: Active
 ---
 # Module 5 — CI/CD & GitOps
