@@ -3,51 +3,31 @@ type: Outline
 status: draft
 ---
 
-# Talk Outline — How to Document Your Homelab (even if you don't have one)
+# Talk Outline — How To Plan Your Perfect Homelab
 
-Slide-by-slide skeleton. Status: draft.
+20-minute talk. Slide-by-slide skeleton. Status: draft.
 
-## 1. The problem
-- Documentation is either never started or instantly stale.
-- "I'll document it later" becomes "I have no idea why I set this up."
-- The lab you can't explain is the lab you can't recover.
+The outcome is documentation, but the talk is about **planning** — a 20-minute, four-section walk through the iterative planning loop and a live example, ending with the deliverable you can take home.
 
-## 2. Reframe: documentation as a loop, not a deliverable
-- Four phases, iterated: Goal → Achievable → How to → Fit.
+## 1. Introduction
+- The accretion problem: a homelab grows one impulse-buy and one "I'll write this down later" at a time.
+- The lab you can't explain is the lab you can't recover (or right-size).
+- We're here to plan, not to admire gear. By the end you'll have a method and a kit.
+
+## 2. Explanation of the Iterative Planning Concept
+- Documentation is a *byproduct*; planning is the loop: Goal → Achievable → How to → Fit.
 - You can enter the loop at any phase (existing lab = start at Fit or How to).
+- Goal — visualize what you *want* (Ideal State). Achievable — what's realistic given hardware, time, skill, risk. How to — architecture, ADRs, inventory, runbooks. Fit — gap analysis: Ideal vs Current/Plan, side by side.
+- The AI assistant's real job: structured interviewer that forces you to confront the gaps you'd skip alone — not a doc ghostwriter.
+- Pattern reminder: the IaC omitted the "why" — this loop captures it up front, before the gear.
 
-## 3. Phase 1 — Goal (Ideal State)
-- Visualize what you *want* before you own anything.
-- Output: an Ideal-State doc (services, environments, intent).
-- Demo hook: build one with no hardware at all.
+## 3. Walking through the example (`/docs/homelab`)
+- Live walk of this repo's *populated* `docs/homelab/` through all four phases.
+- Goal: the overview map + Ideal State. Achievable: ADRs and what was deferred. How to: architecture, environments, inventory. Fit: the gap matrix — growth roadmap.
+- Shows the artifact most labs never produce: the Fit/gap view.
 
-## 4. Phase 2 — Achievable (Realistic scope)
-- Constraints: hardware, budget, time, skill, risk tolerance.
-- Output: a scoped plan that admits what's deferred.
-- Pattern reminder: the IaC omitted the "why" — here we capture it up front.
-
-## 5. Phase 3 — How to (Build/run docs)
-- Architecture, ADRs, inventory, runbooks.
-- Borrowed from real practice: environment maps, decision records.
-- Output: the docs you'd actually need to rebuild or onboard someone.
-
-## 6. Phase 4 — Fit (Gap analysis)
-- Ideal-State vs Current/Plan-State, side by side.
-- Output: a visual fit-gap matrix — the growth roadmap.
-- This is the artifact most labs never produce.
-
-## 7. The AI assistant's real job
-- Structured interviewer, not doc ghostwriter.
-- Per-phase conversation scripts drive the loop.
-- Forces you to confront gaps you'd skip alone.
-
-## 8. Live demo
-- Empty-lab example through all four phases with the assistant.
-- Then the same loop on a real, populated lab → reveal the Fit view.
-
-## 9. Takeaways + how to start today
-- Templates and session scripts are published (methodology dir).
-- Start with Goal, even if your "lab" is a wishlist.
-
-## 10. Q&A / resources
-- Link to the reusable system: `../methodology/document-your-homelab/`
+## 4. Closing & Delivery of `homelab-doc-kit`
+- Recap: planning is a loop, documentation is what it leaves behind.
+- Takeaway: the `homelab-doc-kit` — portable, dependency-free scaffolding for the whole loop.
+  - Now at `artifacts/homelab-doc-kit/` (templates + AI session scripts per phase).
+- Start with Goal, even if your "lab" is a wishlist. Q&A / resources.
