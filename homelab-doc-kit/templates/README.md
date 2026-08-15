@@ -26,9 +26,9 @@ A four-phase, interactive method for documenting this infrastructure *with* an A
         │                │                    │
         │                ▼                    │
         │         ┌──────────────┐            │
-        └────────│ 3 HOW TO     │            │
-                  │ Build/run   │            │
-                  │ docs        │            │
+        └─────────│ 3 HOW TO     │            │
+                  │ Build/run    │            │
+                  │ docs         │            │
                   └──────┬───────┘            │
                          ▼                    │
                   ┌──────────────┐            │
