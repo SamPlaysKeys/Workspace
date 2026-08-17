@@ -25,16 +25,16 @@ This curriculum provides structured, role-based learning paths for engineers and
 
 | # | Module | Required / Optional |
 |---|--------|---------------------|
-| 0 | [Prerequisites & How to Use](learning-path/modules/00-prerequisites.md) | Required |
-| 1 | [Git, GitHub & GitLab Best Practices](learning-path/modules/01-git.md) | Required |
-| 2 | [Containers & Registries](learning-path/modules/02-containers.md) | Required |
-| 3 | [Kubernetes & OpenShift Core](learning-path/modules/03-k8s-openshift-core.md) | Required |
-| 4 | [OpenShift Virtualization](learning-path/modules/04-openshift-virtualization.md) | Required |
-| 5 | [CI/CD & GitOps](learning-path/modules/05-cicd-gitops.md) | Required |
-| 6 | [Fleet Management with ACM](learning-path/modules/06-fleet-acm.md) | Required |
-| 7 | [Observability & Day-2 Operations](learning-path/modules/07-observability-day2.md) | Required |
-| 8 | [Zero Touch Provisioning](learning-path/modules/08-ztp.md) | Optional — specialist track (50+ cluster / edge fleets) |
-| 9 | [Certifications & Next Steps](learning-path/modules/09-certs-nextsteps.md) | Required |
+| 0 | [Prerequisites & How to Use](00-prerequisites.md) | Required |
+| 1 | [Git, GitHub & GitLab Best Practices](01-git.md) | Required |
+| 2 | [Containers & Registries](02-containers.md) | Required |
+| 3 | [Kubernetes & OpenShift Core](03-k8s-openshift-core.md) | Required |
+| 4 | [OpenShift Virtualization](04-openshift-virtualization.md) | Required |
+| 5 | [CI/CD & GitOps](05-cicd-gitops.md) | Required |
+| 6 | [Fleet Management with ACM](06-fleet-acm.md) | Required |
+| 7 | [Observability & Day-2 Operations](07-observability-day2.md) | Required |
+| 8 | [Zero Touch Provisioning](08-ztp.md) | Optional — specialist track (50+ cluster / edge fleets) |
+| 9 | [Certifications & Next Steps](09-certs-nextsteps.md) | Required |
 
 **Suggested sequence:** Complete modules in order. Module 3 is the largest — work through its sub-sections (app layer → cluster ops → networking → storage) before moving to Module 4.
 
@@ -60,13 +60,13 @@ This curriculum provides structured, role-based learning paths for engineers and
 
 | # | Module | Required / Optional |
 |---|--------|---------------------|
-| 0 | [Prerequisites & How to Use](learning-path/modules/00-prerequisites.md) | Required |
-| 1 | [Git, GitHub & GitLab Best Practices](learning-path/modules/01-git.md) | Required |
-| 2 | [Containers & Registries](learning-path/modules/02-containers.md) | Required |
-| 3 | [Kubernetes & OpenShift Core](learning-path/modules/03-k8s-openshift-core.md) | Required |
-| 4 | [OpenShift Virtualization](learning-path/modules/04-openshift-virtualization.md) | Required |
-| 7 | [Observability & Day-2 Operations](learning-path/modules/07-observability-day2.md) | Required |
-| 9 | [Certifications & Next Steps](learning-path/modules/09-certs-nextsteps.md) | Required |
+| 0 | [Prerequisites & How to Use](00-prerequisites.md) | Required |
+| 1 | [Git, GitHub & GitLab Best Practices](01-git.md) | Required |
+| 2 | [Containers & Registries](02-containers.md) | Required |
+| 3 | [Kubernetes & OpenShift Core](03-k8s-openshift-core.md) | Required |
+| 4 | [OpenShift Virtualization](04-openshift-virtualization.md) | Required |
+| 7 | [Observability & Day-2 Operations](07-observability-day2.md) | Required |
+| 9 | [Certifications & Next Steps](09-certs-nextsteps.md) | Required |
 
 > Modules 5 (CI/CD & GitOps), 6 (Fleet Management), and 8 (ZTP) are not included in the support path. Support staff should be *consumers* of the GitOps/fleet model — understanding that Git is the source of truth and the console is read/observe — but are not expected to author pipelines or ACM policies.
 
@@ -89,13 +89,13 @@ All modules live in [learning-path/modules/](learning-path/modules/). Each is se
 
 | # | Module | Short description |
 |---|--------|-------------------|
-| 0 | [Prerequisites & How to Use](learning-path/modules/00-prerequisites.md) | Lab setup, verification philosophy, beginner's mind |
-| 1 | [Git, GitHub & GitLab Best Practices](learning-path/modules/01-git.md) | Git object model, daily workflow, GitHub Foundations cert |
-| 2 | [Containers & Registries](learning-path/modules/02-containers.md) | Images, layers, tags vs digests, registry auth |
-| 3 | [Kubernetes & OpenShift Core](learning-path/modules/03-k8s-openshift-core.md) | App layer, cluster ops, networking, storage |
-| 4 | [OpenShift Virtualization](learning-path/modules/04-openshift-virtualization.md) | KubeVirt VMs, live migration, MTV from vSphere |
-| 5 | [CI/CD & GitOps](learning-path/modules/05-cicd-gitops.md) | Pipelines, Argo CD, GitOps repo structure, secrets |
-| 6 | [Fleet Management with ACM](learning-path/modules/06-fleet-acm.md) | RHACM policies, compliance, ACM + GitOps hybrid |
-| 7 | [Observability & Day-2 Operations](learning-path/modules/07-observability-day2.md) | Prometheus, Loki, OADP, etcd backup/DR |
-| 8 | [Zero Touch Provisioning](learning-path/modules/08-ztp.md) | SiteConfig, PolicyGenTemplate, TALM — specialist track |
-| 9 | [Certifications & Next Steps](learning-path/modules/09-certs-nextsteps.md) | RHCSA, KCNA, CKA, CKAD, EX280, EX480 map |
+| 0 | [Prerequisites & How to Use](00-prerequisites.md) | Lab setup, verification philosophy, beginner's mind |
+| 1 | [Git, GitHub & GitLab Best Practices](01-git.md) | Git object model, daily workflow, GitHub Foundations cert |
+| 2 | [Containers & Registries](02-containers.md) | Images, layers, tags vs digests, registry auth |
+| 3 | [Kubernetes & OpenShift Core](03-k8s-openshift-core.md) | App layer, cluster ops, networking, storage |
+| 4 | [OpenShift Virtualization](04-openshift-virtualization.md) | KubeVirt VMs, live migration, MTV from vSphere |
+| 5 | [CI/CD & GitOps](05-cicd-gitops.md) | Pipelines, Argo CD, GitOps repo structure, secrets |
+| 6 | [Fleet Management with ACM](06-fleet-acm.md) | RHACM policies, compliance, ACM + GitOps hybrid |
+| 7 | [Observability & Day-2 Operations](07-observability-day2.md) | Prometheus, Loki, OADP, etcd backup/DR |
+| 8 | [Zero Touch Provisioning](08-ztp.md) | SiteConfig, PolicyGenTemplate, TALM — specialist track |
+| 9 | [Certifications & Next Steps](09-certs-nextsteps.md) | RHCSA, KCNA, CKA, CKAD, EX280, EX480 map |
