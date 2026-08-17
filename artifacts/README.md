@@ -14,6 +14,7 @@ artifacts/
 ├── ansible/              # Ansible playbooks, roles, and inventory templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
+├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
 └── openshift/            # OpenShift automation (YAML, Ansible, scripts)
     ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
     ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
