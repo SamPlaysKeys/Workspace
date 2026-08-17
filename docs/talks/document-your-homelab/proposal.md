@@ -1,9 +1,14 @@
 ---
 type: Talk
-title: "How to Document Your Homelab (even if you don't have one)"
-status: draft
+title: How to Document Your Homelab (even if you don't have one)
+status: superseded
 slides: ""
-tags: [homelab, documentation, planning, ai-assisted, methodology]
+tags:
+  - homelab
+  - documentation
+  - planning
+  - ai-assisted
+  - methodology
 ---
 
 # How to Document Your Homelab (even if you don't have one)
@@ -48,3 +53,6 @@ The "even if you don't have one" angle: you can run the entire loop on paper (or
 ## History
 
 This talk generalizes and supersedes the earlier narrower idea "How to Plan Out a Homelab" (formerly `docs/talks/how-to-plan-a-homelab-proposal.md`). The planning-only angle is now phase 1–2 of this broader method.
+
+> [!WARNING]
+> This proposal is for an earlier iteration on documenting the homelab. After review, it was realized that the goal is not the documenting, but instead planning (even if done retroactively). Refer to the linked outline for the more accurate breakdown.
