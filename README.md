@@ -4,6 +4,10 @@ A personal workspace for brainstorming, planning, troubleshooting, and building 
 
 This repository serves as a centralized hub for my technical projects, documentation, and experimentation. It uses a structured approach to collaboration with AI agents to maintain continuity and capture knowledge.
 
+## Upstream First Philosophy
+
+This workspace operates on an **"upstream first"** paradigm: rather than building custom, isolated solutions directly within client or downstream environments, we author, refine, and publish general-purpose examples, reusable artifacts, modules, and documentation open-source first. These upstream-validated assets are then pulled down into target environments as clean, standard deliverables, reducing technical debt and accelerating delivery across engagements.
+
 ## Acknowledgments
 
 Special thanks to [hhellbusch/my-ai-workspace](https://github.com/hhellbusch/my-ai-workspace) for providing much of the inspiration and foundational patterns for the AI collaboration workflows and workspace structure used here.

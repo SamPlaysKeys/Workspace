@@ -1,3 +1,8 @@
+---
+type: Guide
+category: OpenShift Learning Path
+status: Active
+---
 # Module 5 — CI/CD & GitOps
 
 **Audience:** Engineers ready to apply Git-as-change-management to cluster configuration and application delivery.

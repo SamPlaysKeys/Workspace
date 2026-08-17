@@ -1,0 +1,6 @@
+availableApplications:
+  hcl-bigfix-agent:
+    annotations:
+      argocd.argoproj.io/sync-wave: '3' # Deploys the node-level agent DaemonSet
+    source:
+      path: components/hcl-bigfix-agent

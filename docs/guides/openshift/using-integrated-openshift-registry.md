@@ -1,5 +1,10 @@
 ---
 type: Reference
+category: Guides
+status: Active
+tags:
+  - OpenShift
+  - Containers
 ---
 # Using the integrated OpenShift container image registry
 

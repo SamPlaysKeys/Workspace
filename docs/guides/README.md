@@ -1,11 +1,15 @@
-# Setup & Prevention Guides
+---
+layout: page
+title: Setup & Prevention Guides
+status: Meta
+---
 
 This directory contains guides and walkthroughs for correctly configuring and maintaining systems.
 
 ## Topic Index
 
 ### OpenBao
-- [Tailscale Integration for OpenBao](./openbao/tailscale-integration.md) - Secure, on-demand generation of Tailscale device auth keys for Docker containers.
+- [Tailscale Integration for OpenBao](../architecture/openbao/tailscale-integration.md) - Secure, on-demand generation of Tailscale device auth keys for Docker containers.
 
 ### Dev Environment
 - [VSCode Setup Guide](./dev-environment/vscode.md) - Configuration instructions for VSCode in enterprise development environments.
@@ -19,7 +23,8 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 - [OpenShift Guides Index](./openshift/README.md) - Setup instructions for GPU, internal registries, and cluster prep.
 
 ### OpenShift Virtualization
-- [VM Migration & Upgrade Strategy](./openshift-virtualization-upgrade/README.md) - Minimize downtime during cluster upgrades with live migration tuning, VM classification, and orchestration workflows (Ansible, AAP, ACM).
+- [OpenShift Virtualization Guides Index](./openshift-virtualization/README.md) - Storage configurations, PVC verification, and VM scheduling/balancing.
+- [VM Migration & Upgrade Strategy](./openshift-virtualization/openshift-virtualization-upgrade/README.md) - Minimize downtime during cluster upgrades with live migration tuning, VM classification, and orchestration workflows (Ansible, AAP, ACM).
 
 ### HCL BigFix
 - [Planning & Architecture Guide](./bigfix/planning.md) - Sizing, network ports, database selection, and discovery checklists for deployment.

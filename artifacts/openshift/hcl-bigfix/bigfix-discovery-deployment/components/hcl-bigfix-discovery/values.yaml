@@ -1,0 +1,17 @@
+namespace:
+  name: bigfix
+  labels:
+    app: bigfix
+    environment: test
+  annotations:
+    description: "Namespace for BigFix-related workloads"
+
+serviceAccount:
+  name: big-fix-serviceaccount
+
+tokenSecret:
+  name: bfi-service-account-token
+
+# Namespace where the NodeFeatureRule should be deployed. Defaults to the bigfix namespace.
+# Relocating this to the bigfix namespace avoids potential conflicts with other teams sharing NFD.
+nodeFeatureRuleNamespace: "bigfix"

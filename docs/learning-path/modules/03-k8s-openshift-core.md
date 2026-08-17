@@ -1,3 +1,8 @@
+---
+type: Guide
+category: OpenShift Learning Path
+status: Active
+---
 # Module 3 — Kubernetes & OpenShift Core
 
 **Audience:** Infrastructure/platform engineers and developers operating or deploying on Kubernetes/OpenShift. (VMware admins: this is where you rebuild the mental model from Kubernetes up — see the mapping scaffold, then discard it.)

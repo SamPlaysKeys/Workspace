@@ -1,0 +1,26 @@
+baseURL = 'https://samplayskeys.github.io/Workspace/'
+relativeURLs = false
+disableDefaultRelref = true
+languageCode = 'en-us'
+title = 'Workspace Docs'
+theme = 'hugo-theme-relearn'
+
+[outputs]
+  home    = ['html', 'rss', 'print']
+  section = ['html', 'rss', 'print']
+  page    = ['html', 'print']
+
+[params]
+  # Modern developer portal dark-theme variant
+  themeVariant = 'relearn-dark'
+  
+  # Auto-expanding dynamic navigation
+  collapsibleMenu = true
+  ordersectionsby = 'weight'
+  showVisitedLinks = true
+  disableLandingPageButton = false
+  
+  # Advanced built-in interactive Lunr search
+  search.disable = false
+  search.index.disable = false
+  search.page.disable = false

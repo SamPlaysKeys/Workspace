@@ -9,7 +9,8 @@ Graduated documentation from brainstorming sessions, troubleshooting investigati
 
 ```
 docs/
-├── platform/          # Platform architecture, operator models, drift management
+├── gitops/            # GitOps consolidation, roadmaps, workflows, and drift management
+├── platform/          # Platform architecture and operator models
 ├── homelab/           # Homelab planning (see homelab/README.md for topic index)
 │   ├── overview/      # Map + visual graphic
 │   ├── network/       # Tailscale, UniFi
@@ -21,7 +22,6 @@ docs/
 ├── guides/            # Setup and prevention guides
 │   ├── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
 │   └── dev-environment/ # VSCode setup, local tools, etc.
-├── blog/              # Blog post drafts
 └── notes/             # Personal notes (events, etc.)
 ```
 
@@ -40,4 +40,5 @@ See `workstyle/working_style.md` for the full graduation workflow.
 | Project | Description | Status |
 |---------|-------------|--------|
 | [Homelab](homelab/) | Infrastructure architecture for greenfield homelab rebuild | Architecture complete |
+| [GitOps Consolidation](gitops/consolidation-roadmap.md) | Strategic roadmap for returning clusters to trunk version control with tagging | Completed |
 | [OpenShift readiness (Ansible)](../artifacts/openshift/readiness-validation-ansible/README.md) | Multi-play validation pattern, role skeleton, example roles; long-form authoring guide in-repo | Graduated from `wip/` |

@@ -10,6 +10,8 @@ references:
   - https://podman-desktop.io/docs/migrating-from-docker/managing-docker-compatibility
   - https://podman.io/docs/installation
   - https://github.com/containers/krunkit
+category: Guides
+title: Installing Podman on MacOS
 ---
 
 # Podman Desktop Setup on macOS

@@ -1,0 +1,64 @@
+name: Sync Pages Deployment
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/**'
+      - '.github/pages-template/**'
+      - '.github/scripts/**'
+      - '.github/workflows/sync-pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Set up Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: 'latest'
+          extended: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Python dependencies
+        run: pip install pyyaml
+
+      - name: Create Hugo Working Directory
+        run: |
+          mkdir -p hugo-build/content hugo-build/static hugo-build/themes
+          cp .github/pages-template/hugo.toml hugo-build/
+
+      - name: Clone Relearn Theme
+        run: |
+          git clone --depth 1 https://github.com/McShelby/hugo-theme-relearn.git hugo-build/themes/hugo-theme-relearn
+
+      - name: Run sync pages script (generates Hugo content & static)
+        run: |
+          python .github/scripts/sync_pages.py docs hugo-build
+
+      - name: Build Hugo Site
+        run: |
+          cd hugo-build
+          hugo --minify
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: GH_Pages
+          publish_dir: hugo-build/public
+          force_orphan: false
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'

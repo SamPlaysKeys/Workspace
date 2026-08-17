@@ -1,3 +1,8 @@
+---
+type: Guide
+category: OpenShift Learning Path
+status: Active
+---
 # Module 2 — Containers & Registries
 
 **Audience:** Engineers new to containerization, or coming from VM-centric operations.

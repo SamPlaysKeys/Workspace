@@ -1,3 +1,8 @@
+---
+type: Guide
+category: OpenShift Learning Path
+status: Active
+---
 # Module 8 — Zero Touch Provisioning (Specialist Track)
 
 > **Who this is for:** Teams managing **50+ clusters**, especially remote/edge sites where manual install isn't viable (retail, utility, telco). This is a distinct engineering specialty — Day 0/1/2 automation — beyond fleet operations. If you manage 3–20 clusters in a datacenter, **Module 6 is sufficient**; return here when provisioning becomes a bottleneck.

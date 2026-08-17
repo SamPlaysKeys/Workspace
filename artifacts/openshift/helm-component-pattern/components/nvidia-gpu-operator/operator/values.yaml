@@ -1,0 +1,12 @@
+enabled: true
+namespace: nvidia-gpu-operator
+
+olm:
+  channel: stable
+  approval: Automatic
+  catalogSource: certified-operators
+  catalogSourceNamespace: openshift-marketplace
+  startingCSV: gpu-operator-certified.v24.9.2
+  operatorGroup: ""
+
+cluster: {}

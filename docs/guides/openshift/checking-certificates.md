@@ -1,5 +1,10 @@
 ---
 type: Reference
+category: Guides
+status: Active
+tags:
+  - OpenShift
+date: 2026-08-01
 ---
 # Checking OpenShift Certificates
 

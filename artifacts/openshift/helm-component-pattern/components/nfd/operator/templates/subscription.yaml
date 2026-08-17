@@ -1,0 +1,33 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace }}
+  annotations:
+    openshift.io/cluster-monitoring: "true"
+---
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: {{ .Values.namespace }}-operator-group
+  namespace: {{ .Values.namespace }}
+spec:
+  targetNamespaces:
+    - {{ .Values.namespace }}
+---
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: nfd-operator
+  namespace: {{ .Values.namespace }}
+  labels:
+    operators.coreos.com/nfd-operator.{{ .Values.namespace }}: ""
+spec:
+  channel: {{ .Values.olm.channel }}
+  installPlanApproval: {{ .Values.olm.approval }}
+  name: nfd-operator
+  source: {{ .Values.olm.catalogSource }}
+  sourceNamespace: {{ .Values.olm.catalogSourceNamespace }}
+  {{- if .Values.olm.startingCSV }}
+  startingCSV: {{ .Values.olm.startingCSV }}
+  {{- end }}

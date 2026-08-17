@@ -1,5 +1,7 @@
 ---
 type: Reference
+status: Active
+category: Guides
 ---
 # NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)
 
@@ -10,24 +12,6 @@ This note validates a common on-cluster workflow against NVIDIA’s published st
 **Related workspace guide:** [Using the integrated OpenShift container image registry](using-integrated-openshift-registry.md).
 
 ---
-
-## Accuracy check (your description vs NVIDIA)
-
-| What you described | Verdict |
-|--------------------|--------|
-| Obtain the **`.run`** installer from the **NVIDIA licensing / software portal** (Linux KVM **vGPU** package), not a random driver | **Correct.** NVIDIA documents the **Linux KVM complete vGPU** bundle and the `NVIDIA-Linux-x86_64-*-vgpu-kvm.run` file. **NVIDIA AI Enterprise** customers use the **`aie`** `.run`, then rename it to `NVIDIA-Linux-x86_64-*-vgpu-kvm.run` before the build, per NVIDIA. |
-| Place that file into **NVIDIA’s driver container repository** (`container-images/driver`, under **`vgpu-manager/<os>`**) and build for the **appropriate OS / RHCOS** tag | **Correct.** Flow is: clone [NVIDIA driver container repo](https://gitlab.com/nvidia/container-images/driver), `cd` into the **`vgpu-manager`** subtree that matches your **OpenShift / RHCOS** line (NVIDIA’s example uses **`vgpu-manager/rhel8`**; use the directory and **`OS_TAG`** that match **your** OCP minor, per NVIDIA and the repo layout for your version). |
-| **Build** the image, then **push** it to a **private registry** | **Correct.** NVIDIA’s `docker build` / `docker push` pattern uses `PRIVATE_REGISTRY`, `VERSION`, and `OS_TAG` (for OpenShift, `OS_TAG` is documented as **`rhcos4.x`** where **`x`** matches the supported **OCP minor**). |
-| For “no Quay for now,” push to the **integrated OpenShift registry** instead | **Correct and explicitly supported by NVIDIA**, which calls the integrated registry the **recommended** target. See Red Hat: [Accessing the registry](https://docs.redhat.com/en/documentation/openshift_container_platform/latest/html/registry/accessing-the-registry). |
-| **After** the image is available, set **`ClusterPolicy`** (`sandboxWorkloads`, sandbox device plugin, **vGPU Manager**, **vGPU Device Manager**, etc.) | **Correct.** `ClusterPolicy` must reference a registry path the cluster can pull, and **`vgpuManager`** should not point at a missing image. |
-| **NVIDIA GPU Operator already installed**; you will **change** `ClusterPolicy` as needed | **Correct.** You do **not** need to reinstall the operator to turn on sandbox / vGPU operands. You **patch or re-apply** `ClusterPolicy` (and ensure pull secrets / RBAC if the image is in another namespace). |
-
-**Ordering nuance:** NVIDIA’s vGPU bullet list often shows “build image **before** installing GPU Operator.” In practice, **operator first + image second + then ClusterPolicy** is fine as long as **`vgpuManager`** is not enabled (or not pointed at a bad image) until the image is pushed and pullable. Your plan matches that.
-
-**Still required elsewhere in the runbook (not replaced by this doc):** IOMMU **MachineConfig**, node label **`nvidia.com/gpu.workload.config=vm-vgpu`**, OpenShift Virtualization prerequisites (including **`disableMDevConfiguration`** on **HyperConverged** where NVIDIA requires it), then later **HyperConverged** `mediatedDevices` and VM `gpus` — see the same NVIDIA chapter.
-
----
-
 ## End-to-end workflow (integrated registry)
 
 ### 1. Download the vGPU Manager `.run`

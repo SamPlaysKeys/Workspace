@@ -1,3 +1,8 @@
+---
+type: Guide
+category: OpenShift Learning Path
+status: Active
+---
 # Module 0 — Prerequisites & How to Use
 
 **Audience:** Everyone starting the path — new hires and existing engineers upskilling.

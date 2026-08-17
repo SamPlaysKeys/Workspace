@@ -1,5 +1,6 @@
 ---
 type: Note
+subcategory: IoT & Automation
 ---
 
 # Home Assistant Automations

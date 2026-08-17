@@ -1,0 +1,12 @@
+enabled: true
+namespace: cert-manager
+
+olm:
+  channel: stable
+  approval: Automatic
+  catalogSource: redhat-operators
+  catalogSourceNamespace: openshift-marketplace
+  startingCSV: cert-manager-operator.v1.16.2
+  operatorGroup: ""
+
+cluster: {}

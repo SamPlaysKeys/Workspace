@@ -1,0 +1,15 @@
+argocd:
+  namespace: openshift-gitops
+  project: default
+
+source:
+  repoURL: https://github.com/YOUR-ORG/YOUR-REPO.git
+  targetRevision: main
+  hubClustersChartPath: charts/hub-clusters
+  valueFilesPrefix: "../.."
+
+destination:
+  server: https://kubernetes.default.svc
+
+# clusters: populated by --values clusters.yaml when rendering this chart.
+clusters: []
