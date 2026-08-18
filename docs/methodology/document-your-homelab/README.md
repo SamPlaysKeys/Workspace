@@ -72,3 +72,14 @@ The assistant's highest-value role is **structured interviewer**: it runs the pe
 ## Reference implementation
 
 The method was extracted from a real, populated lab's docs (`../../homelab/`), which already used ADRs, a roadmap, an environment map, and an interactive overview. This directory generalizes that practice so it applies with or without hardware.
+
+## Homelab doc kit artifact
+
+This methodology is paired with the [homelab-doc-kit](@artifacts/homelab-doc-kit/), a portable, dependency-free scaffold that generates a complete four-phase documentation set from a single command. Use the kit to:
+
+- Quickly scaffold a new documentation directory with `bootstrap.sh`
+- Produce self-referential READMEs, phase templates, and AI session prompts
+- Generate the `overview/lab-map.template.md` for visualizing your lab topology
+- Iterate through the Goal → Achievable → How to → Fit loop without manual file creation
+
+The kit outputs relative-path-linked markdown that works standalone once scaffolded, making it easy to adopt this methodology in any repository.
