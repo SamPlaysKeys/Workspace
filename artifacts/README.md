@@ -18,7 +18,8 @@ artifacts/
 └── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
     ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
     ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
-    ├── openshift-virtualization-upgrade/ # OCP EUS upgrade playbooks, manifests, and AI plan.md artifacts
+    ├── openshift-upgrades/            # AI upgrade plan.md blueprints and upgrade execution artifacts
+    ├── openshift-virtualization-upgrade/ # OCP Virtualization upgrade playbooks and ACM policies
     └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
 ```
 
