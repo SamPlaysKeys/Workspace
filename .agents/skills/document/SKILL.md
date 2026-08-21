@@ -15,10 +15,12 @@ Create consistent, frontmatter-rich documentation. This skill is often called at
 
 ## Process
 
-1. Determine the `type` of document requested (Troubleshooting vs. Guide).
+1. Determine the `type` of output requested (Troubleshooting vs. Guide vs. Reusable Artifact / Plan Template).
 2. Extract the relevant context from the conversation history, **especially the primary external reference URL**.
-3. Generate the document using the exact templates below.
-4. Save to the appropriate directory (`docs/troubleshooting/` or `docs/guides/`).
+3. Generate the output using the exact templates below.
+4. Save to the appropriate directory:
+   - Reference documentation -> `docs/troubleshooting/` or `docs/guides/`
+   - Reusable automation templates, scripts, manifests, and AI execution plan templates -> `artifacts/<system>/` or `artifacts/templates/`
 
 ## Templates
 

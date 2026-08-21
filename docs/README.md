@@ -31,7 +31,7 @@ Documentation graduates from `wip/` sessions:
 
 1. **Storm Sessions** → Project documentation (e.g., `docs/homelab/`)
 2. **Troubleshoot Sessions** → Remediation docs (`docs/troubleshooting/`) and guides (`docs/guides/`)
-3. **Reusable automation templates** → May graduate from `wip/` to `artifacts/` (for example Ansible/OpenShift patterns) with documentation alongside the templates
+3. **Reusable automation templates & AI execution plans** → Graduate from `wip/` to `artifacts/` (for example Ansible/OpenShift patterns, manifests, and prompt-as-a-plan templates) with documentation alongside the templates
 
 See `workstyle/working_style.md` for the full graduation workflow.
 

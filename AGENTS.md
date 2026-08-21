@@ -14,6 +14,7 @@ This workspace enforces strict alignment and controlled execution. Do not run of
 - **Progressive Bookkeeping:** Update state files (`BACKLOG.md`, `context.md`, etc.) as progress happens, not just at the end of a session.
 - **Isolation:** Stay within this project unless cross-repo work is explicitly requested. Do not modify external projects.
 - **Append, Don't Replace:** State and log files should accumulate entries to preserve history.
+- **Documentation vs. Artifacts Placement:** Store human-readable reference material (guides, troubleshooting, architecture notes) in `docs/`. Store reusable assets, automation templates, scripts, manifests, and re-executable AI execution plans/templates in `artifacts/` (e.g., `artifacts/<system>/` or `artifacts/templates/`).
 - **No nginx Unless Required (homelab only):** When designing service delivery *for the homelab*, default to direct HTTP access via Tailscale Serve (pointing at the service port). Do not propose nginx or any reverse proxy unless the service requires TLS termination, path-based routing, or virtual hosting that Tailscale Serve cannot provide. **This rule only applies during homelab planning/reviewing/troubleshooting. For all other contexts, nginx remains a viable solution.**
 
 ## Interactive Workflows (Skills)

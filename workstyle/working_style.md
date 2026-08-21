@@ -20,6 +20,7 @@ These rules are always active. Do not violate them.
 - **No Unprompted Sweeps:** Fix *only* what was requested. If you notice unrelated tech debt, typos, or other bugs, surface them in chat for later. Do not include them in your current edits.
 - **Progressive Bookkeeping:** Update state files (`context.md`, `BACKLOG.md`) as progress happens, not just at the end of a session.
 - **Isolation:** Stay within the current project unless cross-repo work is explicitly requested.
+- **Documentation vs. Artifacts Placement:** Store human-readable reference material (guides, troubleshooting, architecture notes) in `docs/`. Store reusable assets, automation templates, scripts, manifests, and re-executable AI execution plans/templates in `artifacts/` (e.g., `artifacts/<system>/` or `artifacts/templates/`).
 - **No nginx Unless Required (homelab only):** When designing service delivery *for the homelab*, default to direct HTTP via Tailscale Serve pointing at the service port. Do not propose nginx or any reverse proxy unless the service requires TLS termination, path-based routing, or virtual hosting that Tailscale Serve cannot provide. **This rule only applies during homelab planning/reviewing/troubleshooting. For all other contexts, nginx remains a viable solution.**
 
 ---

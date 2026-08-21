@@ -5,6 +5,7 @@
 # Temporary files
 *.tmp
 *.swp
+.local/
 *~
 
 
