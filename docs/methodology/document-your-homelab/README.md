@@ -38,6 +38,14 @@ A four-phase, interactive method for documenting infrastructure *with* an AI ass
 
 You can enter the loop at any phase. An existing lab usually enters at **3 (How to)** or **4 (Fit)**; a greenfield plan enters at **1 (Goal)**.
 
+### Why Achievable precedes How-to
+
+It is tempting to jump straight from **Goal** to **How-to** (writing detailed architecture specs or runbooks), but placing **Achievable** second is intentional:
+
+- **Prevents Wasted Design Effort:** Filters aspirational goals against real constraints (budget, physical space, power, skill) *before* spending hours detailing technical implementations for unviable specs.
+- **Distinguishes Feasibility Spikes from Operational Docs:** Quick technical sanity checks belong in Achievable (*"Can 8GB RAM run Ceph?"* $\rightarrow$ *"No, defer"*). How-to is reserved for execution and runbooks of the surviving scope.
+- **Lowers Friction & Prevents Abandonment:** Homelabs often stall when overwhelmed by oversized designs. Scoping reality first keeps How-to focused, manageable, and gratifying to complete.
+
 ## Phase summary
 
 | Phase | Question | Primary artifact | Phase doc | AI session |
