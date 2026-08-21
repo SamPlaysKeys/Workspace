@@ -15,9 +15,10 @@ artifacts/
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
-└── openshift/            # OpenShift automation (YAML, Ansible, scripts)
+└── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
     ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
     ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
+    ├── openshift-virtualization-upgrade/ # OCP EUS upgrade playbooks, manifests, and AI plan.md artifacts
     └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
 ```
 
