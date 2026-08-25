@@ -9,8 +9,8 @@ var relearn_searchindex = [
   },
   {
     "breadcrumb": "Documentation \u003e Homelab Infrastructure",
-    "content": "ADRs capture decisions that are stable enough to reference later, with context and trade-offs. They supplement the narrative Decisions page.\nDocument Status Per-environment Git branches via Komodo ResourceSync Accepted Baremetal Docker Host OS Selection Proposed Container Runtime Tradeoffs Proposed Skip local Docker registry, focus on git pipeline Accepted",
-    "description": "ADRs capture decisions that are stable enough to reference later, with context and trade-offs. They supplement the narrative Decisions page.\nDocument Status Per-environment Git branches via Komodo ResourceSync Accepted Baremetal Docker Host OS Selection Proposed Container Runtime Tradeoffs Proposed Skip local Docker registry, focus on git pipeline Accepted",
+    "content": "ADRs capture decisions that are stable enough to reference later, with context and trade-offs. They supplement the narrative Decisions page.\nDocument Status Per-environment Git branches via Komodo ResourceSync Accepted Baremetal Docker Host OS Selection Proposed Container Runtime Tradeoffs Proposed Skip local Docker registry, focus on git pipeline Accepted Docker vs Kubernetes for an Orchestration platform Inconclusive",
+    "description": "ADRs capture decisions that are stable enough to reference later, with context and trade-offs. They supplement the narrative Decisions page.\nDocument Status Per-environment Git branches via Komodo ResourceSync Accepted Baremetal Docker Host OS Selection Proposed Container Runtime Tradeoffs Proposed Skip local Docker registry, focus on git pipeline Accepted Docker vs Kubernetes for an Orchestration platform Inconclusive",
     "tags": [],
     "title": "Architecture decision records (homelab)",
     "uri": "/Workspace/homelab/planning/adrs/index.html"
