@@ -12,3 +12,6 @@ ADRs capture decisions that are stable enough to reference later, with context a
 | [Baremetal Docker Host OS Selection](0002-baremetal-host-os.md) | Proposed |
 | [Container Runtime Tradeoffs](0003-container-runtime-tradeoffs.md) | Proposed |
 | [Skip local Docker registry, focus on git pipeline](0004-local-registry-skip.md) | Accepted |
+| [Docker vs Kubernetes for an Orchestration platform](0005-docker-vs-k8s-orchestration.md) | Inconclusive |
+
+
