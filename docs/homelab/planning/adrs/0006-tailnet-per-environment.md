@@ -9,11 +9,11 @@ reviewed_by: ""
 last_modified_by: "agent"
 ---
 
-# ADR: Tailnet-per-environment (Prod / Test / Dev) with declarative cross-tailnet sharing
+# ADR: Tailnet-per-environment (Prod / Test / Dev) with declarative node sharing
 
 ## Status
 
-**Draft — heavy review expected.** This is a decision *framework*, not a settled decision. Sections marked **OPEN** need the human to pick a side before this moves to Proposed.
+**Draft — heavy review expected.** This is a decision *framework*, not a settled decision. Sections marked **OPEN** need a human call before this moves to Proposed.
 
 ## Context
 
@@ -25,14 +25,19 @@ Today the homelab runs a **single tailnet** with tag-based environment separatio
 {"src": ["tag:dev"], "dst": ["tag:dev"], "ip": ["*:*"]}
 ```
 
-That works, but the isolation is **one policy-file edit deep**. A bad merge to the policy file, a mis-tagged node, or a fat-fingered `tag:*` grant collapses Prod/Test/Dev into one flat network. The blast radius of a policy mistake is the entire homelab.
+That works, but the isolation is **one policy-file edit deep**. A bad merge, a mis-tagged node, or a fat-fingered `tag:*` destination collapses Prod/Test/Dev into one flat network. The blast radius of a policy mistake is the entire homelab.
 
-Two Tailscale changes make a different shape viable:
+Three Tailscale capabilities change the calculus:
 
-1. **Tailscale API / Services GA (Feb 2026)** — Services are now first-class, with declarative JSON config on-node, per-service audit logs, ACL tests, and API-driven lifecycle. Environment config becomes something Ansible/Komodo can reconcile rather than something clicked in a console.
-2. **Declarative sharing / grants + `autogroup:shared`** — cross-tailnet access is expressible in the policy file rather than a pile of one-off invite links.
+1. **Additional tailnets via the API.** `POST /api/v2/organizations/-/tailnets` provisions a fully isolated tailnet under the same account, no console clicks. The response carries a **tailnet-scoped OAuth client** — creation is org-scoped, but administration and deletion require that per-tailnet credential.
+2. **Declarative node sharing** ([docs](https://tailscale.com/docs/features/declarative-node-sharing), **alpha, waitlist-gated**). Cross-tailnet access becomes a policy-file construct — `externalTailnets` plus grants referencing `group://<alias>/<name>` or `tag://<alias>/<name>`. It is explicitly designed for **machine-to-machine access between trusted tailnets**, which is exactly the homelab's shape.
+3. **Tailscale Services GA (Feb 2026).** Stable service identities, declarative on-node JSON config, remote-destination proxies, per-service audit logs, and ACL tests.
 
 The question this ADR frames: **is a tailnet boundary the right isolation primitive for the homelab's environments, and is the cross-tailnet seam cheap enough to live with?**
+
+### Correction to an earlier framing
+
+An earlier draft of this ADR analyzed the seam using **link-based sharing** ([sharing docs](https://tailscale.com/docs/features/sharing)) and concluded the model was largely unworkable — tags stripped, shares user-scoped so tagged machines can't accept them, quarantine by default. **Those constraints are real but belong to link-based sharing, not declarative node sharing.** Declarative sharing operates at the policy level and supports tag references and machine-to-machine access directly. The two mechanisms coexist; picking the wrong one produces the wrong conclusion, which is why they're separated explicitly below.
 
 ## Drivers
 
@@ -40,85 +45,141 @@ The question this ADR frames: **is a tailnet boundary the right isolation primit
 |--------|--------|-------|
 | Blast radius of a policy mistake | High | Current model: one file protects everything |
 | Prod stability during Dev experiments | High | Dev is where breakage is *expected* |
-| Operational overhead (per-tailnet admin, keys, DNS) | High | Homelab has one operator |
-| Partner / shared access model | Medium | Adversarial access model already documented |
+| Operational overhead (per-tailnet admin, keys, DNS) | Medium | Lower than assumed — API-drivable |
+| Dependence on an alpha feature | High | Declarative sharing is alpha + waitlist |
 | Komodo GitOps flow across environments | Medium | Controller currently reaches all three |
-| Observability / audit clarity | Medium | Per-tailnet audit logs are cleaner than tag filters |
-| Cost | Low–Medium | **OPEN:** plan/seat implications of 3 tailnets |
+| Observability / audit clarity | Medium | Per-tailnet audit is cleaner than tag filters |
+| Partner / shared access model | Medium | Adversarial model already documented |
+| Cost | Low–Medium | **OPEN:** plan implications of additional tailnets |
+
+## The two sharing mechanisms
+
+Getting this distinction right is most of the decision.
+
+| | Link-based sharing | Declarative node sharing |
+|---|---|---|
+| Status | GA (beta flag in docs), v1.4+ | **Alpha, waitlist-gated** |
+| Unit of sharing | One machine → one user | Policy-level, resource classes |
+| Tags across the boundary | **Stripped** | **Supported** via `tag://<alias>/<tag>` |
+| Machine-to-machine | **Not supported** — only users accept shares | **Explicitly supported** |
+| Quarantine | Inbound-only by default | Governed by `allowIncomingConnections`; **OPEN** whether quarantine semantics still apply |
+| Setup | Invite link, out-of-band, manual accept | Double opt-in policy edits on both tailnets |
+| Automatable | Poorly | Fully — policy file is `GET`/`POST /api/v2/tailnet/-/acl` |
+| Group sync (SCIM/Google) | n/a | **Unsupported** — can't reference synced groups |
+
+**Consequence:** declarative sharing is the mechanism this design should be built on. Link-based sharing remains the right tool only for the partner/guest case — handing one machine to one outside human.
+
+### Shape of the config
+
+Double opt-in. Receiving tailnet declares what may be referenced:
+
+```json
+{
+  "externalTailnets": {
+    "prod": {
+      "externalID": "<prod-tailnet-id>",
+      "allowIncomingConnections": false,
+      "allowExternalReferencesTo": ["tag:komodo-controller"]
+    }
+  }
+}
+```
+
+Sharing tailnet accepts the relationship and writes the grant:
+
+```json
+{
+  "externalTailnets": {
+    "dev": { "externalID": "<dev-tailnet-id>", "allowIncomingConnections": true }
+  },
+  "grants": [
+    { "src": ["tag://dev/komodo-controller"], "dst": ["tag:host"], "ip": ["8120"] }
+  ]
+}
+```
+
+A grant referencing something absent from the other side's `allowExternalReferencesTo` is **silently ignored** — no error, just no connectivity. That failure mode needs a verification step in any runbook.
 
 ## Options
 
 ### Option A — Status quo: one tailnet, tag-based separation
 
-- **Pros:** zero migration; MagicDNS is flat and simple; Komodo controller reaches everything; one policy file to reason about; single admin console.
-- **Cons:** isolation is soft (policy-only); one bad grant flattens all environments; no per-environment audit boundary; `tag:*`-style rules are easy to write and hard to spot in review.
+- **Pros:** zero migration; flat MagicDNS; one policy file; single console; no alpha dependency.
+- **Cons:** isolation is advisory, not structural; one bad grant flattens all environments; no per-environment audit boundary.
 
-### Option B — Three tailnets (Prod / Test / Dev), sharing only where required
+### Option B — Three tailnets (Prod / Test / Dev), declarative sharing between them
 
-- **Pros:** isolation is structural, not advisory — a Dev policy mistake cannot reach Prod; per-tailnet audit logs; per-tailnet auth keys and tagOwners; Dev can be treated as genuinely disposable.
-- **Cons:** every cross-environment flow becomes a share; **shares strip tags, groups, and subnet info**; shared machines are **quarantined by default** (inbound only); shares are **user-scoped, not tag-scoped** — a tagged node cannot accept a share; three admin consoles; three sets of keys to rotate; MagicDNS names become tailnet-qualified FQDNs.
+- **Pros:** isolation is structural — a Dev policy mistake cannot reach Prod; per-tailnet audit logs, auth keys, and tagOwners; Dev becomes genuinely disposable; whole lifecycle is API-drivable (create, `httpsEnabled`, policy push, scoped auth keys); tags and m2m survive the boundary; double opt-in means neither side can unilaterally widen access.
+- **Cons:** **depends on an alpha, waitlist-gated feature**; three policy files and three scoped OAuth credentials to manage; FQDNs become tailnet-qualified; silent-ignore failure mode on mismatched references; per-tailnet settings (notably HTTPS certs, off by default) must be provisioned explicitly.
 
-### Option C — Two tailnets: Prod isolated, Test+Dev share a lower tailnet
+### Option C — Two tailnets: Prod isolated, Test+Dev together
 
-- **Pros:** captures most of the blast-radius win (Prod is structurally separate) at two-thirds the overhead; Test↔Dev promotion stays cheap and in-tailnet.
-- **Cons:** Test no longer has a hard boundary from Dev, so "does Test mirror Prod?" gets fuzzier; still pays the cross-tailnet seam cost for the Prod promotion step.
+- **Pros:** captures the blast-radius win that matters at two-thirds the overhead; Test↔Dev promotion stays in-tailnet.
+- **Cons:** Test loses a hard boundary from Dev, so "does Test mirror Prod?" gets fuzzier; still carries the full alpha dependency for one seam — paying the same risk for less of the benefit.
 
-### Option D — One tailnet, but harden the current model
+### Option D — One tailnet, hardened
 
-Policy-file CI (ACL tests, `tailscale policy test` in GitHub Actions), mandatory review on the policy file, no `tag:*` destinations, and per-environment Services with their own grants.
+Policy-file CI with ACL tests in GitHub Actions, mandatory review on the policy file, ban `tag:*` destinations, per-environment Services with their own grants.
 
-- **Pros:** near-zero migration; keeps flat DNS; ACL tests convert "soft isolation" into "tested isolation."
-- **Cons:** still one flat trust domain; a mistake that passes tests still lands everywhere; doesn't improve the audit boundary.
+- **Pros:** near-zero migration; no alpha dependency; converts soft isolation into *tested* isolation.
+- **Cons:** still one flat trust domain; a mistake that passes tests still lands everywhere; audit boundary unchanged.
 
 ## Decision
 
-**OPEN.** Recommended starting position for review: **Option C**, with Option D's policy CI adopted regardless of which option wins, because tested policy is cheap and useful in every branch of this tree.
+**OPEN.** Recommended starting position for review: **Option D now, Option B when declarative sharing reaches beta/GA.**
 
-Rationale for the lean: the blast-radius problem is really a *Prod* problem. Test and Dev breaking each other is annoying; Dev reaching Prod is the failure that matters. Option C buys the boundary that matters and skips the third console.
+Rationale: declarative sharing makes Option B the *architecturally* right answer — it's the first mechanism that makes tailnet-per-environment operationally sane for a single operator, because tags cross, machines can talk, and everything is API-driven. But it is **alpha and waitlist-gated**, and putting the homelab's Prod reachability on an alpha feature inverts the risk this ADR exists to reduce. Option D's policy CI is worth adopting immediately, is useful regardless of the eventual shape, and is a prerequisite for B anyway — three policy files without tests is worse than one policy file without tests.
 
-## The cross-tailnet seam — the part that decides this
+Option C is not recommended: it takes on the full alpha dependency for a partial boundary.
 
-Every option except A/D pays this cost, so it needs to be settled before the decision is:
-
-1. **Tags don't cross.** Shares strip tags. Any grant that currently reads `tag:prod → tag:prod` has no cross-tailnet equivalent — the far side sees a user identity, not a tag. Cross-environment rules must be written against user identity or `autogroup:shared`.
-2. **Machines can't accept shares — users can.** Machine-to-machine automation across tailnets (Komodo controller → Prod periphery agents) does **not** fit the sharing model. **OPEN:** either the controller gets a node in each tailnet, or each tailnet gets its own controller, or cross-tailnet reconciliation goes through a Service rather than a share.
-3. **Quarantine is inbound-only by default.** Bidirectional flows need mutual sharing. Anything that needs to *initiate* outward (log shipping, metrics push, backup targets) needs explicit design.
-4. **DNS gets longer.** Shared machines are reachable only as `<host>.<tailnet>.ts.net`. Every doc, bookmark, Komodo stack, and Compose file referencing a short MagicDNS name breaks.
-5. **Services may be the better seam than sharing.** Services GA gives stable names, remote-destination proxies, and declarative JSON reload — which looks like a cleaner cross-boundary contract than sharing individual machines. **OPEN:** validate whether a Service can be published across a tailnet boundary in the way this design needs; if it can, sharing becomes a fallback, not the mechanism.
+**Immediate action independent of the decision:** join the declarative node sharing waitlist (admin console → General → Feature previews). Only the *sharing* tailnet needs the feature enabled, and the waitlist is not instant, so the clock should start now.
 
 ## Cross-environment flows to inventory before committing
 
-Each of these currently works because everything is one tailnet. Each needs an explicit answer under any multi-tailnet option:
+Each of these works today only because everything is one tailnet. Each needs an explicit `externalTailnets`/grant design under B or C:
 
-- Komodo controller (NUC, `tag:admin`) → Prod/Test/Dev periphery agents
+- Komodo controller (NUC, `tag:admin`) → Prod/Test/Dev periphery agents — the canonical m2m case; workable via `tag://` references, needs port scoping rather than `dst: ["*"]`
 - Promotion path DevDocker → Test → Prod (per [ADR-0001](0001-komodo-resourcesync-branch-per-environment.md), promotion is a file move; the network path is currently implicit)
-- Observability scrape/push paths across environments
-- Backup flows to `tag:storage` NAS devices (UnRaid = Prod, Synology = Test)
-- Admin access from the operator's laptop/phone to all three
-- Exit node — which tailnet owns it, or one per tailnet
-- Partner/shared user access (currently modeled adversarially; may get *simpler* under Option B/C)
+- Observability scrape/push paths across environments — direction matters against `allowIncomingConnections`
+- Backup flows to `tag:storage` NAS (UnRaid = Prod, Synology = Test)
+- Admin access from the operator's devices to all three — **OPEN:** one identity in three tailnets, or a device per tailnet
+- Exit node — one per tailnet, or one shared
+- Partner/guest access — keep on **link-based** sharing; don't model humans as external tailnets
 - ProxMox host, which hosts the Dev VM but is itself infrastructure
 
-## Trade-offs accepted (if a multi-tailnet option is chosen)
+## Trade-offs accepted (under B or C)
 
+- Alpha-feature dependency on the critical path for cross-environment automation.
 - Longer FQDNs and a documentation sweep to match.
-- Cross-environment automation is deliberately harder — that's the point, but it is a real ongoing tax.
-- More secrets to rotate (auth keys, API keys per tailnet).
-- Some current grant rules have no direct translation and must be redesigned rather than ported.
+- Per-tailnet provisioning steps that don't exist today: `httpsEnabled` PATCH, tagOwners, auth keys, policy push.
+- Tailnet-scoped OAuth credentials must be captured at creation — the org token cannot administer or delete a tailnet it created.
+- Cross-environment automation gets deliberately harder. That's the point, but it's a standing tax.
 
 ## Consequences / follow-on work
 
-- Rewrite [tailscale-grants.md](../../network/tailscale-grants.md) per-tailnet; tag taxonomy shrinks per tailnet since environment identity moves into the boundary itself.
-- Update [tailscale.md](../../network/tailscale.md) — Services naming, Docktail behavior, exit node strategy, access tiers.
-- Add policy-file CI with ACL tests regardless of outcome.
-- Decide where tailnet policy files live in Git and how they reconcile (API push vs. manual apply) — mirrors the ResourceSync branch question from ADR-0001.
-- Migration must be reversible: no environment moves without a documented rollback to the single-tailnet state.
+- Rewrite [tailscale-grants.md](../../network/tailscale-grants.md) per-tailnet. The tag taxonomy shrinks per tailnet — `tag:prod`/`tag:test`/`tag:dev` become redundant once environment identity lives in the boundary.
+- Update [tailscale.md](../../network/tailscale.md): Services naming, Docktail behavior, exit node strategy, access tiers.
+- Add policy-file CI with ACL tests **now**, single-tailnet or not.
+- Decide where policy files live in Git and how they reconcile (API push via CI vs. manual apply) — same question ADR-0001 answered for ResourceSync; the answers should match.
+- Reusable provisioning artifact belongs in `artifacts/` per repo convention, not in this doc: OAuth exchange → create tailnet → `httpsEnabled` → tagOwners/policy → scoped auth keys.
+- Migration must be reversible with a documented rollback to the single-tailnet state.
 
 ## Open questions
 
-1. Plan/cost implications of 2–3 tailnets for a single-operator homelab.
-2. Can Services span a tailnet boundary cleanly? If yes, does that make Option B cheap enough to beat C?
-3. How does Komodo reconcile across a tailnet boundary — one controller with a node per tailnet, or a controller per tailnet?
-4. Does Test lose meaning as a Prod rehearsal if it shares a tailnet with Dev (the Option C objection)?
-5. Migration order — Dev first (lowest risk, proves the seam) or Prod first (proves the boundary that matters)?
-6. Does the partner access model get simpler or just relocate?
+1. Plan/cost implications of additional tailnets on the current account.
+2. Waitlist timing for declarative node sharing — does it gate the whole plan, and is there a beta ETA?
+3. Do quarantine semantics apply to declaratively shared nodes, or does `allowIncomingConnections` fully replace them?
+4. Does the operator's own identity/devices need presence in all three tailnets, and how does that interact with the isolation goal?
+5. Komodo topology: one controller reaching out via declarative sharing, or a controller per tailnet?
+6. Do Services span a tailnet boundary, and does that offer a cleaner contract than node-level grants?
+7. Does Test lose meaning as a Prod rehearsal under Option C?
+8. Migration order — Dev first (proves the seam cheaply) or Prod first (proves the boundary that matters)?
+9. Since synced groups can't be referenced across tailnets, does any current or planned group source conflict with this?
+
+## References
+
+- [Declarative node sharing](https://tailscale.com/docs/features/declarative-node-sharing) — alpha; `externalTailnets`, double opt-in, `tag://`/`group://` syntax
+- [Share your machines with other users](https://tailscale.com/docs/features/sharing) — link-based sharing; tag stripping, quarantine, user-scoped
+- [Tailscale Services GA](https://tailscale.com/blog/services-ga) — declarative JSON config, per-service audit, ACL tests
+- [Grants syntax](https://tailscale.com/docs/reference/syntax/grants)
+- [summer-with-tailscale](https://github.com/frozenprocess/summer-with-tailscale) — worked examples: API tailnet provisioning, `tsnet` membership, declarative sharing, end-to-end script

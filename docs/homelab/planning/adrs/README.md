@@ -13,6 +13,4 @@ ADRs capture decisions that are stable enough to reference later, with context a
 | [Container Runtime Tradeoffs](0003-container-runtime-tradeoffs.md) | Proposed |
 | [Skip local Docker registry, focus on git pipeline](0004-local-registry-skip.md) | Accepted |
 | [Docker vs Kubernetes for an Orchestration platform](0005-docker-vs-k8s-orchestration.md) | Inconclusive |
-
-
-| [Tailnet-per-environment with declarative cross-tailnet sharing](0006-tailnet-per-environment.md) | Draft |
+| [Tailnet-per-environment with declarative node sharing](0006-tailnet-per-environment.md) | Draft |
