@@ -29,7 +29,7 @@ That works, but the isolation is **one policy-file edit deep**. A bad merge, a m
 
 Three Tailscale capabilities change the calculus:
 
-1. **Additional tailnets via the API.** `POST /api/v2/organizations/-/tailnets` provisions a fully isolated tailnet under the same account, no console clicks. The response carries a **tailnet-scoped OAuth client** — creation is org-scoped, but administration and deletion require that per-tailnet credential.
+1. **Additional tailnets via the API.** `POST /api/v2/organizations/-/tailnets` provisions a fully isolated tailnet under the same account, no console clicks. The response carries a **tailnet-scoped OAuth client** — creation is org-scoped, but administration and deletion require that per-tailnet credential ([worked example](https://github.com/frozenprocess/summer-with-tailscale/blob/main/01-tailnet-sandboxes/readme.md)).
 2. **Declarative node sharing** ([docs](https://tailscale.com/docs/features/declarative-node-sharing), **alpha, waitlist-gated**). Cross-tailnet access becomes a policy-file construct — `externalTailnets` plus grants referencing `group://<alias>/<name>` or `tag://<alias>/<name>`. It is explicitly designed for **machine-to-machine access between trusted tailnets**, which is exactly the homelab's shape.
 3. **Tailscale Services GA (Feb 2026).** Stable service identities, declarative on-node JSON config, remote-destination proxies, per-service audit logs, and ACL tests.
 
@@ -71,7 +71,7 @@ Getting this distinction right is most of the decision.
 
 ### Shape of the config
 
-Double opt-in. Receiving tailnet declares what may be referenced:
+Double opt-in, per the [declarative node sharing docs](https://tailscale.com/docs/features/declarative-node-sharing). Receiving tailnet declares what may be referenced:
 
 ```json
 {
@@ -161,7 +161,7 @@ Each of these works today only because everything is one tailnet. Each needs an 
 - Update [tailscale.md](../../network/tailscale.md): Services naming, Docktail behavior, exit node strategy, access tiers.
 - Add policy-file CI with ACL tests **now**, single-tailnet or not.
 - Decide where policy files live in Git and how they reconcile (API push via CI vs. manual apply) — same question ADR-0001 answered for ResourceSync; the answers should match.
-- Reusable provisioning artifact belongs in `artifacts/` per repo convention, not in this doc: OAuth exchange → create tailnet → `httpsEnabled` → tagOwners/policy → scoped auth keys.
+- Reusable provisioning artifact belongs in `artifacts/` per repo convention, not in this doc: OAuth exchange → create tailnet → `httpsEnabled` → tagOwners/policy → scoped auth keys. [`04-api-is-the-way/end-to-end.sh`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/04-api-is-the-way/end-to-end.sh) is a working reference for that exact chain (provisions two tailnets, enables HTTPS, deploys into each, shares them declaratively) and is the obvious starting point to adapt.
 - Migration must be reversible with a documented rollback to the single-tailnet state.
 
 ## Open questions
@@ -178,8 +178,19 @@ Each of these works today only because everything is one tailnet. Each needs an 
 
 ## References
 
-- [Declarative node sharing](https://tailscale.com/docs/features/declarative-node-sharing) — alpha; `externalTailnets`, double opt-in, `tag://`/`group://` syntax
-- [Share your machines with other users](https://tailscale.com/docs/features/sharing) — link-based sharing; tag stripping, quarantine, user-scoped
-- [Tailscale Services GA](https://tailscale.com/blog/services-ga) — declarative JSON config, per-service audit, ACL tests
+### Primary sources
+
+- [Declarative node sharing](https://tailscale.com/docs/features/declarative-node-sharing) — **the mechanism this ADR is built on.** Alpha, waitlist-gated. `externalTailnets`, double opt-in, `tag://`/`group://` external reference syntax, `allowExternalReferencesTo`, `allowIncomingConnections`. Also the source for the SCIM/Google synced-group limitation.
+- [summer-with-tailscale](https://github.com/frozenprocess/summer-with-tailscale) — worked, runnable examples for the API-driven path. Modules used here:
+  - [`01-tailnet-sandboxes`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/01-tailnet-sandboxes/readme.md) — OAuth token exchange, `POST /organizations/-/tailnets`, and the tailnet-scoped OAuth credential that the org token cannot substitute for on delete
+  - [`02-tailnet-membership`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/02-tailnet-membership/readme.md) — `tsnet` embedded membership; relevant if services join tailnets directly rather than via host daemons
+  - [`03-declarative-sharing`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/03-declarative-sharing/readme.md) — `externalTailnets` config walkthrough and scoping external access by group/tag instead of blanket `dst: ["*"]`
+  - [`04-api-is-the-way`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/04-api-is-the-way/readme.md) — policy file as data via `GET`/`POST /tailnet/-/acl`, the `httpsEnabled` PATCH, scoped/tagged/short-lived auth keys, plus `end-to-end.sh`
+
+### Supporting
+
+- [Share your machines with other users](https://tailscale.com/docs/features/sharing) — link-based sharing. Source of the tag-stripping, quarantine, and user-scoped constraints; retained here for the partner/guest case and to keep the two mechanisms distinguishable.
+- [Tailscale Services GA](https://tailscale.com/blog/services-ga) — declarative JSON config, per-service audit logs, ACL tests, remote-destination proxies
 - [Grants syntax](https://tailscale.com/docs/reference/syntax/grants)
-- [summer-with-tailscale](https://github.com/frozenprocess/summer-with-tailscale) — worked examples: API tailnet provisioning, `tsnet` membership, declarative sharing, end-to-end script
+- [Tailnet policy file](https://tailscale.com/docs/features/tailnet-policy-file)
+- [Tailscale API reference](https://tailscale.com/api)
