@@ -15,3 +15,4 @@ ADRs capture decisions that are stable enough to reference later, with context a
 | [Docker vs Kubernetes for an Orchestration platform](0005-docker-vs-k8s-orchestration.md) | Inconclusive |
 
 
+| [Tailnet-per-environment with declarative cross-tailnet sharing](0006-tailnet-per-environment.md) | Draft |
