@@ -1,6 +1,6 @@
 ---
 type: ADR
-Status: Draft
+Status: Rejected
 Date: 2026-08-26
 agent_generated: true
 agent_at: "2026-08-26T00:00:00Z"
@@ -13,7 +13,11 @@ last_modified_by: "agent"
 
 ## Status
 
-**Draft — heavy review expected.** This is a decision *framework*, not a settled decision. Sections marked **OPEN** need a human call before this moves to Proposed.
+**Rejected.** The homelab will **not** split Prod/Test/Dev into separate tailnets. Environment separation stays as it is today: a single tailnet with tag-based grants.
+
+The investigation is retained in full because the rejection is the useful part — it documents why an appealing structural-isolation story doesn't survive contact with an already-working Services deployment.
+
+Superseded in direction by **[ADR-0007: Workload tailnet separation](0007-workload-tailnet-separation.md)**, which applies the tailnet boundary where it actually pays for itself: separating non-homelab workload from the homelab, rather than separating homelab environments from each other.
 
 ## Context
 
@@ -115,22 +119,24 @@ A grant referencing something absent from the other side's `allowExternalReferen
 
 ## Options
 
-### Option A — Status quo: one tailnet, tag-based separation
+Retained as the investigation record. Outcome noted on each.
 
-- **Pros:** zero migration; flat MagicDNS; one policy file; single console; no alpha dependency.
+### Option A — Status quo: one tailnet, tag-based separation — **CHOSEN**
+
+- **Pros:** zero migration; flat MagicDNS; one policy file; single console; no alpha dependency; Services and access model untouched.
 - **Cons:** isolation is advisory, not structural; one bad grant flattens all environments; no per-environment audit boundary.
 
-### Option B — Three tailnets (Prod / Test / Dev), declarative sharing between them
+### Option B — Three tailnets (Prod / Test / Dev), declarative sharing between them — rejected
 
 - **Pros:** isolation is structural — a Dev policy mistake cannot reach Prod; per-tailnet audit logs, auth keys, and tagOwners; Dev becomes genuinely disposable; whole lifecycle is API-drivable (create, `httpsEnabled`, policy push, scoped auth keys); tags and m2m survive the boundary; double opt-in means neither side can unilaterally widen access.
-- **Cons:** **depends on an alpha, waitlist-gated feature**; three policy files and three scoped OAuth credentials to manage; FQDNs become tailnet-qualified; silent-ignore failure mode on mismatched references; per-tailnet settings (notably HTTPS certs, off by default) must be provisioned explicitly.
+- **Cons:** **depends on an alpha, waitlist-gated feature**; three policy files and three scoped OAuth credentials to manage; FQDNs become tailnet-qualified; silent-ignore failure mode on mismatched references; per-tailnet settings (notably HTTPS certs, off by default) must be provisioned explicitly; rewrites a working Services exposure surface.
 
-### Option C — Two tailnets: Prod isolated, Test+Dev together
+### Option C — Two tailnets: Prod isolated, Test+Dev together — rejected
 
 - **Pros:** captures the blast-radius win that matters at two-thirds the overhead; Test↔Dev promotion stays in-tailnet.
 - **Cons:** Test loses a hard boundary from Dev, so "does Test mirror Prod?" gets fuzzier; still carries the full alpha dependency for one seam — paying the same risk for less of the benefit.
 
-### Option D — One tailnet, hardened
+### Option D — One tailnet, hardened — **CARRIED FORWARD** (with A)
 
 Policy-file CI with ACL tests in GitHub Actions, mandatory review on the policy file, ban `tag:*` destinations, and tighten per-service grants on the Services already in place.
 
@@ -139,55 +145,83 @@ Policy-file CI with ACL tests in GitHub Actions, mandatory review on the policy 
 
 ## Decision
 
-**OPEN.** Recommended starting position for review: **Option D now, Option B when declarative sharing reaches beta/GA.**
+**Rejected — keep the current single-tailnet structure with tag-based environment separation.**
 
-Rationale: declarative sharing makes Option B the *architecturally* right answer — it's the first mechanism that makes tailnet-per-environment operationally sane for a single operator, because tags cross, machines can talk, and everything is API-driven. But it is **alpha and waitlist-gated**, and putting the homelab's Prod reachability on an alpha feature inverts the risk this ADR exists to reduce. Option D's policy CI is worth adopting immediately, is useful regardless of the eventual shape, and is a prerequisite for B anyway — three policy files without tests is worse than one policy file without tests.
+The structural-isolation argument is real, and declarative node sharing does make tailnet-per-environment *technically* achievable in a way link-based sharing never did. It is still the wrong trade for this homelab. Four reasons, in order of weight:
 
-Option C is not recommended: it takes on the full alpha dependency for a partial boundary.
+### 1. It breaks access that currently works, to solve a problem that hasn't bitten
 
-**Immediate action independent of the decision:** join the declarative node sharing waitlist (admin console → General → Feature previews). Only the *sharing* tailnet needs the feature enabled, and the waitlist is not instant, so the clock should start now.
+Services are already the exposure mechanism for most containers, and access works today — admin tiers, partner access, per-service MagicDNS names. A tailnet split rewrites that working surface: tailnet-qualified DNS suffixes, tailnet-scoped Docktail/ScaleTail sidecar auth, per-tailnet `httpsEnabled`, and per-tailnet auth keys and tagOwners. The failure it prevents — a fat-fingered grant flattening environments — has not actually occurred. **Trading working access for hypothetical blast-radius reduction is the wrong direction.**
 
-## Cross-environment flows to inventory before committing
+### 2. Cross-boundary sharing is coarser than what's already in place
 
-Each of these works today only because everything is one tailnet. Each needs an explicit `externalTailnets`/grant design under B or C:
+The unresolved question from the investigation is decisive: if a Service cannot be published across a tailnet boundary, then cross-environment access degrades to node-and-port grants. That is **coarser than the per-service exposure model already running**. And if the shareable app has to physically live in the tailnet it's shared from, containers move off the Prod Docker host — which drags in Komodo stack placement and the promotion path from [ADR-0001](0001-komodo-resourcesync-branch-per-environment.md). Either answer is worse than the status quo for a boundary nobody asked for.
 
-- Komodo controller (NUC, `tag:admin`) → Prod/Test/Dev periphery agents — the canonical m2m case; workable via `tag://` references, needs port scoping rather than `dst: ["*"]`
-- Promotion path DevDocker → Test → Prod (per [ADR-0001](0001-komodo-resourcesync-branch-per-environment.md), promotion is a file move; the network path is currently implicit)
+### 3. The complexity is not proportionate to a single-operator homelab
+
+Three tailnets means three policy files, three consoles, three sets of tailnet-scoped OAuth credentials, three auth-key rotations, and per-tailnet provisioning steps that don't exist today. Add the **silent-ignore failure mode** — a grant referencing something absent from the other side's `allowExternalReferencesTo` produces no error, just no connectivity — and routine debugging gets materially harder. Isolation that is expensive to operate gets worked around, and a worked-around boundary is worse than an honest tag.
+
+### 4. The alpha dependency lands on the wrong path
+
+Declarative node sharing is alpha and waitlist-gated. Under this ADR it would sit on the path between the Komodo controller and Prod periphery agents — meaning homelab *manageability* depends on an alpha feature. That inverts the risk this ADR set out to reduce.
+
+### What is kept
+
+- **Environment separation stays tag-based** (`tag:prod` / `tag:test` / `tag:dev`) in one tailnet. No grants rewrite, no tag taxonomy change, no Services churn.
+- **Partner access stays link-based sharing**, per the adversarial model in [tailscale.md](../../network/tailscale.md). Outside humans are not modeled as external tailnets.
+- **Policy-file CI with ACL tests is still worth doing** (the former Option D) and is the only recommendation carried forward from this ADR. It converts advisory isolation into *tested* isolation at near-zero cost, and it is independently useful.
+
+### Future option: collapse three environments to two
+
+Noted, not decided: the Prod/Test/Dev split could later collapse to **Test and Prod only**. Under [ADR-0007](0007-workload-tailnet-separation.md), Dev's remaining purpose is being reconsidered — if non-homelab work moves to a workload environment, a third homelab environment may not be earning its keep. That is a separate decision and deliberately out of scope here.
+
+### Where the tailnet boundary does belong
+
+The investigation's real finding is that the boundary axis was wrong. Splitting *environments* imposes a boundary across paths that need to stay open (admin, Komodo, observability, backups). Splitting *workload from homelab* puts the boundary where the paths should be closed anyway. See **[ADR-0007](0007-workload-tailnet-separation.md)**.
+
+## Cross-environment flows that made the split expensive
+
+Each of these works today only because everything is one tailnet. Each would have needed an explicit `externalTailnets`/grant design — collectively, this list is the concrete form of reason #1 above:
+
+- Komodo controller (NUC, `tag:admin`) → Prod/Test/Dev periphery agents — the canonical m2m case; technically workable via `tag://` references, but it puts homelab manageability behind an alpha feature
+- Promotion path DevDocker → Test → Prod (per [ADR-0001](0001-komodo-resourcesync-branch-per-environment.md), promotion is a file move; the network path is currently implicit and would have to become explicit)
 - Observability scrape/push paths across environments — direction matters against `allowIncomingConnections`
 - Backup flows to `tag:storage` NAS (UnRaid = Prod, Synology = Test)
-- Admin access from the operator's devices to all three — **OPEN:** one identity in three tailnets, or a device per tailnet
+- Admin access from the operator's devices to all three — one identity in three tailnets, or a device per tailnet, neither cheap
 - Exit node — one per tailnet, or one shared
-- Partner/guest access — keep on **link-based** sharing; don't model humans as external tailnets
+- Partner/guest access — stays on link-based sharing regardless
 - ProxMox host, which hosts the Dev VM but is itself infrastructure
 
-## Trade-offs accepted (under B or C)
+## Trade-offs that would have been accepted (and were judged too costly)
 
 - Alpha-feature dependency on the critical path for cross-environment automation.
 - Longer FQDNs and a documentation sweep to match.
 - Per-tailnet provisioning steps that don't exist today: `httpsEnabled` PATCH, tagOwners, auth keys, policy push.
 - Tailnet-scoped OAuth credentials must be captured at creation — the org token cannot administer or delete a tailnet it created.
-- Cross-environment automation gets deliberately harder. That's the point, but it's a standing tax.
+- Cross-environment automation gets deliberately harder. Intended for environments; unhelpful for admin paths.
 
 ## Consequences / follow-on work
 
-- Rewrite [tailscale-grants.md](../../network/tailscale-grants.md) per-tailnet. The tag taxonomy shrinks per tailnet — `tag:prod`/`tag:test`/`tag:dev` become redundant once environment identity lives in the boundary.
-- Update [tailscale.md](../../network/tailscale.md): Services naming, Docktail behavior, exit node strategy, access tiers.
-- Add policy-file CI with ACL tests **now**, single-tailnet or not.
-- Decide where policy files live in Git and how they reconcile (API push via CI vs. manual apply) — same question ADR-0001 answered for ResourceSync; the answers should match.
-- Reusable provisioning artifact belongs in `artifacts/` per repo convention, not in this doc: OAuth exchange → create tailnet → `httpsEnabled` → tagOwners/policy → scoped auth keys. [`04-api-is-the-way/end-to-end.sh`](https://github.com/frozenprocess/summer-with-tailscale/blob/main/04-api-is-the-way/end-to-end.sh) is a working reference for that exact chain (provisions two tailnets, enables HTTPS, deploys into each, shares them declaratively) and is the obvious starting point to adapt.
-- Migration must be reversible with a documented rollback to the single-tailnet state.
+Because the split is rejected, most of the original follow-on work is moot. What remains:
 
-## Open questions
+- **Add policy-file CI with ACL tests.** The one carried-forward recommendation. Ban `tag:*` destinations, require review on the policy file, run tests in GitHub Actions.
+- **No changes** to [tailscale-grants.md](../../network/tailscale-grants.md) or [tailscale.md](../../network/tailscale.md) from this ADR — the tag taxonomy and Services naming convention stand as documented.
+- **Record the rejection** so the option isn't re-litigated from scratch; the mechanism comparison above is the reusable part.
+- Continue in [ADR-0007](0007-workload-tailnet-separation.md) for the workload boundary, where the provisioning artifact and waitlist question actually apply.
 
-1. Plan/cost implications of additional tailnets on the current account.
-2. Waitlist timing for declarative node sharing — does it gate the whole plan, and is there a beta ETA?
-3. Do quarantine semantics apply to declaratively shared nodes, or does `allowIncomingConnections` fully replace them?
-4. Does the operator's own identity/devices need presence in all three tailnets, and how does that interact with the isolation goal?
-5. Komodo topology: one controller reaching out via declarative sharing, or a controller per tailnet?
-6. Can a Service be published across a tailnet boundary? If not, cross-environment access is coarser than the Services model already in use — that is a regression, and the strongest argument for Option A/D.
-7. Does Test lose meaning as a Prod rehearsal under Option C?
-8. Migration order — Dev first (proves the seam cheaply) or Prod first (proves the boundary that matters)?
-9. Since synced groups can't be referenced across tailnets, does any current or planned group source conflict with this?
+## Open questions — resolved or relocated
+
+The rejection closes most of these. Recorded so the option isn't re-litigated from scratch:
+
+1. Plan/cost implications of additional tailnets — **moot here**; relocated to [ADR-0007](0007-workload-tailnet-separation.md).
+2. Waitlist timing for declarative node sharing — **no longer gating** this decision; still worth joining for ADR-0007.
+3. Quarantine semantics vs. `allowIncomingConnections` for declaratively shared nodes — **unresolved**; relocated to ADR-0007, where it actually matters.
+4. Operator identity/devices across three tailnets — **moot**; admin access stays in one tailnet, which is the point of the rejection.
+5. Komodo topology across a boundary — **moot**; controller and periphery agents stay in one tailnet.
+6. Can a Service be published across a tailnet boundary? — **unresolved and now load-bearing for [ADR-0007](0007-workload-tailnet-separation.md).** Answering it decides whether shareable apps can stay on their current host or must physically move.
+7. Does Test lose meaning as a Prod rehearsal under Option C? — **moot**; Option C rejected. Related but distinct question of collapsing to Test+Prod is noted as a future option above.
+8. Migration order — **moot**; no migration.
+9. Synced groups (SCIM/Google) can't be referenced across tailnets — **relocated** to ADR-0007; only relevant where a boundary exists.
 
 ## References
 
