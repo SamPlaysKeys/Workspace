@@ -17,7 +17,9 @@ last_modified_by: "agent"
 
 ## Context
 
-Today the homelab runs a **single tailnet** with tag-based environment separation. Per [tailscale-grants.md](../../network/tailscale-grants.md), isolation between Prod/Test/Dev is enforced entirely by grant rules:
+Today the homelab runs a **single tailnet** with tag-based environment separation. Services are already the primary exposure mechanism for containers across Prod/Test/Dev — advertised via Docktail labels and ScaleTail sidecars, with per-service MagicDNS names, per [tailscale.md](../../network/tailscale.md). That part of the design is settled and this ADR does not revisit it.
+
+What is *not* settled is the environment boundary. Per [tailscale-grants.md](../../network/tailscale-grants.md), isolation between Prod/Test/Dev is enforced entirely by grant rules:
 
 ```json
 {"src": ["tag:prod"], "dst": ["tag:prod"], "ip": ["*:*"]}
@@ -27,13 +29,23 @@ Today the homelab runs a **single tailnet** with tag-based environment separatio
 
 That works, but the isolation is **one policy-file edit deep**. A bad merge, a mis-tagged node, or a fat-fingered `tag:*` destination collapses Prod/Test/Dev into one flat network. The blast radius of a policy mistake is the entire homelab.
 
-Three Tailscale capabilities change the calculus:
+Two Tailscale capabilities change the calculus:
 
 1. **Additional tailnets via the API.** `POST /api/v2/organizations/-/tailnets` provisions a fully isolated tailnet under the same account, no console clicks. The response carries a **tailnet-scoped OAuth client** — creation is org-scoped, but administration and deletion require that per-tailnet credential ([worked example](https://github.com/frozenprocess/summer-with-tailscale/blob/main/01-tailnet-sandboxes/readme.md)).
 2. **Declarative node sharing** ([docs](https://tailscale.com/docs/features/declarative-node-sharing), **alpha, waitlist-gated**). Cross-tailnet access becomes a policy-file construct — `externalTailnets` plus grants referencing `group://<alias>/<name>` or `tag://<alias>/<name>`. It is explicitly designed for **machine-to-machine access between trusted tailnets**, which is exactly the homelab's shape.
-3. **Tailscale Services GA (Feb 2026).** Stable service identities, declarative on-node JSON config, remote-destination proxies, per-service audit logs, and ACL tests.
 
 The question this ADR frames: **is a tailnet boundary the right isolation primitive for the homelab's environments, and is the cross-tailnet seam cheap enough to live with?**
+
+### What a tailnet split does to the existing Services layer
+
+Because Services are already the exposure model, the split's real cost lands here rather than on greenfield design:
+
+- **Service names become tailnet-qualified.** Every service currently resolves under one tailnet's MagicDNS suffix. Three tailnets means three suffixes, and the naming convention documented in [tailscale.md](../../network/tailscale.md) needs an environment-aware revision. **OPEN:** does `plex.<prod-tailnet>.ts.net` replace the current flat convention, or does an alias layer hide the split?
+- **`httpsEnabled` is per-tailnet and off by default.** Any new tailnet needs the setting turned on before TLS-terminating services work at all — a provisioning step that doesn't exist today because the current tailnet was configured once, long ago.
+- **Docktail/ScaleTail config becomes tailnet-scoped.** Sidecars and label-driven advertisement authenticate to a specific tailnet. Auth keys, tags, and tagOwners all become per-tailnet concerns.
+- **Cross-environment service consumption is the seam.** Anything in one environment consuming a service in another (observability, backups, promotion tooling) stops being an in-tailnet lookup and becomes an `externalTailnets` grant.
+
+**OPEN and worth answering early:** whether a Service can be *published across* a tailnet boundary. If yes, the boundary contract is service-level and clean. If not, cross-environment access is node-and-port level, which is coarser than the exposure model already in use — a genuine regression against current practice, and arguably the strongest argument for staying on one tailnet.
 
 ### Correction to an earlier framing
 
@@ -49,6 +61,7 @@ An earlier draft of this ADR analyzed the seam using **link-based sharing** ([sh
 | Dependence on an alpha feature | High | Declarative sharing is alpha + waitlist |
 | Komodo GitOps flow across environments | Medium | Controller currently reaches all three |
 | Observability / audit clarity | Medium | Per-tailnet audit is cleaner than tag filters |
+| Churn to the existing Services layer | Medium | DNS suffixes, sidecar auth, per-tailnet `httpsEnabled` |
 | Partner / shared access model | Medium | Adversarial model already documented |
 | Cost | Low–Medium | **OPEN:** plan implications of additional tailnets |
 
@@ -119,7 +132,7 @@ A grant referencing something absent from the other side's `allowExternalReferen
 
 ### Option D — One tailnet, hardened
 
-Policy-file CI with ACL tests in GitHub Actions, mandatory review on the policy file, ban `tag:*` destinations, per-environment Services with their own grants.
+Policy-file CI with ACL tests in GitHub Actions, mandatory review on the policy file, ban `tag:*` destinations, and tighten per-service grants on the Services already in place.
 
 - **Pros:** near-zero migration; no alpha dependency; converts soft isolation into *tested* isolation.
 - **Cons:** still one flat trust domain; a mistake that passes tests still lands everywhere; audit boundary unchanged.
@@ -171,7 +184,7 @@ Each of these works today only because everything is one tailnet. Each needs an 
 3. Do quarantine semantics apply to declaratively shared nodes, or does `allowIncomingConnections` fully replace them?
 4. Does the operator's own identity/devices need presence in all three tailnets, and how does that interact with the isolation goal?
 5. Komodo topology: one controller reaching out via declarative sharing, or a controller per tailnet?
-6. Do Services span a tailnet boundary, and does that offer a cleaner contract than node-level grants?
+6. Can a Service be published across a tailnet boundary? If not, cross-environment access is coarser than the Services model already in use — that is a regression, and the strongest argument for Option A/D.
 7. Does Test lose meaning as a Prod rehearsal under Option C?
 8. Migration order — Dev first (proves the seam cheaply) or Prod first (proves the boundary that matters)?
 9. Since synced groups can't be referenced across tailnets, does any current or planned group source conflict with this?
@@ -190,7 +203,7 @@ Each of these works today only because everything is one tailnet. Each needs an 
 ### Supporting
 
 - [Share your machines with other users](https://tailscale.com/docs/features/sharing) — link-based sharing. Source of the tag-stripping, quarantine, and user-scoped constraints; retained here for the partner/guest case and to keep the two mechanisms distinguishable.
-- [Tailscale Services GA](https://tailscale.com/blog/services-ga) — declarative JSON config, per-service audit logs, ACL tests, remote-destination proxies
+- [Tailscale Services GA](https://tailscale.com/blog/services-ga) — cited for the GA-era additions relevant to a split (declarative on-node JSON config, per-service audit logs, ACL tests), not as an introduction to Services, which the homelab already runs
 - [Grants syntax](https://tailscale.com/docs/reference/syntax/grants)
 - [Tailnet policy file](https://tailscale.com/docs/features/tailnet-policy-file)
 - [Tailscale API reference](https://tailscale.com/api)
