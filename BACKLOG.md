@@ -8,6 +8,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [ ] **Storm Session: AAP Inventory Queries**: Export and enrich AAP Controller job templates, projects, and inventories into CSV/JSON (`wip/AAP_Inventory_Queries/`)
 - [x] **AI VM Management**: LlamaFarm-based AI model management layer on Debian + Quadro P5000 — ADR 0001, architecture plan, and Ansible draft → graduated to `docs/homelab/ai-vm/`
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [ ] **Storm Session: OpenShift Virtualization VM Migration**: Develop tuning profiles, orchestration pathways, and decision trees for near-zero-downtime upgrades (`wip/openshift-virtualization-VM-migration/`)
