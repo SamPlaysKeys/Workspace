@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 #
-# AAP Inventory & Job Template Exporter (Bash Deliverable)
-#
 # Fetches Projects, Inventories, Execution Environments, Job Templates,
 # and Workflow Job Templates from Ansible Automation Platform (AAP) /
 # Automation Controller v2 API, enriches them with human-readable names,
