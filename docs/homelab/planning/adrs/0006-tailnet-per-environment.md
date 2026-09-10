@@ -17,7 +17,7 @@ last_modified_by: "agent"
 
 The investigation is retained in full because the rejection is the useful part — it documents why an appealing structural-isolation story doesn't survive contact with an already-working Services deployment.
 
-Superseded in direction by **[ADR-0007: Workload tailnet separation](0007-workload-tailnet-separation.md)**, which applies the tailnet boundary where it actually pays for itself: separating non-homelab workload from the homelab, rather than separating homelab environments from each other.
+Superseded in direction by **[ADR-0007: Workload isolation in a single tailnet — access pools](0007-workload-tailnet-separation.md)**, which keeps the workload/homelab separation inside the tailnet as ACL-defined access pools, with a separate tailnet retained only as a deferred off-ramp. Its core finding — that a tailnet boundary pays off where paths should be closed anyway (non-homelab workload), not between homelab environments — still stands.
 
 ## Context
 
