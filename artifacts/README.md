@@ -11,7 +11,8 @@ Reusable code, scripts, and configurations that can be applied across projects.
 
 ```
 artifacts/
-├── ansible/              # Ansible playbooks, roles, and inventory templates
+├── ansible/              # Ansible playbooks, roles, inventory templates, and AAP exporter tools
+│   └── aap-template-export/           # Production & minimal Bash scripts + Python PoC to export AAP templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant

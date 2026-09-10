@@ -1,11 +1,17 @@
 #!/usr/bin/env python3
 """
-AAP Inventory & Job Template Exporter (Python Proof-of-Concept)
+AAP / AWX Job Template & Workflow Exporter (Python Proof-of-Concept)
 
-Fetches Projects, Inventories, Execution Environments, Job Templates,
-and Workflow Job Templates from Ansible Automation Platform (AAP) /
-Automation Controller v2 API, enriches them with human-readable names,
-and outputs unified CSV or JSON reports.
+DISCLAIMER:
+  This script is a reference Proof-of-Concept (PoC) demonstrating zero-dependency
+  standard library API querying, pagination handling, and data enrichment.
+  It has NOT been tested in production environments. For production use cases,
+  use the primary Bash deliverable (aap_template_export.sh) or validate this
+  script in a staging/sandbox environment before running against production AAP.
+
+Fetches Job Templates and Workflow Job Templates from Ansible Automation
+Platform (AAP) / Automation Controller v2 API, enriches them with human-readable
+Project, Inventory, and Execution Environment names, and outputs unified CSV/JSON.
 """
 
 import argparse
@@ -21,7 +27,7 @@ import urllib.request
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Export and enrich AAP / AWX Job Templates and Workflow Job Templates."
+        description="Export and enrich AAP / AWX Job Templates and Workflow Job Templates (Reference PoC - Not production tested)."
     )
     parser.add_argument(
         "--host",
@@ -70,7 +76,7 @@ def fetch_all_results(url: str, token: str, ssl_ctx: ssl.SSLContext) -> list:
     headers = {
         "Authorization": f"Bearer {token}",
         "Accept": "application/json",
-        "User-Agent": "AAP-Inventory-Exporter/1.0",
+        "User-Agent": "AAP-Template-Exporter/1.0",
     }
 
     while current_url:

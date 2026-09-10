@@ -8,7 +8,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
-- [ ] **Storm Session: AAP Inventory Queries**: Export and enrich AAP Controller job templates, projects, and inventories into CSV/JSON (`wip/AAP_Inventory_Queries/`)
+- [x] **Storm Session: AAP Template Queries**: Export and enrich AAP Controller job templates and workflow templates into CSV/JSON → graduated to `artifacts/ansible/aap-template-export/` and `docs/guides/ansible/aap-job-template-export.md`
 - [x] **AI VM Management**: LlamaFarm-based AI model management layer on Debian + Quadro P5000 — ADR 0001, architecture plan, and Ansible draft → graduated to `docs/homelab/ai-vm/`
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)
 - [ ] **Storm Session: OpenShift Virtualization VM Migration**: Develop tuning profiles, orchestration pathways, and decision trees for near-zero-downtime upgrades (`wip/openshift-virtualization-VM-migration/`)
@@ -25,6 +25,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## Completed
 
+- [x] **AAP / AWX Job Template & Workflow Exporters**: Created production Bash script (`aap_template_export.sh` with recursive pagination and CSV/JSON output), minimal Bash script (`aap_template_export_mini.sh`), and Python PoC (`aap_template_export.py`) to query Controller v2 APIs and resolve Project, Inventory, and EE IDs to human-readable names. Documented architecture and execution in `docs/guides/ansible/aap-job-template-export.md` and `artifacts/ansible/aap-template-export/`.
 - [x] **Hugo Relearn Theme Documentation Portal**: Switched the static pages deployment branch `GH_Pages` from Jekyll to the modern, feature-rich Hugo `relearn` theme. Re-engineered `.github/scripts/sync_pages.py` to target Hugo's `content/` and `static/` directories (mapping `README.md` to `_index.md`, and writing pure, un-wrapped markdown). Overhauled `.github/workflows/sync-pages.yml` to compile the Hugo site using the extended Hugo builder and deploy flat, production-ready static HTML assets directly to `GH_Pages`, improving reliability and compile speed.
 
 - [x] **GitOps Cluster Consolidation Roadmap**: Created a strategic phased roadmap and Mermaid flowchart under `docs/gitops/consolidation-roadmap.md` to guide the consolidation of tag-drifted and unmanaged clusters onto `main`, a dedicated `Testing` branch, and a `v2.0` release tag. Added a long-term management strategy for test, pre-prod, prod, and strictly-managed environments with a flat repository directory structure.
@@ -87,6 +88,27 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 - [ ] **"Scratch Pad" Workspace Concept** — write up this workspace approach as a shareable concept for others who want a collaborative AI workspace; frame it as a "scratch pad" for brainstorming, troubleshooting, and building with AI as a supporting tool
 
 ## Active Sessions
+
+# Dead Drop — 2026-09-10
+
+**In progress:** Nothing active — session complete.
+
+**Just completed:**
+- Developed production-ready Bash exporter (`aap_template_export.sh`) with `.next` recursive pagination, robust CLI flags, endpoint 404 resilience, and CSV/JSON output.
+- Developed minimal quick-run Bash script (`aap_template_export_mini.sh`) for lean 5-column CSV export with automatic temp workspace cleanup.
+- Developed zero-dependency Python reference PoC (`aap_template_export.py`) using standard library (`urllib`, `ssl`, `json`, `csv`) with clear non-production disclaimer.
+- Created reusable artifacts and reference documentation at `artifacts/ansible/aap-template-export/`.
+- Authored comprehensive guide `docs/guides/ansible/aap-job-template-export.md` detailing API endpoints, authentication, output schemas, and operational pitfalls.
+- Cross-linked and indexed all artifacts and documentation in `docs/guides/README.md`, `artifacts/README.md`, and `artifacts/ansible/README.md`.
+- Graduated session out of WIP.
+
+**Next step:** Run exports against live AAP / Automation Controller instances as needed.
+
+**Key decision:** Renamed and scoped artifacts from "Inventory" to "Job Template / Workflow Template" to prevent naming ambiguity with host inventories, while providing both comprehensive and minimal tooling.
+
+**Git state:** Uncommitted changes (new files in `artifacts/ansible/aap-template-export/`, `docs/guides/ansible/`, updated indexes and `BACKLOG.md`).
+
+**Open threads:** None.
 
 # Dead Drop — 2026-07-20
 

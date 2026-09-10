@@ -11,6 +11,9 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 ### OpenBao
 - [Tailscale Integration for OpenBao](../architecture/openbao/tailscale-integration.md) - Secure, on-demand generation of Tailscale device auth keys for Docker containers.
 
+### Ansible & AAP
+- [Exporting and Enriching AAP Job Templates and Workflows](./ansible/aap-job-template-export.md) - Extract and resolve Job Templates, Workflow Job Templates, Inventories, and Projects into unified CSV/JSON reports via AAP Controller API v2.
+
 ### Dev Environment
 - [VSCode Setup Guide](./dev-environment/vscode.md) - Configuration instructions for VSCode in enterprise development environments.
 - [Podman Desktop on macOS](./dev-environment/podman-desktop-macos.md) - Install Podman Desktop, configure Docker compatibility, and choose rootless vs rootful mode.

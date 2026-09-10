@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# AAP Inventory Quick Exporter (Minimal Deliverable)
+# AAP / AWX Template Quick Exporter (Minimal Deliverable)
 # Queries AAP / AWX API v2 for Job Templates and Workflow Templates,
-# resolves IDs to human-readable names, and outputs an RFC 4180 CSV report.
+# resolves Project, Inventory, and EE IDs to human-readable names,
+# and outputs an RFC 4180 CSV report.
 # ==============================================================================
 set -euo pipefail
 

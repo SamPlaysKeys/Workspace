@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 #
-# Fetches Projects, Inventories, Execution Environments, Job Templates,
-# and Workflow Job Templates from Ansible Automation Platform (AAP) /
-# Automation Controller v2 API, enriches them with human-readable names,
+# AAP / AWX Job Template & Workflow Exporter
+#
+# Queries Job Templates and Workflow Job Templates from Ansible Automation
+# Platform (AAP) / Automation Controller v2 API, enriches them with
+# human-readable Project, Inventory, and Execution Environment names,
 # and outputs unified CSV or JSON reports.
 #
 # Requirements: bash, curl, jq
