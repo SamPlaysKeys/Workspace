@@ -14,4 +14,4 @@ ADRs capture decisions that are stable enough to reference later, with context a
 | [Skip local Docker registry, focus on git pipeline](0004-local-registry-skip.md) | Accepted |
 | [Docker vs Kubernetes for an Orchestration platform](0005-docker-vs-k8s-orchestration.md) | Inconclusive |
 | [Tailnet-per-environment with declarative node sharing](0006-tailnet-per-environment.md) | Rejected |
-| [Workload tailnet separation — repurposing Dev for non-homelab work](0007-workload-tailnet-separation.md) | Draft |
+| [Workload isolation in a single tailnet — access pools](0007-workload-tailnet-separation.md) | Proposed |
