@@ -38,4 +38,4 @@ To register and activate these components in your Argo CD GitOps repository:
 ## Detailed Guide
 
 For full architecture details, OpenShift security postures, and sub-capacity licensing calculations, refer to the prose guide:
-* **[docs/guides/openshift/bigfix-discovery-deployment.md](docs/guides/openshift/bigfix-discovery-deployment.md)**
+* **[docs/guides/openshift/bigfix-discovery-deployment.md](../../../../docs/guides/openshift/bigfix-discovery-deployment.md)**
