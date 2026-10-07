@@ -6,7 +6,7 @@ description: Security sanitization skill. Interactively redacts secrets, infra i
 # Scrub — Interactive Sanitization
 
 <objective>
-Scan and interactively redact sensitive data (secrets, infrastructure identifiers, and org/user identity) before files are committed or graduated. Never edit files without user confirmation.
+Scan and interactively redact sensitive data (secrets, infrastructure identifiers, and org/user identity) before files are committed or graduated. Never edit files without user confirmation. Never use git commands like "add" or "commit" when dealing with original data.
 </objective>
 
 ## Triggers
