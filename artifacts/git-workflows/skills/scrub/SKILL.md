@@ -1,6 +1,15 @@
 ---
 name: scrub
-description: Security sanitization skill. Interactively redacts secrets, infra identifiers, and org metadata before graduating or committing files.
+description: >
+  Security sanitization skill. Interactively redacts secrets, infra identifiers,
+  and org metadata before graduating or committing files.
+license: Apache-2.0
+compatibility: >
+  Requires filesystem read and edit access to target files.
+metadata:
+  author: platform-team
+  version: "1.0"
+allowed-tools: Read Edit
 ---
 
 # Scrub — Interactive Sanitization

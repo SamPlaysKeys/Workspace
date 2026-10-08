@@ -16,7 +16,7 @@ artifacts/
 │   └── aap-template-export/           # Production & minimal Bash scripts + Python PoC to export AAP templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
-├── git-workflows/        # Agent Skills for PR lifecycle (Copilot triage, PR drift synchronization)
+├── git-workflows/        # Agent Skills for Git & PR workflows (Copilot triage, PR drift sync, security scrub)
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
 └── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
     ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
