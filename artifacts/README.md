@@ -16,14 +16,15 @@ artifacts/
 │   └── aap-template-export/           # Production & minimal Bash scripts + Python PoC to export AAP templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
-├── git-workflows/        # Agent Skills for Git & PR workflows (Copilot triage, PR drift sync, security scrub)
+├── git-workflows/        # Agent Skills for PR lifecycle (Copilot triage, PR drift synchronization)
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
-└── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
-    ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
-    ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
-    ├── openshift-upgrades/            # AI upgrade plan.md blueprints and upgrade execution artifacts
-    ├── openshift-virtualization-upgrade/ # OCP Virtualization upgrade playbooks and ACM policies
-    └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
+├── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
+│   ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
+│   ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)
+│   ├── openshift-upgrades/            # AI upgrade plan.md blueprints and upgrade execution artifacts
+│   ├── openshift-virtualization-upgrade/ # OCP Virtualization upgrade playbooks and ACM policies
+│   └── readiness-validation-ansible/  # Multi-play cluster readiness pattern + examples
+└── security/             # Security & sanitization skills (interactive secret & infra redaction)
 ```
 
 ## Usage

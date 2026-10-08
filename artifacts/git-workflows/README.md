@@ -15,8 +15,7 @@ artifacts/git-workflows/
 ├── README.md                 # This guide
 └── skills/
     ├── copilot-review-cycle/ # Review, fix, and reply to Copilot/automated PR comments
-    ├── pr-drift-sync/        # Synchronize PR titles and descriptions with branch diffs
-    └── scrub/                # Interactively scan and redact secrets/infra/ident before committing
+    └── pr-drift-sync/        # Synchronize PR titles and descriptions with branch diffs
 ```
 
 ---
@@ -43,16 +42,6 @@ artifacts/git-workflows/
   3. Uses safe heredoc formatting (`gh pr edit <id> --title ... --body-file -`) to prevent shell quoting bugs and markdown truncation.
   4. Confirms updated PR state via `gh pr view`.
 - **Triggers:** "sync pr description", "update pr title", "fix pr drift", "refresh pr summary".
-
-### 3. `scrub`
-- **Objective:** Interactively scan and redact sensitive data (secrets, infrastructure identifiers, and org/user identity) before files are committed, PR'd, or graduated to public artifacts.
-- **Workflow:**
-  1. Identifies targets (`secrets`, `infra`, `ident`, or default to all three).
-  2. Scans files and collects line-by-line sensitive matches.
-  3. Proposes an explicit remediation table using standard RFC/generic placeholders.
-  4. Prompts human reviewer for alignment approval before modifying any files.
-  5. Applies approved replacements and verifies syntax.
-- **Triggers:** "scrub [file/dir]", "sanitize [file/artifact]", "prepare for public/artifacts".
 
 ---
 
