@@ -9,6 +9,7 @@ Reusable Ansible playbooks, roles, and inventory templates.
 
 ## Contents
 
+- [`aap-agents/`](./aap-agents/README.md) — Comprehensive AAP / AWX CLI tooling and Agent Skills for real-time job monitoring, log triage, failure diagnosis, branch test history, merge gating, and PR decision trail reporting.
 - [`aap-template-export/`](./aap-template-export/README.md) — Automation scripts (production Bash, minimal Bash, and Python reference PoC) to query AAP / AWX Controller v2 APIs, enrich Job Templates and Workflow Templates with human-readable Project/Inventory/EE names, and generate CSV/JSON reports.
 
 **OpenShift-focused Ansible:** See [`../openshift/readiness-validation-ansible/`](../openshift/readiness-validation-ansible/README.md) — multi-play cluster readiness validation pattern, role skeleton, and examples.

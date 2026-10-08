@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""One-time setup (and token refresh) for local AAP API access.
+
+Creates ~/.config/aap/ and populates:
+  token          — your personal access token
+  hostname       — AAP instance to target (default: aap.example.com)
+  .token_created — unix timestamp when token was last saved (expiry warnings)
+
+Tokens expire after ~1 week. To refresh:
+  ./scripts/aap-setup --refresh-token
+
+To verify credentials without making changes:
+  ./scripts/aap-setup --check
+
+To get a new PAT:
+  1. Log in to https://aap.example.com
+  2. Navigate to: User menu (top-right) → User Details → Tokens tab
+  3. Click Add → Application: (none) → Scope: Write → Save
+  4. Copy the displayed token and paste it when prompted.
+
+Usage:
+  ./scripts/aap-setup [--hostname aap-test.example.com] [--refresh-token] [--check]
+"""
+
+import argparse
+import getpass
+import json
+import os
+import pathlib
+import shutil
+import sys
+import time
+import urllib.error
+import urllib.request
+
+AAP_CONFIG_DIR = pathlib.Path.home() / ".config" / "aap"
+TOKEN_FILE = AAP_CONFIG_DIR / "token"
+HOST_FILE = AAP_CONFIG_DIR / "hostname"
+TOKEN_CREATED_FILE = AAP_CONFIG_DIR / ".token_created"
+HOSTNAME_DEFAULT = "aap.example.com"
+TOKEN_MAX_AGE_DAYS = 7
+
+SCRIPT_DIR = pathlib.Path(__file__).resolve().parent
+AAP_API_SRC = SCRIPT_DIR / "aap-api"
+AAP_API_DST = AAP_CONFIG_DIR / "aap-api"
+
+
+def validate_token():
+    """Call /api/v2/me/ and report the connected username. Returns True on success."""
+    token = TOKEN_FILE.read_text().strip()
+    host = HOST_FILE.read_text().strip()
+    url = f"https://{host}/api/v2/me/"
+    req = urllib.request.Request(url, headers={
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    })
+    try:
+        with urllib.request.urlopen(req) as resp:
+            data = json.loads(resp.read())
+        username = data["results"][0]["username"]
+        print(f"  validate: \u2713  connected to {host} as {username}")
+        return True
+    except urllib.error.HTTPError as e:
+        if e.code == 401:
+            print("  validate: \u2717  401 Unauthorized \u2014 token is invalid or expired")
+            print("            Run: ./scripts/aap-setup --refresh-token")
+        else:
+            print(f"  validate: \u2717  HTTP {e.code} from {host}")
+        return False
+    except Exception as e:
+        print(f"  validate: \u2717  {e}")
+        return False
+
+
+def check_token_age():
+    """Report token age and warn if near expiry."""
+    if not TOKEN_CREATED_FILE.exists():
+        print("  age:      unknown (no creation timestamp \u2014 run setup again to record it)")
+        return
+    created = int(TOKEN_CREATED_FILE.read_text().strip())
+    age_days = (int(time.time()) - created) // 86400
+    remaining = TOKEN_MAX_AGE_DAYS - age_days
+    if age_days >= TOKEN_MAX_AGE_DAYS:
+        print(f"  age:      \u26a0  {age_days}d old \u2014 token may be expired (tokens last ~{TOKEN_MAX_AGE_DAYS}d)")
+        print("            Run: ./scripts/aap-setup --refresh-token")
+    else:
+        print(f"  age:      {age_days}d old (~{remaining}d remaining)")
+
+
+def sync_aap_api():
+    """Copy aap-api to ~/.config/aap/; re-copy if the repo version is newer."""
+    if not AAP_API_DST.exists():
+        shutil.copy2(AAP_API_SRC, AAP_API_DST)
+        AAP_API_DST.chmod(0o700)
+        print("  aap-api:  installed")
+    elif AAP_API_SRC.read_bytes() != AAP_API_DST.read_bytes():
+        shutil.copy2(AAP_API_SRC, AAP_API_DST)
+        AAP_API_DST.chmod(0o700)
+        print("  aap-api:  updated (was stale)")
+    else:
+        print("  aap-api:  up to date")
+
+
+def save_token(token_input):
+    """Write token and record creation timestamp."""
+    TOKEN_FILE.write_text(token_input)
+    TOKEN_FILE.chmod(0o600)
+    TOKEN_CREATED_FILE.write_text(str(int(time.time())))
+    TOKEN_CREATED_FILE.chmod(0o600)
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Set up local AAP API access credentials.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+To get a new PAT:
+  1. Log in to https://aap.example.com
+  2. Navigate to: User menu (top-right) -> User Details -> Tokens tab
+  3. Click Add -> Application: (none) -> Scope: Write -> Save
+  4. Copy the displayed token and paste it when prompted.
+""",
+    )
+    parser.add_argument(
+        "--hostname",
+        default=None,
+        metavar="HOST",
+        help="AAP hostname to configure (default: aap.example.com)",
+    )
+    parser.add_argument(
+        "--refresh-token",
+        action="store_true",
+        help="Prompt for a new token, preserving the existing hostname",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Validate hostname, token age, and connectivity without making changes",
+    )
+    args = parser.parse_args()
+
+    # --check mode: read-only validation
+    if args.check:
+        print("Checking AAP credentials ...")
+        if not TOKEN_FILE.exists() or TOKEN_FILE.stat().st_size == 0:
+            print("  token:    missing or empty \u2014 run ./scripts/aap-setup first", file=sys.stderr)
+            sys.exit(1)
+        host = HOST_FILE.read_text().strip() if HOST_FILE.exists() else HOSTNAME_DEFAULT
+        print(f"  hostname: {host}")
+        check_token_age()
+        sys.exit(0 if validate_token() else 1)
+
+    # Normal setup / token refresh
+    print(f"Setting up AAP API access in {AAP_CONFIG_DIR} ...")
+    AAP_CONFIG_DIR.mkdir(mode=0o700, parents=True, exist_ok=True)
+    AAP_CONFIG_DIR.chmod(0o700)
+
+    if args.refresh_token:
+        existing_host = HOST_FILE.read_text().strip() if HOST_FILE.exists() else HOSTNAME_DEFAULT
+        print(f"  hostname: {existing_host} (unchanged)")
+    else:
+        hostname = args.hostname or HOSTNAME_DEFAULT
+        HOST_FILE.write_text(hostname)
+        HOST_FILE.chmod(0o600)
+        print(f"  hostname: {hostname}")
+
+    sync_aap_api()
+
+    if args.refresh_token:
+        print("  token:    refreshing (--refresh-token)")
+        token_input = getpass.getpass(
+            "  Paste your new AAP personal access token (input hidden): "
+        )
+        if token_input:
+            save_token(token_input)
+            print("  token:    updated")
+        else:
+            print("  token:    no input \u2014 token file unchanged")
+            sys.exit(0)
+    elif TOKEN_FILE.exists() and TOKEN_FILE.stat().st_size > 0:
+        print("  token:    already set (use --refresh-token to update)")
+        check_token_age()
+    else:
+        TOKEN_FILE.touch(mode=0o600)
+        token_input = getpass.getpass(
+            "  Paste your AAP personal access token (input hidden): "
+        )
+        if token_input:
+            save_token(token_input)
+            print("  token:    saved")
+        else:
+            print(f"  token:    left empty \u2014 paste your PAT into {TOKEN_FILE} before using aap-api")
+            sys.exit(0)
+
+    print()
+    validate_token()
+    print()
+    print(f"Tip: tokens expire after ~{TOKEN_MAX_AGE_DAYS}d. Refresh with:")
+    print("  ./scripts/aap-setup --refresh-token")
+
+
+if __name__ == "__main__":
+    main()

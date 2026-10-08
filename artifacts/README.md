@@ -12,9 +12,11 @@ Reusable code, scripts, and configurations that can be applied across projects.
 ```
 artifacts/
 ├── ansible/              # Ansible playbooks, roles, inventory templates, and AAP exporter tools
+│   ├── aap-agents/                    # AAP CLI tools & Agent Skills (stream, scan, triage, gate, PR evidence)
 │   └── aap-template-export/           # Production & minimal Bash scripts + Python PoC to export AAP templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
+├── git-workflows/        # Agent Skills for PR lifecycle (Copilot triage, PR drift synchronization)
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
 └── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
     ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)

@@ -1,0 +1,89 @@
+#!/usr/bin/env bash
+# Thin wrapper for AAP REST API calls.
+#
+# Why bash (not Python)?
+#   This script is intentionally a shell primitive.  Its key feature is "$@"
+#   pass-through: any extra arguments are forwarded directly to curl, so callers
+#   can add headers, body payloads, --insecure, etc. without any wrapper knowing
+#   about them.  It is dependency-free (only curl), composable with jq/grep in
+#   one-liners, and usable from any shell context — including outside the repo.
+#   The Python helper scripts (aap-failures.py, aap-runs.py, etc.) have their
+#   own HTTP layer via _aap_lib.py and do NOT call this script; they coexist.
+#
+# Usage:
+#   aap-api [METHOD] PATH [curl-extra-args...]
+#
+# Examples:
+#   aap-api GET  /api/v2/me/
+#   aap-api GET  /api/v2/jobs/316231/
+#   aap-api GET  "/api/v2/jobs/316231/stdout/?format=txt"
+#   aap-api GET  "/api/v2/jobs/?order_by=-id&page_size=20&inventory__name=example-cluster-01+Build+OCP"
+#   aap-api POST /api/v2/job_templates/123/launch/ -d '{"extra_vars":{}}'
+#
+# Credentials are read from:
+#   ~/.config/aap/token    — personal access token (raw value, no quotes)
+#   ~/.config/aap/hostname — AAP hostname  (e.g. aap.example.com or aap-test.example.com)
+#
+# Run scripts/aap-setup to initialise these files.
+
+set -euo pipefail
+
+TOKEN="${AAP_TOKEN:-}"
+HOST="${AAP_HOST:-${AAP_HOSTNAME:-}}"
+
+if [[ -z "$TOKEN" || -z "$HOST" ]]; then
+  TOKEN_FILE="$HOME/.config/aap/token"
+  HOST_FILE="$HOME/.config/aap/hostname"
+
+  if [[ ! -f "$TOKEN_FILE" || ! -s "$TOKEN_FILE" ]]; then
+    echo "ERROR: $TOKEN_FILE is missing or empty." >&2
+    echo "       Set AAP_TOKEN and AAP_HOST or run scripts/aap-setup to configure access." >&2
+    exit 1
+  fi
+
+  if [[ ! -f "$HOST_FILE" ]]; then
+    echo "ERROR: $HOST_FILE is missing." >&2
+    echo "       Set AAP_TOKEN and AAP_HOST or run scripts/aap-setup to configure access." >&2
+    exit 1
+  fi
+
+  TOKEN=$(tr -d '[:space:]' < "$TOKEN_FILE")
+  HOST=$(tr -d '[:space:]'  < "$HOST_FILE")
+fi
+
+# Accept either:
+#   aap-api METHOD PATH [curl-args...]   e.g.  aap-api GET /api/v2/me/
+#   aap-api PATH [curl-args...]          e.g.  aap-api /api/v2/me/   (defaults to GET)
+if [[ "${1-}" =~ ^/ ]]; then
+  METHOD="GET"
+  PATH_ARG="$1"
+  shift
+else
+  METHOD="${1:-GET}"
+  PATH_ARG="${2:-/api/v2/ping/}"
+  shift 2 2>/dev/null || true
+fi
+
+_BODY_FILE="/tmp/.aap_api_body.$$"
+
+HTTP_STATUS=$(curl -s -o "$_BODY_FILE" -w "%{http_code}" \
+  -X "$METHOD" \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  "$@" \
+  "https://${HOST}${PATH_ARG}")
+
+if [[ "$HTTP_STATUS" == "401" ]]; then
+  echo "ERROR: AAP returned 401 Unauthorized — your token has likely expired." >&2
+  echo "       Run: scripts/aap-setup --refresh-token" >&2
+  rm -f "$_BODY_FILE"
+  exit 1
+elif [[ "$HTTP_STATUS" -ge 400 ]]; then
+  echo "ERROR: AAP returned HTTP $HTTP_STATUS" >&2
+  cat "$_BODY_FILE" >&2
+  rm -f "$_BODY_FILE"
+  exit 1
+fi
+
+cat "$_BODY_FILE"
+rm -f "$_BODY_FILE"

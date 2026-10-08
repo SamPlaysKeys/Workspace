@@ -1,0 +1,4 @@
+# Dependencies for AAP helper scripts (scripts/aap-*.py)
+# Install with: pip install -r scripts/requirements.txt
+detect-secrets>=1.5.0
+websocket-client>=1.5.0
