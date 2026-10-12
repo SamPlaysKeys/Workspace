@@ -6,6 +6,10 @@ type: README-Note
 
 A collection of security-focused tools, agent skills, and validation patterns for identifying and remediating sensitive data, secrets, internal infrastructure markers, and credentials across repositories and public artifacts.
 
+> [!NOTE]
+> **Portable Reference vs. Live Skill:**
+> The skill definition here (`artifacts/security/skills/scrub/`) is a portable reference artifact intended to be shared, copied, or adapted across different environments and repositories. A live, actively registered version of the `scrub` skill is also maintained in the [`.agents/skills/scrub/`](../../.agents/skills/scrub/) directory of this repository for direct execution by OpenCode and compatible agent runners.
+
 ---
 
 ## Directory Structure
