@@ -8,9 +8,9 @@ Options:
     --limit N   Maximum number of results to fetch (default: 20, hard cap: 20)
 
 Examples:
-    aap-runs.py "Install CoreOS 2.0"
-    aap-runs.py "Deploy Openshift 2.0" develop
-    aap-runs.py "Validate 2.0" feature/network-refactor --limit 20
+    aap-runs.py "Deploy application"
+    aap-runs.py "Deploy application" feature/my-change
+    aap-runs.py "Nightly check" feature/my-change --limit 20
 
 Output columns: ID  STATUS  ELAPSED  CLUSTER  BRANCH  SHA  STARTED
 

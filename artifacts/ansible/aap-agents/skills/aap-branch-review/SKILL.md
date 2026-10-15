@@ -41,22 +41,16 @@ For a single-job deep-dive, use the **`aap-troubleshoot`** skill instead.
 
 ## Step 1 — Identify the template names and branch to review
 
-Common job template names:
-- `Install CoreOS 2.0` → `phase_3.yml`
-- `Deploy Openshift 2.0` → `phase_4.yml`
-- `Validate 2.0` → `phase_1.yml`
-- `Expand OCP Cluster 2.0` → `phase_5.yml`
-
-If the user hasn't specified, default to both `Install CoreOS 2.0` and
-`Deploy Openshift 2.0` — these cover the bulk of interesting failures.
+Ask which AAP job template names and which git branch to review. A template
+name is the controller's job template name, not a playbook filename. If the
+user hasn't named at least one template, stop and ask before querying AAP.
 
 ---
 
 ## Step 2 — List recent runs, filtered by branch
 
 ```bash
-scripts/aap-runs.py "Install CoreOS 2.0" <branch>
-scripts/aap-runs.py "Deploy Openshift 2.0" <branch>
+scripts/aap-runs.py "<job template name>" <branch>
 ```
 
 Omit the branch argument to see all recent runs regardless of branch.
@@ -79,17 +73,17 @@ Use elapsed time as the first triage signal before pulling any logs:
 
 | Elapsed | Category | What to look for |
 |---|---|---|
-| < 5 min | **Config / input bug** | Validation failure, CIDR error, missing var, pip install, SCM sync |
-| 5–25 min | **Boot / iDRAC issue** | ISO mount, PowerState polling, SSH readiness timeout |
-| 25–90 min | **Install-time issue** | NTO stuck, bootstrap timeout, operator convergence |
-| > 90 min | **Severe timeout** | Ironic slow, network path down, API never came up |
 | < 1 min | **Infrastructure** | Proxy failure, SCM sync error, execution environment issue |
+| 1–5 min | **Config / input bug** | Validation failure, malformed input, missing var, dependency install |
+| 5–25 min | **Boot / BMC issue** | Media mount, power-state polling, SSH readiness timeout |
+| 25–90 min | **Install-time issue** | Condition stuck, bootstrap timeout, component convergence |
+| > 90 min | **Severe timeout** | Provisioning slow, network path down, service never came up |
 
-For **config/input failures** (< 5 min): pull failed events directly — one query
+For **config/input failures** (1–5 min): pull failed events directly — one query
 usually gives the full root cause.
 
 For **install-time failures** (> 25 min): fetch stdout and scan for known signals
-(NTO, rc=5/7, bootstrap-complete, SSH readiness).
+(stuck conditions, installer return codes, ready signals, SSH readiness).
 
 ---
 
@@ -100,7 +94,7 @@ scripts/aap-failures.py <id>
 ```
 
 Prints the job header and all failed task events. For config/input failures
-(< 5 min), this is usually sufficient to identify root cause without fetching stdout.
+(1–5 min), this is usually sufficient to identify root cause without fetching stdout.
 
 ---
 
@@ -116,16 +110,14 @@ scripts/aap-scan-stdout.py <id> --no-cache   # force re-fetch if needed
 ```
 
 The script fetches stdout as plain text (`?format=txt`) — no HTML stripping needed.
-Scans for: FATAL/FAILED, NTO, BootProgress, SSH-readiness, install-rc, ISO/iDRAC,
-PowerState, Retry, Timeout.
+Scans for: FATAL/FAILED, retry, timeout, SSH, syntax errors, and Ansible return codes.
 
 Key signals to interpret:
-- `NTO.*Progressing=True` — NTO stuck (common cause of long failures)
-- `BootProgress` retries — boot sequence issue
-- `Monitor power state.*RETRYING` — old code (PowerState polling) or slow POST
-- `SSH readiness.*RETRYING` — nodes booted but coreos-installer stalled
-- `rc=5` — installer's own 1h timeout (not necessarily fatal; check API probe)
-- `rc=7` — Ansible ASYNC FAILED (Ansible killed the async task)
+- A condition or resource stuck progressing — the change is not applying
+- Boot or power-state retries — boot sequence issue, or an older revision still polling
+- SSH readiness retries — the host is up but the installer or service stalled
+- Installer timeout return code — the installer's own timer fired; check whether the service came up anyway
+- `ASYNC_FAILED` — Ansible killed the async task
 
 ---
 

@@ -1,15 +1,12 @@
 ---
 name: aap-troubleshoot
 description: >
-  Troubleshoot OpenShift bare-metal install and cluster problems. Use when: a job
-  fails on aap.example.com or aap-test.example.com; a user pastes a job URL or job ID;
-  debugging phase_1, phase_3, phase_4, phase_5, or auto-gitops; investigating an
-  OpenShift bare-metal install failure; workers not joining; nodes not ready;
-  checking stdout, host summaries, or failed events from AAP. Starts with OCP-level
-  checks (nodes, CSRs, Machines, BareMetalHosts) before pulling AAP job data.
-  Keywords: AAP, job failed, install failed, phase 3, phase 4, NTO, iDRAC, bastion,
-  unreachable, stdout, job ID, aap.example.com, workers not joining, node not ready,
-  CSR pending.
+  Troubleshoot a failed Ansible Automation Platform job. Use when: a job fails;
+  a user pastes a job URL or job ID; debugging a playbook run; checking stdout,
+  host summaries, or failed events from AAP. If the user describes a symptom on
+  the managed system, inspect that system before pulling AAP job data.
+  Keywords: AAP, job failed, playbook failed, unreachable, stdout, job ID,
+  host failed.
 license: Apache-2.0
 compatibility: >
   Requires network access to your AAP instance, plus git.
@@ -30,39 +27,17 @@ Before pulling any AAP data, classify what kind of problem this is:
 |---|---|---|
 | Provides a job ID or URL | AAP | Step 1 (extract job ID) |
 | Describes an automation / playbook failure | AAP | Step 1 |
-| Describes a cluster / workload symptom ("workers didn't join", "node not ready") | OCP-first | OCP checks below |
-| Unclear / ambiguous | OCP-first | OCP checks below, escalate to AAP if needed |
+| Describes a symptom on the managed system ("host didn't join", "service not ready") | Target first | Target-system checks below |
+| Unclear / ambiguous | Target first | Target-system checks below, escalate to AAP if needed |
 
-### OCP-level checks (for cluster/workload symptoms)
+### Target-system checks (for symptoms outside the job)
 
-Run these **before** opening AAP. Many problems are diagnosable entirely at the OCP layer:
+Run these **before** opening AAP when the user describes the managed system rather than a job. Many problems are visible there without controller logs.
 
-```bash
-# Are the nodes visible at all?
-oc get nodes -o wide
-
-# Pending CSRs? (worker nodes need two approval rounds: bootstrap + client)
-oc get csr | grep Pending
-
-# Machine object status (is OCP even trying to provision these nodes?)
-oc get machines -n openshift-machine-api -o wide
-
-# BareMetalHost state (did hardware provisioning complete?)
-oc get bmh -n openshift-machine-api
-
-# Events on stuck objects
-oc describe machine -n openshift-machine-api <name>
-oc describe node <name>
-
-# If node is reachable — kubelet and network logs on the RHCOS node.
-# Agent constraint: never SSH to nodes directly without explicit authorization.
-# Ask the user to run these and paste the output back:
-#   ssh core@<node-ip> 'journalctl -u kubelet --no-pager | tail -50'
-#   ssh core@<node-ip> 'journalctl -u NetworkManager --no-pager | tail -30'
-```
+Ask which checks apply to that platform: hosts up, pending approvals, machine or hardware status, recent events. Do not SSH to hosts without explicit authorization. If a host is reachable and logs would help, ask the user to collect them and paste the output.
 
 **Escalate to AAP (Steps 1–8) when:**
-- Cluster state alone doesn't explain the failure
+- Target state alone doesn't explain the failure
 - You need to understand what the automation did (which tasks ran, what output was produced)
 - The user specifically asks to review the job
 
@@ -94,9 +69,9 @@ Use elapsed time as the first signal to avoid unnecessary stdout fetches:
 |---|---|---|
 | < 1 min | Infrastructure / SCM | Step 6 (failed events) |
 | 1–5 min | Config / input bug | Step 6 (failed events) — one query usually gives root cause |
-| 5–25 min | Boot / iDRAC issue | Step 6, then Step 5 (stdout scan) if events are ambiguous |
-| 25–90 min | Install-time issue (NTO, bootstrap) | Step 5 (stdout scan) |
-| > 90 min | Severe timeout (network, Ironic) | Step 5 (stdout scan) |
+| 5–25 min | Boot / BMC issue | Step 6, then Step 4 (stdout scan) if events are ambiguous |
+| 25–90 min | Install-time issue | Step 4 (stdout scan) |
+| > 90 min | Severe timeout | Step 4 (stdout scan) |
 
 **For fast failures (< 5 min): go directly to Step 6.** Fetching stdout for a 2-minute job wastes an API call.
 
@@ -113,7 +88,7 @@ Use elapsed time as the first signal to avoid unnecessary stdout fetches:
 
 ## Step 1 — Extract the Job ID
 
-From a URL like `https://aap.example.com/#/jobs/playbook/328968/output`, the job ID is `328968`.
+From a URL like `https://<aap-host>/#/jobs/playbook/1001/output`, the job ID is `1001`.
 
 ## Step 2 — Fetch Job Metadata
 
@@ -155,15 +130,15 @@ Check whether the failing task file has any commits between the job's SHA and **
 # Replace <sha> with scm_revision from the job, <task_file> with path from event_data.task_path
 git log --oneline <sha>..origin/HEAD -- <task_file>
 
-# If the default remote branch is not the right one, check develop or all refs:
-git log --oneline <sha>..origin/develop -- <task_file>
+# If the default remote branch is not the one the template tracks, name that branch:
+git log --oneline <sha>..origin/<branch> -- <task_file>
 git log --all --oneline -- <task_file> | head -10   # all branches + tags
 ```
 
 If commits appear, diff the task to see what changed:
 
 ```bash
-git diff <sha>..origin/develop -- <task_file>
+git diff <sha>..origin/<branch> -- <task_file>
 ```
 
 To see which branches/tags already contain a specific fix commit:
@@ -189,8 +164,8 @@ scripts/aap-scan-stdout.py <id> --no-cache
 ```
 
 Output is cached automatically to `~/.cache/aap/<id>-stdout.txt`.
-The script scans for: NTO, BootProgress, SSH-readiness, install-rc, ISO/iDRAC,
-PowerState, Retry, Timeout — no HTML stripping needed (`?format=txt`).
+The script scans for FATAL/FAILED, retry, timeout, SSH, syntax errors, and
+Ansible return codes — no HTML stripping needed (`?format=txt`).
 
 ## Step 5 — Check Host Summaries
 
@@ -221,14 +196,14 @@ scripts/aap-workflow.py <workflow_id>
 Shows all phases that ran, their status, elapsed time, and which ones failed.
 Steer next investigation with `scripts/aap-failures.py` on the failed child job IDs.
 
-## Step 8 — Assess phase_5 cancel/rerun behavior (when phase_5 involved)
+## Step 8 — Assess cancel/rerun behavior
 
-When troubleshooting `phase_5.yml` jobs, always evaluate cancel/rerun semantics
-using:
-[references/phase5-idempotency-rubric.md](references/phase5-idempotency-rubric.md)
+When a job was canceled, failed mid-flight, or the user asks where a rerun
+will pick up, evaluate it using:
+[references/cancel-rerun-rubric.md](references/cancel-rerun-rubric.md)
 
 Required report line:
-- `cancel/rerun expectation: <reprovision|expand-only|no-op|unsafe-ambiguous> — <one line reason>`
+- `cancel/rerun expectation: <reprovision|continue|no-op|unsafe-ambiguous> — <one line reason>`
 
 ## Common Failure Patterns
 
@@ -238,14 +213,11 @@ If the error isn't immediately obvious, read:
 Patterns are grouped by elapsed time (fast / boot / install-time / severe / infra).
 Read it when `aap-failures.py` surfaces an unfamiliar error.
 
-## AAP Instances
+## AAP instances
 
-| Environment | Hostname |
-|---|---|
-| Production | `aap.example.com` |
-| Test | `aap-test.example.com` |
-
-Switch instances by editing `~/.config/aap/hostname`.
+Hostnames belong in `~/.config/aap/hostname` (see `scripts/aap-setup`). Example
+placeholders: `aap.example.com`, `aap-test.example.com`. Switch instances by
+editing that file.
 
 ---
 
