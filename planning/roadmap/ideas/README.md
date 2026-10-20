@@ -49,3 +49,13 @@ See `docs/homelab/iot/automations.md` for implementation notes.
 This should be time-boxed, not an indefinite toggle, to avoid household-wide ad leakage from forgotten toggles.
 
 See `docs/homelab/iot/automations.md` for automation rules.
+
+## Espresso Machine Stats Site
+
+**Status:** Idea  
+**Area:** Web / central resource  
+**Concept:** Public site at `espresso-machines.samplayskeys.com` hosting espresso machine stats as a central resource — config, temperatures, yields, pull logs, and anything a machine owner would want as reference data.
+
+Open questions (as of capture): what data sources feed it (manual entry, home automation sensors, brew-log exports), whether it's homelab-hosted, and who it's for (self, community, both).
+
+<!-- agent-added entry: added by MeadowBot 2026-10-20, review_status: awaiting_review -->
