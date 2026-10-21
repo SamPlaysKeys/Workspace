@@ -139,11 +139,7 @@ def main():
     name     = wf.get("name", "?")
     sym      = STATUS_SYMBOL.get(status, "?")
 
-    try:
-        ev = json.loads(wf.get("extra_vars", "{}") or "{}")
-    except (json.JSONDecodeError, TypeError):
-        ev = {}
-    cluster = ev.get("openshift_cluster_name", "?")
+    cluster  = parse_cluster(wf)
 
     print(f"{'─' * 65}")
     print(f"Workflow:  {wf_id}  —  {name}")
