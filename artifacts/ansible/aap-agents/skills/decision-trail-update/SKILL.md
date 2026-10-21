@@ -113,7 +113,7 @@ rm -f /tmp/decision-trail-draft.md
 ## Guardrails
 
 - Evidence first; avoid generic status text.
-- Link jobs (`https://aap.example.com/#/jobs/playbook/<id>/output`) instead of pasting
+- Link jobs (`https://<aap-host>/#/jobs/playbook/<id>/output`, using the configured hostname) instead of pasting
   large logs.
 - Distinguish **code-path validation** from **environment/input blockers**.
 - If no new evidence exists, post a short "no evidence delta" update.

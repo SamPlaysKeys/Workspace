@@ -28,8 +28,9 @@ If missing/empty, stop and ask user to run `./scripts/aap-setup`.
 
 ## Step 1 — Collect evidence jobs
 
-Gather the job IDs relevant to the gate (typically latest phase_3 and phase_5).
-If user provided only one ID, include it and explicitly call out missing required runs.
+Gather the job IDs the user says are required for the gate. If they have not
+named which runs are required, stop and ask. If they provided only one ID,
+include it and explicitly call out any required runs they said are still missing.
 
 ## Step 2 — Capture what code ran
 

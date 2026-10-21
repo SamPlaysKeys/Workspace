@@ -12,8 +12,8 @@ This updates prior decision-trail evidence for branch `<head_branch>` at head SH
 
 | Job | SHA | Elapsed | Result | Evidence / takeaway |
 |---|---|---:|---|---|
-| [123456](https://aap.example.com/#/jobs/playbook/123456/output) | `abc1234` | 8.2m | failed | `<one-line finding>` |
-| [123457](https://aap.example.com/#/jobs/playbook/123457/output) | `def5678` | 10.1m | successful | `<what this validates>` |
+| [1001](https://<aap-host>/#/jobs/playbook/1001/output) | `abc1234` | 8.2m | failed | `<one-line finding>` |
+| [1002](https://<aap-host>/#/jobs/playbook/1002/output) | `def5678` | 10.1m | successful | `<what this validates>` |
 
 ### What this validates now
 

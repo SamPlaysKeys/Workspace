@@ -2,10 +2,10 @@
 name: aap-live-monitor
 description: >
   Live validation of a running AAP job: hard failures plus semantic correctness of
-  changed code sections. Use when: a job is currently running on aap.example.com or
-  aap-test.example.com; proactive validation while job is in progress; checking for
-  silent failures (vacuous asserts, loop filter misses, wrong output values, missing
-  hosts). Use aap-troubleshoot for post-failure root cause analysis instead.
+  changed code sections. Use when: a job is currently running; proactive validation
+  while a job is in progress; checking for silent failures (vacuous asserts, loop
+  filter misses, wrong output values, missing hosts). Use aap-troubleshoot for
+  post-failure root cause analysis instead.
   Keywords: live monitor, running job, in-progress, aap running, job status, check
   status, how's it going, silent failure, semantic validation.
 license: Apache-2.0
@@ -62,7 +62,7 @@ For each changed task/template, build one checkpoint row per logical change:
 
 | # | Changed section | Task fragment (unique substring) | ✅ success evidence | ❌ silent-fail evidence | Expected count |
 |---|----------------|----------------------------------|--------------------|-----------------------|----------------|
-| 1 | `ResetConfig filter` | `Report controllers` | `eligible=True` | `eligible=False` or 0 results | 1 row per node |
+| 1 | `Wait for rollout` | `Report rollout status` | `ready=True` | `ready=False` or 0 results | 1 row per host |
 
 Rules:
 - **Task fragment must be unique enough** to not appear in unrelated tasks.
@@ -139,7 +139,7 @@ Count matches when `expected_count` is set. Assign status:
 
 Report after each refresh:
 ```
-@ <elapsed>s  ✅ [1] eligible=True×8  ⏳ [2] not reached  ⏳ [3] not reached
+@ <elapsed>s  ✅ [1] ready=True×8  ⏳ [2] not reached  ⏳ [3] not reached
 ```
 
 ---
@@ -171,7 +171,7 @@ deriving checkpoints in Step 1, not as generic post-hoc greps.
 | Pattern in stdout | What it means |
 |-------------------|--------------|
 | `"skip_reason": "No items in the list"` | Loop filter returned zero items — task did nothing |
-| Custom `eligible=False` debug output | Filter logic excluded items it should have kept |
+| Custom debug output showing the filter excluded items | Filter logic dropped items it should have kept |
 | `changed=false` on a task that must mutate state (first run) | Action silently skipped |
 | Fewer host results than inventory size | Some hosts dropped from the loop |
 | `"All assertions passed"` on an assert with `default([])` guard | May be vacuously true — verify the input list was non-empty |

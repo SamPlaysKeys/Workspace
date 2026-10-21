@@ -11,8 +11,8 @@ Options:
     --no-cache   Re-fetch from AAP even if a cached copy exists
 
 Example:
-    aap-workflow.py 328900
-    # Job metadata shows: Workflow: 328900 — run this to see the full picture
+    aap-workflow.py 1002
+    # Job metadata shows: Workflow: 1002 — run this to see the full picture
 
 Output:
     Workflow summary header, then a tree of all nodes showing:

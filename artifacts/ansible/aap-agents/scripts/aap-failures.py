@@ -10,7 +10,7 @@ Options:
 Output is also saved to ~/.cache/aap/<job-id>-failures.json for follow-up.
 
 Example:
-    aap-failures.py 328968
+    aap-failures.py 1001
 
 Credentials: ~/.config/aap/token and ~/.config/aap/hostname
 Run scripts/aap-setup if missing.

@@ -13,9 +13,9 @@ Options:
     --context <n>   Print n lines of context around each match (default: 0)
 
 Examples:
-    aap-scan-stdout.py 328968
-    aap-scan-stdout.py 328968 --context 3
-    aap-scan-stdout.py 328968 --raw | grep -n "NTO"
+    aap-scan-stdout.py 1001
+    aap-scan-stdout.py 1001 --context 3
+    aap-scan-stdout.py 1001 --raw | grep -n "FAILED"
 
 Credentials: ~/.config/aap/token and ~/.config/aap/hostname
 Run scripts/aap-setup if missing.
@@ -33,7 +33,7 @@ SIGNALS = [
     ("TIMEOUT",             re.compile(r"timed out|timeout|exceeded.*wait", re.I)),
     ("SSH / CONNECTION",    re.compile(r"Failed to connect|SSH Error|Permission denied \(publickey", re.I)),
     ("SYNTAX / UNDEFINED",  re.compile(r"undefined variable|template error|syntax error|error in task", re.I)),
-    ("INFRA / ORCHESTRATE", re.compile(r"\bNTO\b|BootProgress|OSRunning|\brc=[0-9]+\b|mount_iso|virtual.?media|\bidrac\b", re.I)),
+    ("RETURN CODE",        re.compile(r"\brc=[0-9]+\b|ASYNC_FAILED", re.I)),
 ]
 
 
