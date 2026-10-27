@@ -56,6 +56,7 @@ Architecture of environments, hardware, and infrastructure-as-code layout.
 | [Environments](platform/environments.md) | Detailed breakdown of each environment |
 | [Hardware](platform/hardware.md) | Physical inventory and specs |
 | [Planned repository structure](platform/planned-repo-structure.md) | Infrastructure repo layout |
+| [Leantime MCP server](platform/leantime-mcp.md) | Leantime MCP bridge setup and how it reaches the homelab instance |
 
 ---
 
