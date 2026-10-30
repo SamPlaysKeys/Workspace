@@ -16,6 +16,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 - [ ] **Homelab — public status site** (`status.samplayskeys.com`): VPS-hosted, user-facing component status; see `docs/homelab/observability/status-and-operator-dashboard.md`
 - [ ] **Homelab — operator single pane:** lab overview + links (Uptime Kuma, Komodo, dynamic management URLs); see same document
+- [ ] **Homelab — bring docs back in sync with deployment:** `docs/homelab/` (hardware, environments, architecture, homelab-map, planned-repo-structure, roadmap, network, observability) still describes Proxmox, UnRAID/Synology, per-environment Komodo and `fedora-dev` Core. Update to match the `InfrastructureAsCode` `overhaul/v2` model (purpose-based: Mgmt `nuclet`, Prod `meadowprod` + TrueNAS, Dev `devbox`, Test Talos, Lab OpenShift, Remote Windows minis) and ADRs 0008/0009; also mirror any behavior changes in `workstyle/working_style.md`
 - [x] **OpenShift vGPU + MTV combined program:** Host prep, VDDK pinning, and ClusterPolicy definition (Step 5 complete)
 - [ ] Populate `artifacts/` with reusable automation components
 - [ ] Create initial skills in `workstyle/skills/`
