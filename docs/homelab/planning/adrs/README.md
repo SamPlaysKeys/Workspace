@@ -8,10 +8,12 @@ ADRs capture decisions that are stable enough to reference later, with context a
 
 | Document | Status |
 |----------|--------|
-| [Per-environment Git branches via Komodo ResourceSync](0001-komodo-resourcesync-branch-per-environment.md) | Accepted |
-| [Baremetal Docker Host OS Selection](0002-baremetal-host-os.md) | Proposed |
+| [Per-environment Git branches via Komodo ResourceSync](0001-komodo-resourcesync-branch-per-environment.md) | Superseded by 0009 |
+| [Baremetal Docker Host OS Selection](0002-baremetal-host-os.md) | Superseded by 0008 |
 | [Container Runtime Tradeoffs](0003-container-runtime-tradeoffs.md) | Proposed |
 | [Skip local Docker registry, focus on git pipeline](0004-local-registry-skip.md) | Accepted |
 | [Docker vs Kubernetes for an Orchestration platform](0005-docker-vs-k8s-orchestration.md) | Inconclusive |
 | [Tailnet-per-environment with declarative node sharing](0006-tailnet-per-environment.md) | Rejected |
 | [Workload isolation in a single tailnet — access pools](0007-workload-tailnet-separation.md) | Proposed |
+| [Dev host: Fedora Server with Cockpit, Podman Quadlets and KVM](0008-dev-host-fedora-cockpit-podman-kvm.md) | Accepted |
+| [Organize infrastructure by purpose, not environment](0009-organize-by-purpose.md) | Accepted |

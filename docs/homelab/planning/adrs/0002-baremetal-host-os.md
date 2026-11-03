@@ -1,10 +1,13 @@
 ---
 type: ADR
-Status: Proposed
+Status: Superseded
+Superseded_by: 0008
 Date: 2026-06-09
 ---
 
 # ADR: Baremetal Docker Host OS Selection
+
+> **Superseded by [ADR 0008](0008-dev-host-fedora-cockpit-podman-kvm.md).** The Fedora Server host is kept, but the rootful Docker + containerized Periphery decision no longer applies to the dev host, and Proxmox/LenovoMini host assignments are out of date. Kept below for history.
 
 ## Context
 

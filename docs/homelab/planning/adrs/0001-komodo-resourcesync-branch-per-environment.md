@@ -1,10 +1,13 @@
 ---
 type: ADR
-Status: Accepted  
+Status: Superseded  
+Superseded_by: 0009
 Date: 2026-05-12  
 ---
 
 # ADR: Per-environment Git branches via Komodo ResourceSync
+
+> **Superseded by [ADR 0009](0009-organize-by-purpose.md).** Environments are no longer the organizing axis; a single ResourceSync follows `main`. Kept below for history.
 
 ## Context
 
