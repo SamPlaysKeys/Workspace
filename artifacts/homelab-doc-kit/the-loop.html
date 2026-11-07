@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Homelab Planning Loop — Visual Flow</title>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --card-border: #30363d;
+      --text-main: #f0f6fc;
+      --text-muted: #8b949e;
+      --blue: #58a6ff;
+      --amber: #d29922;
+      --green: #3fb950;
+      --purple: #bc8cff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1060px;
+    }
+
+    .header-text {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-text h1 {
+      font-size: 1.85rem;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+      color: #ffffff;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .svg-container {
+      width: 100%;
+      background: #12171f;
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+    }
+
+    svg {
+      width: 100%;
+      height: auto;
+      max-width: 1000px;
+      display: block;
+    }
+
+    .caption {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+  <div class="header-text">
+    <h1>The Homelab Planning Loop</h1>
+    <p>Documentation is a loop, not a deliverable. Start with the goal, not the gear.</p>
+  </div>
+
+  <div class="svg-container">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" width="100%" height="100%">
+      <defs>
+        <!-- Gradients -->
+        <linearGradient id="grad-goal" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#161b22"/>
+          <stop offset="100%" stop-color="#0e1726"/>
+        </linearGradient>
+        <linearGradient id="grad-achievable" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#161b22"/>
+          <stop offset="100%" stop-color="#1e1810"/>
+        </linearGradient>
+        <linearGradient id="grad-howto" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#161b22"/>
+          <stop offset="100%" stop-color="#0f1f14"/>
+        </linearGradient>
+        <linearGradient id="grad-fit" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#161b22"/>
+          <stop offset="100%" stop-color="#191328"/>
+        </linearGradient>
+
+        <!-- Drop Shadows -->
+        <filter id="card-shadow" x="-5%" y="-5%" width="115%" height="115%">
+          <feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000000" flood-opacity="0.5"/>
+        </filter>
+
+        <!-- Arrow Markers -->
+        <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#58a6ff"/>
+        </marker>
+        <marker id="arr-amber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#d29922"/>
+        </marker>
+        <marker id="arr-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#3fb950"/>
+        </marker>
+        <marker id="arr-purple" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 1 L 10 5 L 0 9 z" fill="#bc8cff"/>
+        </marker>
+      </defs>
+
+      <style>
+        .title-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .node-card { transition: all 0.2s ease; }
+        .entry-pill { font-size: 11px; font-weight: 600; text-anchor: middle; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .phase-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .phase-heading { font-size: 19px; font-weight: 700; fill: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .phase-sub { font-size: 13px; font-weight: 500; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .bullet-item { font-size: 12px; fill: #c9d1d9; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        .flow-label { font-size: 11px; font-weight: 600; fill: #8b949e; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; text-anchor: middle; }
+      </style>
+
+      <!-- Background Ambient Grid Pattern -->
+      <pattern id="dot-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="1" fill="#21262d" />
+      </pattern>
+      <rect width="1000" height="660" fill="url(#dot-grid)" opacity="0.65" />
+
+      <!-- ================= CONNECTOR PATHS ================= -->
+
+      <!-- 1 GOAL -> 2 ACHIEVABLE (Top horizontal arrow) -->
+      <path d="M 440 185 L 545 185" fill="none" stroke="#58a6ff" stroke-width="2.5" marker-end="url(#arr-blue)"/>
+      <rect x="458" y="165" width="70" height="18" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="493" y="178" class="flow-label" fill="#58a6ff">Constrain</text>
+
+      <!-- 2 ACHIEVABLE -> 3 HOW TO (Right vertical arrow) -->
+      <path d="M 725 290 L 725 385" fill="none" stroke="#d29922" stroke-width="2.5" marker-end="url(#arr-amber)"/>
+      <rect x="675" y="328" width="100" height="18" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="725" y="341" class="flow-label" fill="#d29922">Scoped Plan</text>
+
+      <!-- 3 HOW TO -> 4 FIT (Bottom horizontal arrow) -->
+      <path d="M 545 485 L 440 485" fill="none" stroke="#3fb950" stroke-width="2.5" marker-end="url(#arr-green)"/>
+      <rect x="460" y="465" width="68" height="18" rx="4" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="494" y="478" class="flow-label" fill="#3fb950">As-Built</text>
+
+      <!-- 4 FIT -> 1 GOAL (Left vertical arrow: The continuous loopback!) -->
+      <path d="M 275 385 L 275 290" fill="none" stroke="#bc8cff" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arr-purple)"/>
+      <rect x="180" y="328" width="190" height="20" rx="10" fill="#161b22" stroke="#bc8cff" stroke-width="1.2"/>
+      <text x="275" y="342" class="flow-label" fill="#bc8cff">LOOP BACK TO GOAL (EVOLVE)</text>
+
+
+      <!-- ================= PHASE 1: GOAL ================= -->
+      <g transform="translate(100, 95)" class="node-card" filter="url(#card-shadow)">
+        <rect width="340" height="190" rx="12" fill="url(#grad-goal)" stroke="#30363d" stroke-width="1.5"/>
+        <rect width="340" height="4" rx="2" fill="#58a6ff"/>
+
+        <!-- Phase Badge & Entry Tag -->
+        <text x="20" y="30" class="phase-label" fill="#58a6ff">Phase 01</text>
+        <rect x="195" y="16" width="125" height="22" rx="4" fill="rgba(88, 166, 255, 0.15)" stroke="#58a6ff" stroke-width="1"/>
+        <text x="257" y="31" fill="#58a6ff" class="entry-pill">Start: Greenfield</text>
+
+        <!-- Title & Subtitle -->
+        <text x="20" y="60" class="phase-heading">1. Goal</text>
+        <text x="20" y="80" class="phase-sub" fill="#8b949e">Ideal State (Unconstrained)</text>
+
+        <!-- Divider -->
+        <line x1="20" y1="95" x2="320" y2="95" stroke="#30363d" stroke-width="1"/>
+
+        <!-- Bullets -->
+        <circle cx="26" cy="115" r="3" fill="#58a6ff"/>
+        <text x="36" y="119" class="bullet-item">What the lab should be with zero friction</text>
+
+        <circle cx="26" cy="138" r="3" fill="#58a6ff"/>
+        <text x="36" y="142" class="bullet-item">Target services &amp; problems to solve</text>
+
+        <circle cx="26" cy="161" r="3" fill="#58a6ff"/>
+        <text x="36" y="165" class="bullet-item">Environment map visual skeleton</text>
+      </g>
+
+
+      <!-- ================= PHASE 2: ACHIEVABLE ================= -->
+      <g transform="translate(555, 95)" class="node-card" filter="url(#card-shadow)">
+        <rect width="340" height="190" rx="12" fill="url(#grad-achievable)" stroke="#30363d" stroke-width="1.5"/>
+        <rect width="340" height="4" rx="2" fill="#d29922"/>
+
+        <!-- Phase Badge -->
+        <text x="20" y="30" class="phase-label" fill="#d29922">Phase 02</text>
+        <rect x="230" y="16" width="90" height="22" rx="4" fill="rgba(210, 153, 34, 0.15)" stroke="#d29922" stroke-width="1"/>
+        <text x="275" y="31" fill="#d29922" class="entry-pill">Reality Check</text>
+
+        <!-- Title & Subtitle -->
+        <text x="20" y="60" class="phase-heading">2. Achievable</text>
+        <text x="20" y="80" class="phase-sub" fill="#8b949e">Realistic Scope &amp; Constraints</text>
+
+        <!-- Divider -->
+        <line x1="20" y1="95" x2="320" y2="95" stroke="#30363d" stroke-width="1"/>
+
+        <!-- Bullets -->
+        <circle cx="26" cy="115" r="3" fill="#d29922"/>
+        <text x="36" y="119" class="bullet-item">Constrain by gear, budget, time, skill &amp; risk</text>
+
+        <circle cx="26" cy="138" r="3" fill="#d29922"/>
+        <text x="36" y="142" class="bullet-item">Scoped, actionable build plan</text>
+
+        <circle cx="26" cy="161" r="3" fill="#d29922"/>
+        <text x="36" y="165" class="bullet-item">Explicit deferred backlog list</text>
+      </g>
+
+
+      <!-- ================= PHASE 3: HOW TO ================= -->
+      <g transform="translate(555, 395)" class="node-card" filter="url(#card-shadow)">
+        <rect width="340" height="190" rx="12" fill="url(#grad-howto)" stroke="#30363d" stroke-width="1.5"/>
+        <rect width="340" height="4" rx="2" fill="#3fb950"/>
+
+        <!-- Phase Badge & Entry Tag -->
+        <text x="20" y="30" class="phase-label" fill="#3fb950">Phase 03</text>
+        <rect x="180" y="16" width="140" height="22" rx="4" fill="rgba(63, 185, 80, 0.15)" stroke="#3fb950" stroke-width="1"/>
+        <text x="250" y="31" fill="#3fb950" class="entry-pill">Start: Undocumented</text>
+
+        <!-- Title & Subtitle -->
+        <text x="20" y="60" class="phase-heading">3. How To</text>
+        <text x="20" y="80" class="phase-sub" fill="#8b949e">Build &amp; Run Documentation</text>
+
+        <!-- Divider -->
+        <line x1="20" y1="95" x2="320" y2="95" stroke="#30363d" stroke-width="1"/>
+
+        <!-- Bullets -->
+        <circle cx="26" cy="115" r="3" fill="#3fb950"/>
+        <text x="36" y="119" class="bullet-item">Real topology maps &amp; network configs</text>
+
+        <circle cx="26" cy="138" r="3" fill="#3fb950"/>
+        <text x="36" y="142" class="bullet-item">Architecture Decision Records (ADRs)</text>
+
+        <circle cx="26" cy="161" r="3" fill="#3fb950"/>
+        <text x="36" y="165" class="bullet-item">Inventory, credentials shells &amp; runbooks</text>
+      </g>
+
+
+      <!-- ================= PHASE 4: FIT ================= -->
+      <g transform="translate(100, 395)" class="node-card" filter="url(#card-shadow)">
+        <rect width="340" height="190" rx="12" fill="url(#grad-fit)" stroke="#30363d" stroke-width="1.5"/>
+        <rect width="340" height="4" rx="2" fill="#bc8cff"/>
+
+        <!-- Phase Badge & Entry Tag -->
+        <text x="20" y="30" class="phase-label" fill="#bc8cff">Phase 04</text>
+        <rect x="185" y="16" width="135" height="22" rx="4" fill="rgba(188, 140, 255, 0.15)" stroke="#bc8cff" stroke-width="1"/>
+        <text x="252" y="31" fill="#bc8cff" class="entry-pill">Start: Growth Audit</text>
+
+        <!-- Title & Subtitle -->
+        <text x="20" y="60" class="phase-heading">4. Fit</text>
+        <text x="20" y="80" class="phase-sub" fill="#8b949e">Gap Analysis &amp; Growth Roadmap</text>
+
+        <!-- Divider -->
+        <line x1="20" y1="95" x2="320" y2="95" stroke="#30363d" stroke-width="1"/>
+
+        <!-- Bullets -->
+        <circle cx="26" cy="115" r="3" fill="#bc8cff"/>
+        <text x="36" y="119" class="bullet-item">Ideal State vs. Current State side-by-side</text>
+
+        <circle cx="26" cy="138" r="3" fill="#bc8cff"/>
+        <text x="36" y="142" class="bullet-item">Detect silent drift &amp; scope creep</text>
+
+        <circle cx="26" cy="161" r="3" fill="#bc8cff"/>
+        <text x="36" y="165" class="bullet-item">Growth roadmap &rarr; loops back to Goal</text>
+      </g>
+
+      <!-- Bottom Loop Footer Text -->
+      <text x="500" y="625" class="flow-label" fill="#8b949e">
+        "Documentation is a loop, not a deliverable. Start with the goal, not the gear."
+      </text>
+    </svg>
+  </div>
+</div>
+
+</body>
+</html>
