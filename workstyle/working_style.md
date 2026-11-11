@@ -114,9 +114,9 @@ These are defined modes of interaction. When the user uses the **Trigger** phras
 
 **Process**: Read-only review of *any code* (default), or a diff, branch, or PR. Separate what the code **does** from what we **believe** it does.
 1. **Parse**: target, optional output path ("save to X"), mode (`full` or `quick`). A stated output path is the approval to write the review file.
-2. **Cost gate**: print target, roster, estimated subagent count, and resolved output path; wait for "go".
-3. **Congress**: context-free `explore` subagents in parallel, each with a different lens (Smooth Brain blind read, Skeptic, Saboteur, Gatekeeper, Operator, Maintainer). `quick` = Smooth Brain, Skeptic, Saboteur. No intent, PR text, or conversation is passed to delegates.
-4. **Deliberation**: cluster findings, note convergence across lenses, then an adjudication wave of fresh verifiers tries to refute High/Critical and single-lens findings.
+2. **Cost gate**: first check the target is inside a git repo; if not, flag it and ask the user to confirm the target before launching. Then print target, repo status, roster, estimated subagent count, and resolved output path; wait for "go".
+3. **Congress**: context-free `explore` subagents in parallel, each with a different lens (Smooth Brain blind read, Skeptic, Saboteur, Gatekeeper, Operator, Maintainer). `quick` = Smooth Brain, Skeptic, Saboteur. No intent, PR text, or conversation is passed to delegates. Delegates may list the repo layout (`git ls-files`) but must not read READMEs, CHANGELOGs, docs, or commit/PR text. Paths with spaces are quoted or escaped.
+4. **Deliberation**: cluster findings, note convergence across lenses, then an adjudication wave of fresh verifiers tries to refute High/Critical findings, single-lens findings, and convergent findings where every lens only *inferred* the claim. Verifiers may run code, but only in a temp directory, never writing to the target. The main agent then re-rates severity itself, since delegates tend to inflate it.
 5. **Reconcile**: compare the blind-read summary against the stated intent and prior beliefs.
 6. **Report in chat**, then optionally write `docs/reviews/YYYY-MM-DD-<slug>.md` (or the requested path) from `.agents/skills/smooth-brain-review/templates/review.md`.
 

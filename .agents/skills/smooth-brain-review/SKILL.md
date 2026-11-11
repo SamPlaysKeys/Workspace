@@ -19,7 +19,7 @@ Review code without assumptions. Separate what the code **does** from what we **
 
 ## Guard (read first)
 - **Never self-invoke and never suggest this skill unprompted.** It runs only on an explicit user request.
-- **Read-only.** The only permitted write is the single review file in Step 7, and only when an output location was requested or confirmed.
+- **Read-only.** Never write to the target. The only permitted write is the single review file in Step 7, and only when an output location was requested or confirmed. (Verifiers may run code, but only under the temp-directory rule in Step 4.)
 - **Fix nothing.** Findings may carry a one-line "direction" hint; do not edit reviewed code.
 - Stay in scope. Surface unrelated issues as findings; never act on them.
 
@@ -44,20 +44,30 @@ Extract three things from the user's message:
    - **A stated output path is the approval for the write.** Do not ask again at the end.
    - No path given: chat only, with an end-of-report offer to write to `docs/reviews/` (default location).
 3. **Mode**: `full` (default) or `quick`.
+4. **Subagent / model** (optional): the user may name a subagent type and/or a model for the delegates and verifiers (e.g. for cost saving). Default is the `explore` subagent with its default model. Pass a model only if the user names one, and resolve its exact `providerID/modelID` with the models tool; never guess it. The subagent must be read-only.
 
 ### Reset declaration
 Write down (privately, for Step 5) the beliefs being set aside: stated intent, PR title/description, commit messages, earlier conclusions in this conversation, and any "this was fixed / tested / unused" claims. **None of this goes to any delegate or verifier.**
 
 ## Step 2 — Cost gate (always confirm before launch)
+### Pre-gate check: is the target in a git repo?
+Before printing the plan, run `git -C <target dir> rev-parse --is-inside-work-tree` (read-only). Diff, branch, and PR targets are git by definition and skip this check.
+- **Inside a repo:** continue. Note the repo root and branch for the plan.
+- **Not a repo:** do not launch. Say so plainly in the plan, and ask the user to confirm the target is what they intended (a non-repo directory is often generated output, a backup, or a scratch area that may hold secrets or logs). Proceed only on an explicit "go" that acknowledges this. Delegates then list layout with `ls`/`find` instead of `git ls-files`.
+
+This check does not scan contents. It is only a prompt to confirm.
+
 Resolve the target and print a short plan, then wait for an explicit "go":
 
 ```
 Smooth Brain Review
 Target:   <resolved target: paths, or diff/branch/PR refs>
+Repo:     <git repo root @ branch | NOT A GIT REPO — confirm target>
 Roster:   6 delegates (Smooth Brain, Skeptic, Saboteur, Gatekeeper, Operator, Maintainer)
           [quick: 3 — Smooth Brain, Skeptic, Saboteur]
 Then:     adjudication wave (~1 verifier per High/Critical or single-lens finding, cap 8)
 Estimate: ~6 + up to 8 subagent runs
+Agent:    <subagent type, and model if one was requested | explore, default model>
 Output:   <resolved file path | chat only>
 Proceed?
 ```
@@ -65,7 +75,7 @@ Proceed?
 Echo the **resolved** output path so typos are caught before tokens are spent. One "go" approves both the launch and the file write.
 
 ## Step 3 — Convene the Congress
-Spawn all delegates **in parallel** using the `explore` subagent (read-only by construction). Each delegate starts with a fresh context.
+Spawn all delegates **in parallel** using the `explore` subagent (read-only by construction), or the subagent/model the user requested in Step 1. Each delegate starts with a fresh context. Verifiers in Step 4 use the same subagent and model.
 
 ### Neutral brief (identical for every delegate)
 Contains only:
@@ -73,8 +83,15 @@ Contains only:
 - The output schema (below).
 - The rules (below).
 - That delegate's lens charter (below).
+- A note on paths: quote or escape any path containing spaces in commands (e.g. `"/path/Personal Projects/x"`, or `\ ` inside `set rtp+=`).
 
 It must **not** contain: intent, PR/commit text, ticket links, prior findings, or anything from this conversation.
+
+### Repo layout vs. withheld material
+Delegates **may list the repo layout** (`git ls-files`, `ls`, `find`, glob) so they can tell whether files such as `plugin/`, tests, CI, or config exist. Listing names is allowed; **reading the withheld material is not.** State this explicitly in the brief:
+- Do not open or read README files, CHANGELOGs, docs, help files, prior reviews, or any other file that states intent. Their names may appear in a listing; do not read them.
+- Do not read commit messages or PR text (`git log`, `git show`, `gh pr view`).
+- Read only the target files and what is needed to confirm what exists around them.
 
 ### Rules for every delegate
 - Do not assume intent. If behavior looks deliberate, report it as **undocumented behavior**; do not excuse it.
@@ -103,10 +120,21 @@ Main agent processes the delegate output:
 1. **Cluster and dedupe** findings by location and claim.
 2. **Convergence:** a finding raised by 2+ lenses gains confidence; record which lenses.
 3. **Contested:** where lenses disagree, keep both positions side by side.
-4. **Adjudication wave:** spawn fresh, context-free `explore` verifiers (parallel) to try to **refute** each High/Critical finding and each single-lens finding.
-   - A verifier gets only the claim, the cited location, and the target access method, and must cite code evidence to refute.
+4. **Adjudication wave:** spawn fresh, context-free `explore` verifiers (parallel) to try to **refute** each of these:
+   - every High/Critical finding;
+   - every single-lens finding;
+   - every **convergent finding where all agreeing lenses marked it `inferred` or `assumed`** (agreement between guesses is not evidence); and
+   - any finding where the delegates disagree on severity by two or more levels.
+
+   A verifier gets only the claim, the cited location, and the target access method, and must cite code evidence to refute.
+   - **Verifiers may run code** to test a claim (e.g. a headless runtime, a script, a test), under these rules:
+     - Run only inside a temp directory (the environment's designated temp dir if one is given, otherwise a fresh `mktemp -d`). Copy or reference target files; do not run anything that writes into the target.
+     - Never create, edit, or delete files in the target, and leave no build artifacts, caches, or lockfiles there.
+     - Quote or escape paths containing spaces.
+     - Report the exact command and output as evidence.
    - **Confirmed** = survived refutation. **Refuted** = dropped, but counted. **Inconclusive** = moved to "Contested / unverified".
    - Cap at 8 verifiers; if more findings qualify, batch by file.
+5. **Severity re-rating (main agent):** delegates tend to inflate severity (e.g. "no tests" as High). After adjudication, set the final severity for each confirmed finding yourself, judging real-world impact, likelihood, and the size and nature of the target. Where it differs from the delegates' rating, keep the final rating and note the change and reason briefly (e.g. "High → Low: 30-line plugin"). Use the final rating in the report and file.
 
 ## Step 5 — Reconcile
 Compare the Smooth Brain summary against the beliefs set aside in the reset declaration (stated intent, PR text, prior claims). Report each mismatch: what was believed, what the code does, evidence.
