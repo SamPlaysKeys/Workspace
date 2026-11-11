@@ -22,8 +22,11 @@ docs/
 ├── guides/            # Setup and prevention guides
 │   ├── openshift/     # OpenShift / OCP how-tos (registry, GPU Operator, etc.)
 │   └── dev-environment/ # VSCode setup, local tools, etc.
-└── notes/             # Personal notes (events, etc.)
+├── talks/             # OUTDATED: archived, no longer added to
+└── notes/             # OUTDATED: archived, no longer added to
 ```
+
+> **Note:** `talks/` and `notes/` are outdated and will not be added to going forward. That information now lives in other repos or tools. Treat the existing contents as historical reference only.
 
 ## How Documentation Gets Here
 
