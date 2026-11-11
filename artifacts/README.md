@@ -16,6 +16,7 @@ artifacts/
 │   └── aap-template-export/           # Production & minimal Bash scripts + Python PoC to export AAP templates
 ├── articulate-storyline/ # Web Objects for Articulate Storyline courses
 ├── bash/                 # Shell scripts and utilities
+├── code-review/          # Smooth Brain Review skill (context-free subagent congress) + ADRs
 ├── git-workflows/        # Agent Skills for PR lifecycle (Copilot triage, PR drift synchronization)
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
 ├── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
