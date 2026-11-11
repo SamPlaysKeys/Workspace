@@ -13,6 +13,7 @@ A portable Agent Skill for a read-only, "fresh eyes" code review. It convenes a 
 ```text
 artifacts/code-review/
 ├── README.md                          # This guide
+├── comparison-with-builtin-review.md  # How this skill differs from the built-in /review command
 ├── adr/                               # Why the skill works the way it does (7 ADRs)
 └── skills/
     └── smooth-brain-review/
@@ -32,6 +33,8 @@ artifacts/code-review/
 5. Reconciles the blind read against stated intent, and reports in chat. It optionally writes one review file from the template.
 
 It never edits the code under review. See the [ADRs](adr/README.md) for the reasoning behind each choice.
+
+Already have a built-in `/review` command? See [how this skill compares](comparison-with-builtin-review.md).
 
 ---
 
