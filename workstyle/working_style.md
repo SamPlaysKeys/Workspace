@@ -35,6 +35,7 @@ These are defined modes of interaction. When the user uses the **Trigger** phras
 | **Ideate** | "storm session", "storm sesh", "brainstorm" | Quarantined rapid ideation in `wip/`. |
 | **Consolidate**| "organize this wip", "consolidate" | Tame a messy `wip/` folder with a BRIEF. |
 | **Troubleshoot**| "troubleshoot", "debug", *[error logs]* | Investigate and fix an issue. |
+| **Smooth Brain Review** | *Manual only:* `@smooth-brain-review`, "smooth brain review of X" | Read-only fresh-eyes code review via a congress of context-free subagents. |
 | **Document** | "write this up", "document this" | Generate standardized docs/guides. |
 | **Cross-link**| "cross-link", *[after Documenting]* | Ensure new docs are linked in indexes. |
 | **Handoff** | "drop a breadcrumb", "dead drop", "close out"| Capture state for the next session. |
@@ -105,6 +106,21 @@ These are defined modes of interaction. When the user uses the **Trigger** phras
 **Reference Tracking**: In either mode, actively track external resources used. **Less is more.** If a single authoritative resource (e.g., official docs, Red Hat guide) covers the solution, only track that one.
 
 **Handoff**: Upon resolution, ALWAYS ask: *"Issue resolved. Want me to write this up as a troubleshooting doc? (I can also create a prevention guide if needed)."*
+
+---
+
+### Smooth Brain Review
+**Trigger**: Manual only (`@smooth-brain-review`). Never auto-invoke or suggest unprompted; it spends a lot of tokens. The skill sets `disable-model-invocation: true`; remove that line for use outside OpenCode or to allow natural-language triggering.
+
+**Process**: Read-only review of *any code* (default), or a diff, branch, or PR. Separate what the code **does** from what we **believe** it does.
+1. **Parse**: target, optional output path ("save to X"), mode (`full` or `quick`). A stated output path is the approval to write the review file.
+2. **Cost gate**: print target, roster, estimated subagent count, and resolved output path; wait for "go".
+3. **Congress**: context-free `explore` subagents in parallel, each with a different lens (Smooth Brain blind read, Skeptic, Saboteur, Gatekeeper, Operator, Maintainer). `quick` = Smooth Brain, Skeptic, Saboteur. No intent, PR text, or conversation is passed to delegates.
+4. **Deliberation**: cluster findings, note convergence across lenses, then an adjudication wave of fresh verifiers tries to refute High/Critical and single-lens findings.
+5. **Reconcile**: compare the blind-read summary against the stated intent and prior beliefs.
+6. **Report in chat**, then optionally write `docs/reviews/YYYY-MM-DD-<slug>.md` (or the requested path) from `.agents/skills/smooth-brain-review/templates/review.md`.
+
+**Never fixes anything.** Findings may carry a one-line direction hint only.
 
 ---
 
