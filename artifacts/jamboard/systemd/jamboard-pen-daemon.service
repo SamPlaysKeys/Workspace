@@ -1,5 +1,5 @@
 [Unit]
-Description=Google Jamboard RAPT Stylus, Wedge Tilt, Eraser & Multi-Touch Daemon
+Description=Google Jamboard RAPT Stylus, Eraser & Multi-Touch Daemon
 After=jamboard-touch-init.service systemd-udevd.service
 Wants=jamboard-touch-init.service
 

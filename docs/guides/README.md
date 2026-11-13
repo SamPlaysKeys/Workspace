@@ -33,7 +33,8 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 - [Planning & Architecture Guide](./bigfix/planning.md) - Sizing, network ports, database selection, and discovery checklists for deployment.
 
 ### Hardware & Embedded Linux
-- [Fedora Workstation (GNOME) & Stylus/Eraser Bring-Up on Google Jamboard](./jamboard/fedora-gnome-and-stylus-bringup.md) - Complete two-stage plan for backing up stock Android 7, reverse-engineering the RAPT optical stylus/tilt/eraser via LineageOS ADB, and installing stock Fedora `aarch64` onto the internal 16 GB eMMC.
+- [Fedora Workstation (GNOME) & Stylus/Eraser Bring-Up on Google Jamboard](./jamboard/fedora-gnome-and-stylus-bringup.md) - Complete two-stage plan for backing up stock Android 7, reverse-engineering the RAPT optical stylus/eraser via LineageOS ADB, and installing stock Fedora `aarch64` onto the internal 16 GB eMMC.
 - [Clean-Room Reverse-Engineering Findings from Stock Google Jamboard ROM](./jamboard/stock-rom-reverse-engineering-findings.md) - Interoperability analysis of `stock-system.img` (`rapt_hid_descriptor.bin`, `libinputflinger.so` `MT_TOOL_ERASER=3`, `JamKiosk` wedge/chisel stroke math, and Google `karma` daemons).
-- [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](./jamboard/rapt-touch-and-scaler-protocol.md) - Wire-level specification for RAPT 340-byte HID Report `0xF1`, `uinput` stylus/tilt/eraser daemon setup, and MStar `/dev/ttyTHS1` 9600-baud UART brightness and HDMI/USB-C input switching.
+- [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](./jamboard/rapt-touch-and-scaler-protocol.md) - Wire-level specification for RAPT HID Report `0xF1` (340/484-byte interfaces), `uinput` stylus/eraser daemon setup, and MStar `/dev/ttyTHS1` 9600-baud UART brightness and HDMI/USB-C input switching.
+- [Live Input Capture Findings for the Google Jamboard RAPT Touch Controller](./jamboard/live-input-capture-findings.md) - Measured RAPT firmware tool classes (stylus/finger/eraser), extended HID interface, palm clustering data, and where it differs from the stock-ROM analysis.
 

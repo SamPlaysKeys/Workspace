@@ -2,8 +2,13 @@
 type: Guide
 status: Active
 system: Google Jamboard (baracus)
+category: Guides
+title: Fedora Workstation (GNOME) & Stylus/Eraser Bring-Up Plan for Google Jamboard
+tags: [jamboard, baracus, fedora, gnome, aarch64, tegra210, u-boot, lineageos, emmc, stylus, eraser, install]
+date: 2026-11-13
 related_to:
   - ./stock-rom-reverse-engineering-findings.md
+  - ./live-input-capture-findings.md
   - ./rapt-touch-and-scaler-protocol.md
 references:
   - https://wiki.lineageos.org/devices/baracus/install/
@@ -18,11 +23,11 @@ references:
 
 ## Overview
 
-This guide documents the end-to-end hardware architecture, reverse-engineering workflow, and installation procedure for running **stock Fedora Workstation (`aarch64`, GNOME on Wayland)**—with full multi-touch, passive stylus, tilt/wedge detection, physical eraser, and display backlight support—on a **Google Jamboard** (codename `baracus`).
+This guide documents the end-to-end hardware architecture, reverse-engineering workflow, and installation procedure for running **stock Fedora Workstation (`aarch64`, GNOME on Wayland)**—with full multi-touch, passive stylus, physical eraser, and display backlight support—on a **Google Jamboard** (codename `baracus`).
 
-Because the Jamboard's passive stylus and eraser currently lack complete tool-type/tilt/eraser handling in open-source ROMs, this plan uses a **two-stage execution strategy**:
+Because the Jamboard's passive stylus and eraser currently lack complete tool-type/eraser handling in open-source ROMs, this plan uses a **two-stage execution strategy**:
 
-1. **Stage 1 (LineageOS Lab & Protocol Capture):** Unlock the bootloader, back up Google's stock Android 7 partitions (preserving proprietary calibration, firmware, and the stock Jamboard APK's optical touch math), boot **LineageOS 22 (`baracus_tab`)**, and capture raw USB HID / `evdev` optical sensor data over Root ADB to build a universal `uinput` pen/tilt/eraser daemon.
+1. **Stage 1 (LineageOS Lab & Protocol Capture):** Unlock the bootloader, back up Google's stock Android 7 partitions (preserving proprietary calibration, firmware, and the stock Jamboard APK's optical touch math), boot **LineageOS 22 (`baracus_tab`)**, and capture raw USB HID / `evdev` optical sensor data over Root ADB to build a universal `uinput` pen/eraser daemon.
 2. **Stage 2 (Fedora Workstation `aarch64` Bring-Up on Internal eMMC):** Chainload a UEFI-enabled U-Boot from Google's signed `cboot` bootloader, deploy stock Fedora Workstation (GNOME Wayland) **100% onto the internal 16 GB eMMC** (`CAC` for `/boot/efi`, `APP` for `/boot`, and `UDA` with `zstd` Btrfs compression for `/`), and enable the Jamboard hardware daemons (touchscreen GPIO init, UART scaler brightness, and the pen/eraser translator).
 
 ---
@@ -39,7 +44,7 @@ Because the Jamboard's passive stylus and eraser currently lack complete tool-ty
   - **Backlight & Input Switching:** There is **no PWM/GPIO/DDC backlight**. Brightness, video source switching, and speaker unmuting are controlled via 9600-baud UART commands sent over **`/dev/ttyTHS1`** (`serial@70006040`).
 - **Optical Touchscreen ("HazelRed" / `hazeldos` — RAPT Touch InGlass):**
   - 100–120 Hz infrared optical waveguide bezel driven by an internal NXP/RAPT Touch controller (`VID:PID 1cbe:0003`) wired to internal USB host port **`usb-70090000.xusb-4`** (`usb2-3` UTMI).
-  - **Passive Stylus & Eraser:** Neither accessory contains electronics or batteries. The bezel measures the physical 2D optical shadow/ellipse on the glass (~1.5–3 mm fine stylus tip, elongated ellipse when tilted/angled, ~8–15 mm finger, ~40–60 mm eraser puck).
+  - **Passive Stylus & Eraser:** Neither accessory contains electronics or batteries. The bezel measures the physical 2D optical shadow/ellipse on the glass (~1.5–3 mm fine stylus tip, ~8–15 mm finger, ~40–60 mm eraser puck).
   - **Power/Boot Sequence Required:** On every boot, the host must toggle three Tegra GPIOs (`pwren=174` / `V6`, `bootmode=184` / `X0`, `reset=185` / `X1`) to boot the touch MCU from SPIFI flash before it enumerates on USB.
 
 ### Physical Port & Button Identification (For Hands-On Operator)
@@ -135,7 +140,7 @@ Before installing LineageOS (which overwrites `APP` `/system`), boot into Lineag
 
    sha256sum *.img > SHA256SUMS.txt
    ```
-   > **Why `stock-APP-system.img` is essential:** Mounting this `ext4` image gives us `/system/usr/idc/*.idc` (Google's exact touch calibration), `/system/bin/scalerdaemon` (all 66 UART scaler/audio/input commands), `libinputflinger.so`, and the stock **Google Jamboard APK**—which contains Google's exact mathematical formulas and size thresholds for stylus, tilt/wedge stroke width, palm rejection, and physical eraser detection!
+   > **Why `stock-APP-system.img` is essential:** Mounting this `ext4` image gives us `/system/usr/idc/*.idc` (Google's exact touch calibration), `/system/bin/scalerdaemon` (all 66 UART scaler/audio/input commands), `libinputflinger.so`, and the stock **Google Jamboard APK**—which contains Google's exact mathematical formulas and size thresholds for stylus, stroke width, palm rejection, and physical eraser detection!
 
 ### Step 1.4: Install LineageOS 22 (`baracus_tab`) & Enable Root + Wireless ADB
 1. Still in LineageOS Recovery on the Jamboard:
@@ -156,12 +161,12 @@ Before installing LineageOS (which overwrites `APP` `/system`), boot into Lineag
 
 ---
 
-### Step 1.5: Reverse-Engineering the Stylus, Tilt, & Eraser Protocol
+### Step 1.5: Reverse-Engineering the Stylus & Eraser Protocol
 
 #### Background Findings Driving the Investigation
-- The RAPT Touch USB device (`1cbe:0003` at `usb-70090000.xusb-4`) exports a massive **2,313-byte USB HID Report Descriptor** and **multiple USB HID interfaces** (`input0` and `input1`).
+- The RAPT Touch USB device (`1cbe:0003` at `usb-70090000.xusb-4`) exports large USB HID Report Descriptors (2,313 B and 3,149 B) and **multiple USB HID interfaces** (`input0` and `input1`).
 - Currently, LineageOS silences `input1` by mapping it to non-existent `display="99"` in `input-port-associations.xml` because both interfaces fire concurrently.
-- Furthermore, standard `hid-multitouch` reports contacts as generic `MT_TOOL_FINGER` with ellipse axes (`ABS_MT_TOUCH_MAJOR`, `ABS_MT_TOUCH_MINOR`, `ABS_MT_ORIENTATION`), which neither AOSP nor GNOME automatically promotes into a hardware `Stylus` or `Eraser` without either decoding the secondary HID report or running a lightweight `uinput` classifier.
+- Furthermore, standard `hid-multitouch` reports contacts as generic touches with `ABS_MT_TOUCH_MAJOR/MINOR` and no tool type, which neither AOSP nor GNOME automatically promotes into a hardware `Stylus` or `Eraser`. The live unit also exposes a second, extended 3,149-byte HID interface carrying the firmware tool class.
 
 #### A. Static Extraction from the Stock Backup (Run on Computer)
 Mount `stock-APP-system.img` read-only to extract Google's reference configs and binaries:
@@ -193,39 +198,22 @@ adb shell 'for f in /sys/kernel/debug/hid/*/rdesc; do echo "=== $f ==="; cat "$f
 ```
 *(Inspect `hid-rdesc.txt` with `hid-recorder` / `hidrd-convert` to enumerate every Digitizer, Pen, Eraser, Width/Height, Azimuth, and Vendor `0xFF00` usage across `input0`, `input1`, and `/dev/hidraw*`.)*
 
-#### C. Guided 5-Stroke Live Capture Protocol
-Run the helper command below for each of the **5 physical test gestures** (5 seconds each), saving separate log files:
+#### C. Guided Live Capture (`rapt-live-probe.sh`)
+Enable **Developer options > Rooted debugging**, run `adb root`, then use the helper script from this repo. It finds the extended RAPT `hidraw` interface, records five phases (finger, stylus, eraser/whiteboard block, palm, stylus + resting palm) as CSVs, and prints per-class statistics:
 
 ```bash
-# Usage: ./capture-gesture.sh <gesture-name>
-GESTURE="$1"
-echo "Get ready for: $GESTURE (starting in 2s, recording for 6s)..."
-sleep 2
-adb shell "timeout 6 getevent -lt > /data/local/tmp/${GESTURE}_evdev.log & \
-           for h in /dev/hidraw*; do \
-             timeout 6 od -tx1 -An -w32 \"\$h\" > /data/local/tmp/${GESTURE}_\$(basename \$h).hex & \
-           done; \
-           wait"
-adb pull /data/local/tmp/${GESTURE}_evdev.log ./
-adb pull /data/local/tmp/ ./raw-${GESTURE}/
+PROBE_SECS=12 ./artifacts/jamboard/rapt-live-probe.sh ./jamboard-probe-results
 ```
 
-Perform these **5 specific captures**:
-1. `01_finger`: Single finger tap, slow drag, and two-finger pinch/zoom.
-2. `02_stylus_90deg`: Jamboard stylus held straight (90° perpendicular to glass), drawing a horizontal and vertical line.
-3. `03_stylus_tilt_wedge`: Stylus held at ~45° tilt pointing **North**, then **East**, then **South**, then **West**, followed by dragging the **wide flat wedge/chisel side** of the tip.
-4. `04_eraser`: Jamboard physical eraser puck placed **flat** on the glass and dragged in a circle, then dragged on its **narrow edge**.
-5. `05_palm_plus_stylus`: Rest the side of your hand/palm on the glass while simultaneously writing next to it with the stylus.
+The measured results from this procedure are in [live-input-capture-findings.md](./live-input-capture-findings.md). The key result: the RAPT firmware classifies contacts itself (`1` stylus, `2` finger, `3` eraser/large) and `Width + Height` is constant per class, so no size-guessing geometry is required.
 
-#### D. Universal `jamboard-pen-daemon` (`libevdev` → `uinput`)
-Using the captured data (plus any thresholds confirmed from Google's stock APK/IDC files), we build a small static C daemon (`jamboard-pen-daemon`) that works identically on **both LineageOS and Fedora GNOME**:
-- Opens the raw RAPT `/dev/input/eventX` (and/or `/dev/hidrawX`) with `EVIOCGRAB` so duplicate raw events never leak to the OS.
+#### D. Universal `jamboard-pen-daemon` (`hidraw` -> `uinput`)
+`artifacts/jamboard/jamboard-pen-daemon.c` is a small static C daemon that works identically on **both LineageOS and Fedora GNOME**:
+- Reads RAPT `hidraw` frames directly (extended interface preferred) and grabs the raw `evdev` nodes with `EVIOCGRAB` so duplicate events never leak to the OS.
 - Exposes two clean Linux `uinput` devices (`INPUT_PROP_DIRECT`):
-  1. **Jamboard Multitouch Finger Screen:** For finger-sized contacts (~6–22 mm), forwarding multi-touch slots (`ABS_MT_POSITION_X/Y`).
-  2. **Jamboard Stylus & Eraser Digitizer:**
-     - **Fine contact (~1–4 mm)** → `BTN_TOOL_PEN` + `BTN_TOUCH` + `ABS_X/Y` + `ABS_TILT_X` / `ABS_TILT_Y` (computed from contact ellipse aspect ratio `acos(minor / major)` decomposed along `ABS_MT_ORIENTATION`, or mapped directly from RAPT's secondary HID pen report).
-     - **Eraser puck contact (~35–65 mm)** → **`BTN_TOOL_RUBBER`** + `BTN_TOUCH` + `ABS_X/Y`.
-- **Result:** Both Android (`MotionEvent.TOOL_TYPE_STYLUS` / `TOOL_TYPE_ERASER`) and Fedora GNOME Wayland (`libinput` → Rnote, Xournal++, Krita, GIMP, Firefox/Chrome Web `PointerEvent`) natively switch between Pen, Tilt, Finger, and Eraser with automatic palm rejection and zero per-app hacks.
+  1. **Jamboard RAPT Finger Touch:** finger-class contacts as 24-slot multi-touch.
+  2. **Jamboard RAPT Stylus & Eraser:** stylus-class contacts -> `BTN_TOOL_PEN` + `BTN_TOUCH` + `ABS_X/Y/PRESSURE`; eraser-class contacts (any eraser, felt block, or palm) -> **`BTN_TOOL_RUBBER`** with spatial clustering so palm wipes do not leak finger gestures.
+- **Result:** Android (`TOOL_TYPE_STYLUS` / `TOOL_TYPE_ERASER`) and Fedora GNOME Wayland (`libinput` tablet tools) switch between Pen, Finger, and Eraser with no per-app hacks. Stylus tilt/wedge handling is not implemented (the optical bezel reports no tilt).
 
 ---
 
@@ -516,6 +504,7 @@ fastboot reboot
 
 ## Related
 
-- [Clean-Room Reverse-Engineering Findings from Stock Google Jamboard ROM](./stock-rom-reverse-engineering-findings.md) - Full findings from `stock-system.img` explaining why unpatched `hid-multitouch` drops RAPT `Vendor 0xFF00:0x0001` and how passive wedge strokes work.
+- [Clean-Room Reverse-Engineering Findings from Stock Google Jamboard ROM](./stock-rom-reverse-engineering-findings.md) - Full findings from `stock-system.img` explaining why unpatched `hid-multitouch` drops the RAPT vendor fields and how stock Jamboard handled erasers and palms.
+- [Live Input Capture Findings (LineageOS)](./live-input-capture-findings.md) - Measured RAPT firmware tool classes, extended HID interface, and daemon design inputs.
 - [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](./rapt-touch-and-scaler-protocol.md) - Byte-level HID Report `0xF1` and `/dev/ttyTHS1` scaler protocol specs + daemon configuration.
 - [`artifacts/jamboard/`](../../../artifacts/jamboard/README.md) - Ready-to-use `rapt-live-probe.sh`, `jamboard-pen-daemon.c`, `jamboard-scaler.sh`, and `systemd` service units.

@@ -1,0 +1,1069 @@
+UsagePage Digitizers
+Local0 0x4
+Collection 1
+  ReportID 241
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[0..0] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1..7] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[8..15] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[16..31] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[32..47] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[48..63] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[64..79] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[80..95] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[96..111] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[112..112] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[113..119] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[120..127] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[128..143] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[144..159] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[160..175] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[176..191] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[192..207] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[208..223] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[224..224] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[225..231] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[232..239] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[240..255] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[256..271] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[272..287] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[288..303] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[304..319] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[320..335] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[336..336] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[337..343] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[344..351] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[352..367] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[368..383] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[384..399] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[400..415] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[416..431] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[432..447] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[448..448] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[449..455] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[456..463] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[464..479] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[480..495] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[496..511] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[512..527] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[528..543] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[544..559] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[560..560] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[561..567] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[568..575] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[576..591] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[592..607] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[608..623] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[624..639] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[640..655] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[656..671] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[672..672] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[673..679] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[680..687] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[688..703] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[704..719] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[720..735] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[736..751] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[752..767] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[768..783] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[784..784] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[785..791] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[792..799] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[800..815] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[816..831] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[832..847] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[848..863] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[864..879] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[880..895] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[896..896] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[897..903] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[904..911] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[912..927] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[928..943] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[944..959] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[960..975] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[976..991] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[992..1007] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1008..1008] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1009..1015] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1016..1023] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1024..1039] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1040..1055] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1056..1071] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1072..1087] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1088..1103] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1104..1119] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1120..1120] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1121..1127] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1128..1135] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1136..1151] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1152..1167] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1168..1183] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1184..1199] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1200..1215] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1216..1231] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1232..1232] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1233..1239] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1240..1247] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1248..1263] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1264..1279] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1280..1295] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1296..1311] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1312..1327] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1328..1343] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1344..1344] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1345..1351] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1352..1359] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1360..1375] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1376..1391] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1392..1407] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1408..1423] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1424..1439] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1440..1455] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1456..1456] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1457..1463] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1464..1471] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1472..1487] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1488..1503] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1504..1519] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1520..1535] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1536..1551] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1552..1567] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1568..1568] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1569..1575] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1576..1583] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1584..1599] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1600..1615] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1616..1631] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1632..1647] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1648..1663] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1664..1679] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1680..1680] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1681..1687] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1688..1695] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1696..1711] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1712..1727] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1728..1743] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1744..1759] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1760..1775] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1776..1791] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1792..1792] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1793..1799] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1800..1807] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1808..1823] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1824..1839] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1840..1855] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1856..1871] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1872..1887] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[1888..1903] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[1904..1904] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[1905..1911] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[1912..1919] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[1920..1935] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[1936..1951] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[1952..1967] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[1968..1983] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[1984..1999] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2000..2015] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2016..2016] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2017..2023] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2024..2031] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2032..2047] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2048..2063] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2064..2079] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2080..2095] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2096..2111] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2112..2127] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2128..2128] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2129..2135] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2136..2143] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2144..2159] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2160..2175] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2176..2191] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2192..2207] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2208..2223] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2224..2239] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2240..2240] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2241..2247] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2248..2255] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2256..2271] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2272..2287] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2288..2303] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2304..2319] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2320..2335] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2336..2351] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2352..2352] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2353..2359] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2360..2367] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2368..2383] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2384..2399] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2400..2415] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2416..2431] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2432..2447] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2448..2463] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2464..2464] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2465..2471] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2472..2479] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2480..2495] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2496..2511] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2512..2527] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2528..2543] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2544..2559] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2560..2575] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x22
+  Collection 2
+    Local0 0x42
+    LogMin 0
+    LogMax 1
+    ReportSize 1
+    ReportCount 1
+    Input rid=241 bits[2576..2576] usages=['0x42'] up=Digitizers
+    ReportCount 7
+    Input rid=241 bits[2577..2583] usages=[] up=Digitizers CONST
+    ReportSize 8
+    Local0 0x51
+    ReportCount 1
+    Input rid=241 bits[2584..2591] usages=['0x51'] up=Digitizers
+    UsagePage Generic Desktop
+    ReportSize 16
+    UnitExp 14
+    Unit 17
+    Local0 0x30
+    LogMin 0
+    LogMax 29999
+    PhysMin 0
+    PhysMax 12076
+    Input rid=241 bits[2592..2607] usages=['0x30'] up=Generic Desktop
+    Local0 0x31
+    LogMax 29999
+    PhysMax 6784
+    Input rid=241 bits[2608..2623] usages=['0x31'] up=Generic Desktop
+    UsagePage Digitizers
+    Local0 0x48
+    LogMax 14999
+    Input rid=241 bits[2624..2639] usages=['0x48'] up=Digitizers
+    Local0 0x49
+    Input rid=241 bits[2640..2655] usages=['0x49'] up=Digitizers
+    Local0 0x30
+    LogMax 29999
+    Input rid=241 bits[2656..2671] usages=['0x30'] up=Digitizers
+    UsagePage Vendor FF00
+    Local0 0x1
+    LogMax 14999
+    Input rid=241 bits[2672..2687] usages=['0x1'] up=Vendor FF00
+  End
+  UsagePage Digitizers
+  Local0 0x54
+  ReportCount 1
+  ReportSize 8
+  LogMin 0
+  LogMax 24
+  Input rid=241 bits[2688..2695] usages=['0x54'] up=Digitizers
+  UnitExp 12
+  Unit 4097
+  PhysMax 65535
+  LogMax 65535
+  ReportSize 16
+  ReportCount 1
+  Local0 0x56
+  Input rid=241 bits[2696..2711] usages=['0x56'] up=Digitizers
+  ReportID 242
+  UsagePage Digitizers
+  Local0 0x55
+  ReportCount 1
+  ReportSize 8
+  LogMin 0
+  LogMax 24
+  Feature rid=242 bits[0..7] usages=['0x55'] up=Digitizers
+  ReportID 68
+  UsagePage Vendor FF00
+  Local0 0xc5
+  LogMin 0
+  LogMax 255
+  ReportSize 8
+  ReportCount 256
+  Feature rid=68 bits[0..2047] usages=['0xc5'] up=Vendor FF00
+End
+{241: {8: 339}, 242: {11: 1}, 68: {11: 256}}

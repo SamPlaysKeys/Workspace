@@ -2,22 +2,33 @@
  * jamboard-pen-daemon.c — Google Jamboard (baracus) RAPT Optical Stylus/Touch Daemon
  *
  * Clean-room Linux/Android user-space driver for the Google Jamboard's RAPT Touch
- * ("HazelRed" / hazeldos, VID:PID 1cbe:0003 or 2986:0137) optical InGlass bezel.
+ * ("HazelRed" / hazeldos, VID:PID 2986:0137 or 1cbe:0003) optical InGlass bezel.
  *
  * Why this daemon is needed:
- *   1. The RAPT controller streams 340-byte HID Input Reports (Report ID 0xF1)
- *      containing 24 x 14-byte contact slots. Each slot carries X, Y, Width,
- *      Height, Tip Pressure, and a custom 16-bit field (Vendor 0xFF00:0x0001) at
- *      bytes +12..+13, all wrapped inside Logical Collection (Finger).
- *   2. Unmodified Linux hid-multitouch ignores 0xFF00:0x0001, hardcodes every
- *      contact to MT_TOOL_FINGER, and exposes duplicate evdev nodes (input0/input1).
+ *   1. The RAPT controller exposes two HID interfaces on the same USB device,
+ *      both streaming Input Report 0xF1 (24 contact slots):
+ *        - Basic    (rdesc 2313 B): 340-byte report,  14-byte contacts.
+ *        - Extended (rdesc 3149 B): 484-byte report,  20-byte contacts, where
+ *          byte 0 = bit0 Tip Switch | bits1..7 = Vendor 0xFF00:0x02 CONTACT CLASS
+ *          (1 = stylus, 2 = finger, 3 = eraser / large object). The extended
+ *          interface also streams Report 0xF6 (103 B contamination map), which
+ *          this daemon ignores.
+ *   2. Unmodified Linux hid-multitouch ignores the vendor class, hardcodes every
+ *      contact to MT_TOOL_FINGER, and exposes both interfaces as evdev nodes.
  *   3. This daemon grabs the raw kernel evdev nodes (EVIOCGRAB), parses Report
  *      0xF1 directly from /dev/hidraw*, and exposes two clean uinput devices:
  *        - "Jamboard RAPT Finger Touch" (24-slot Type-B Direct Multi-Touch)
  *        - "Jamboard RAPT Stylus & Eraser" (Direct Pen/Rubber Tablet with
- *          BTN_TOOL_PEN, BTN_TOOL_RUBBER, optical wedge ABS_PRESSURE +
- *          synthesized ABS_TILT_X / ABS_TILT_Y, open-ended universal eraser
- *          sizing, and spatial palm/whiteboard-block contact clustering)
+ *          BTN_TOOL_PEN / BTN_TOOL_RUBBER, ABS_PRESSURE, open-ended universal
+ *          eraser, and spatial palm/whiteboard-block contact clustering)
+ *
+ * Classification (measured on live LineageOS 22.2 firmware, see
+ * docs/guides/jamboard/live-input-capture-findings.md):
+ *   - Extended interface: use the firmware class from byte 0 bits 1..7.
+ *   - Basic interface (or --sum-classifier): Width + Height is constant per class
+ *     (stylus 12000, finger 26998, eraser 29998), so thresholds on Width + Height
+ *     reproduce the firmware class exactly.
+ *   - Width/Height are NOT physical millimetres; Height is an opaque size measure.
  *
  * Build (Fedora aarch64):
  *   gcc -O2 -Wall -Wextra -o jamboard-pen-daemon jamboard-pen-daemon.c -lm
@@ -52,45 +63,50 @@
 #define RAPT_PID_GENERIC      0x0137
 
 #define RAPT_REPORT_ID        0xF1
-#define RAPT_REPORT_LEN       340
 #define RAPT_MAX_SLOTS        24
-#define RAPT_RDESC_TARGET_LEN 2313
+#define RAPT_RDESC_BASIC_LEN  2313
+#define RAPT_RDESC_EXT_LEN    3149
 
-/* Physical active area from rapt_hid_descriptor.bin: 1210.0 mm x 680.0 mm */
+/* Physical active area from the live report descriptors: 1207.6 mm x 678.4 mm */
 #define RAPT_LOGICAL_MAX_XY   29999
 #define RAPT_LOGICAL_MAX_WH   14999
 #define RAPT_LOGICAL_MAX_P    29999
-#define RAPT_PHYS_WIDTH_MM    1210.0f
-#define RAPT_PHYS_HEIGHT_MM   680.0f
-#define RAPT_RES_X_UNITS_MM   25  /* ~29999 / 1210 mm */
-#define RAPT_RES_Y_UNITS_MM   44  /* ~29999 / 680 mm  */
+#define RAPT_PHYS_WIDTH_MM    1207.6f
+#define RAPT_PHYS_HEIGHT_MM   678.4f
+#define RAPT_RES_X_UNITS_MM   25  /* ~29999 / 1207.6 mm */
+#define RAPT_RES_Y_UNITS_MM   44  /* ~29999 / 678.4 mm  */
 
 #define MAX_GRABBED_EVDEV     8
 
 enum tool_kind {
     TOOL_NONE   = 0,
-    TOOL_FINGER = 1,
-    TOOL_STYLUS = 2,
+    TOOL_STYLUS = 1,
+    TOOL_FINGER = 2,
     TOOL_ERASER = 3,
 };
+
+struct frame_layout {
+    const char *name;
+    int report_len;
+    int contact_len;
+    int count_off;
+    int scan_off;
+    bool has_fw_class;
+};
+
+static const struct frame_layout LAYOUT_BASIC = {"basic",    340, 14, 337, 338, false};
+static const struct frame_layout LAYOUT_EXT   = {"extended", 484, 20, 481, 482, true};
 
 struct daemon_cfg {
     const char *hidraw_path;
     bool grab_evdev;
     bool dump_frames;
     bool verbose;
-    bool geometry_fallback;
-    bool use_norm_bands;
-    int vendor_stylus;
-    int vendor_eraser;
-    int vendor_eraser_alt;
-    float stylus_max_minor_mm;
-    float wedge_start_mm;
-    float wedge_full_mm;
-    float eraser_min_mm;
+    bool sum_classifier;
+    int sum_stylus_max;
+    int sum_finger_max;
+    float eraser_base_mm;
     float eraser_cluster_mm;
-    float norm_stylus_max;
-    float norm_eraser_min;
     float latch_radius_mm;
     int latch_ms;
 };
@@ -98,19 +114,15 @@ struct daemon_cfg {
 struct contact_raw {
     bool active;
     uint8_t cid;
+    uint8_t fw_class;
     uint16_t x;
     uint16_t y;
     uint16_t w;
     uint16_t h;
     uint16_t pressure;
-    uint16_t vendor01;
     float x_mm;
     float y_mm;
-    float w_mm;
-    float h_mm;
-    float major_mm;
-    float minor_mm;
-    float norm_size;
+    enum tool_kind cls;
 };
 
 struct slot_tracker {
@@ -156,45 +168,51 @@ static int emit_event(int fd, uint16_t type, uint16_t code, int32_t value) {
     return write(fd, &ev, sizeof(ev)) == (ssize_t)sizeof(ev) ? 0 : -1;
 }
 
-static int find_rapt_hidraw(char *out_path, size_t out_len) {
-    DIR *dir = opendir("/dev");
-    if (!dir) return -1;
+static const struct frame_layout *layout_for_rdesc(int rdesc_size) {
+    if (rdesc_size == RAPT_RDESC_EXT_LEN) return &LAYOUT_EXT;
+    if (rdesc_size == RAPT_RDESC_BASIC_LEN) return &LAYOUT_BASIC;
+    return NULL;
+}
 
-    char best_fallback[128] = {0};
+/* Prefer the extended (3149-byte) interface because it carries the firmware class. */
+static const struct frame_layout *find_rapt_hidraw(char *out_path, size_t out_len) {
+    DIR *dir = opendir("/dev");
+    if (!dir) return NULL;
+
+    char basic_path[128] = {0};
     struct dirent *de;
     while ((de = readdir(dir)) != NULL) {
         if (strncmp(de->d_name, "hidraw", 6) != 0) continue;
 
         char cand[128];
         snprintf(cand, sizeof(cand), "/dev/%s", de->d_name);
-        int fd = open(cand, O_RDWR | O_NONBLOCK);
-        if (fd < 0) fd = open(cand, O_RDONLY | O_NONBLOCK);
+        int fd = open(cand, O_RDONLY | O_NONBLOCK);
         if (fd < 0) continue;
 
         struct hidraw_devinfo info;
         int rdesc_size = 0;
         if (ioctl(fd, HIDIOCGRAWINFO, &info) == 0 &&
-            is_rapt_vid_pid(info.vendor & 0xFFFF, info.product & 0xFFFF)) {
-            if (ioctl(fd, HIDIOCGRDESCSIZE, &rdesc_size) == 0 &&
-                rdesc_size == RAPT_RDESC_TARGET_LEN) {
+            is_rapt_vid_pid(info.vendor & 0xFFFF, info.product & 0xFFFF) &&
+            ioctl(fd, HIDIOCGRDESCSIZE, &rdesc_size) == 0) {
+            if (rdesc_size == RAPT_RDESC_EXT_LEN) {
                 snprintf(out_path, out_len, "%s", cand);
                 close(fd);
                 closedir(dir);
-                return 0;
+                return &LAYOUT_EXT;
             }
-            if (best_fallback[0] == '\0' && rdesc_size >= 500) {
-                snprintf(best_fallback, sizeof(best_fallback), "%s", cand);
+            if (rdesc_size == RAPT_RDESC_BASIC_LEN && basic_path[0] == '\0') {
+                snprintf(basic_path, sizeof(basic_path), "%s", cand);
             }
         }
         close(fd);
     }
     closedir(dir);
 
-    if (best_fallback[0] != '\0') {
-        snprintf(out_path, out_len, "%s", best_fallback);
-        return 0;
+    if (basic_path[0] != '\0') {
+        snprintf(out_path, out_len, "%s", basic_path);
+        return &LAYOUT_BASIC;
     }
-    return -1;
+    return NULL;
 }
 
 static size_t grab_rapt_evdev_nodes(int *grab_fds, size_t max_fds, bool verbose) {
@@ -258,9 +276,8 @@ static int create_finger_uinput(void) {
     setup_abs(ufd, ABS_MT_TRACKING_ID, 0, 65535, 0);
     setup_abs(ufd, ABS_MT_POSITION_X, 0, RAPT_LOGICAL_MAX_XY, RAPT_RES_X_UNITS_MM);
     setup_abs(ufd, ABS_MT_POSITION_Y, 0, RAPT_LOGICAL_MAX_XY, RAPT_RES_Y_UNITS_MM);
-    setup_abs(ufd, ABS_MT_TOUCH_MAJOR, 0, RAPT_LOGICAL_MAX_WH, RAPT_RES_X_UNITS_MM);
-    setup_abs(ufd, ABS_MT_TOUCH_MINOR, 0, RAPT_LOGICAL_MAX_WH, RAPT_RES_X_UNITS_MM);
-    setup_abs(ufd, ABS_MT_ORIENTATION, -90, 90, 0);
+    setup_abs(ufd, ABS_MT_TOUCH_MAJOR, 0, RAPT_LOGICAL_MAX_WH, 0);
+    setup_abs(ufd, ABS_MT_TOUCH_MINOR, 0, RAPT_LOGICAL_MAX_WH, 0);
     setup_abs(ufd, ABS_MT_PRESSURE, 0, RAPT_LOGICAL_MAX_P, 0);
 
     struct uinput_setup usetup;
@@ -292,8 +309,6 @@ static int create_pen_uinput(void) {
     setup_abs(ufd, ABS_X, 0, RAPT_LOGICAL_MAX_XY, RAPT_RES_X_UNITS_MM);
     setup_abs(ufd, ABS_Y, 0, RAPT_LOGICAL_MAX_XY, RAPT_RES_Y_UNITS_MM);
     setup_abs(ufd, ABS_PRESSURE, 0, 4095, 0);
-    setup_abs(ufd, ABS_TILT_X, -90, 90, 0);
-    setup_abs(ufd, ABS_TILT_Y, -90, 90, 0);
 
     struct uinput_setup usetup;
     memset(&usetup, 0, sizeof(usetup));
@@ -310,112 +325,75 @@ static int create_pen_uinput(void) {
     return ufd;
 }
 
-static bool is_eraser_sized(const struct contact_raw *c, const struct daemon_cfg *cfg) {
-    if (cfg->use_norm_bands) {
-        /* Stock JamKiosk DrawingController::TouchTypeFromSize(float) @ 0x00474714:
-         * open-ended [0.475f, +inf) matches puck, any whiteboard block, or palm heel */
-        return c->norm_size >= cfg->norm_eraser_min;
-    }
-    /* Open-ended physical threshold [eraser_min_mm, +inf) — no upper cap */
-    return c->major_mm >= cfg->eraser_min_mm;
+static enum tool_kind class_from_sum(const struct contact_raw *c, const struct daemon_cfg *cfg) {
+    int sum = (int)c->w + (int)c->h;
+    if (sum < cfg->sum_stylus_max) return TOOL_STYLUS;
+    if (sum < cfg->sum_finger_max) return TOOL_FINGER;
+    return TOOL_ERASER;
 }
 
-static enum tool_kind classify_new_contact(const struct contact_raw *c,
-                                           const struct daemon_cfg *cfg,
-                                           const struct tool_latch *latch,
-                                           int64_t ts_ms) {
-    /* 1. Spatial/temporal bounce latch (mirrors stock mEraserLatchRange / mEraserDelayTime) */
-    if (latch->kind != TOOL_NONE && (ts_ms - latch->last_seen_ms) <= cfg->latch_ms) {
-        float dx = c->x_mm - latch->x_mm;
-        float dy = c->y_mm - latch->y_mm;
-        if (hypotf(dx, dy) <= cfg->latch_radius_mm) {
-            return latch->kind;
-        }
+static enum tool_kind classify_contact(const struct contact_raw *c,
+                                       const struct frame_layout *layout,
+                                       const struct daemon_cfg *cfg) {
+    if (layout->has_fw_class && !cfg->sum_classifier &&
+        c->fw_class >= TOOL_STYLUS && c->fw_class <= TOOL_ERASER) {
+        return (enum tool_kind)c->fw_class;
     }
+    return class_from_sum(c, cfg);
+}
 
-    /* 2. Hardware RAPT Vendor 0xFF00:0x0001 classification */
-    if (c->vendor01 != 0) {
-        if ((int)c->vendor01 == cfg->vendor_eraser ||
-            (cfg->vendor_eraser_alt >= 0 && (int)c->vendor01 == cfg->vendor_eraser_alt)) {
-            return TOOL_ERASER;
-        }
-        if ((int)c->vendor01 == cfg->vendor_stylus) {
-            return TOOL_STYLUS;
-        }
-    }
-
-    /* 3. Open-ended Universal Eraser & Stylus size bands */
-    if (is_eraser_sized(c, cfg)) {
+/* New contacts landing next to a just-lifted eraser stay erasers (mirrors the stock
+ * mEraserLatchRange / mEraserDelayTime behaviour in libinputflinger). */
+static enum tool_kind apply_eraser_latch(enum tool_kind cls,
+                                         const struct contact_raw *c,
+                                         const struct daemon_cfg *cfg,
+                                         const struct tool_latch *latch,
+                                         int64_t ts_ms) {
+    if (cls != TOOL_ERASER && latch->kind == TOOL_ERASER &&
+        (ts_ms - latch->last_seen_ms) <= cfg->latch_ms &&
+        hypotf(c->x_mm - latch->x_mm, c->y_mm - latch->y_mm) <= cfg->latch_radius_mm) {
         return TOOL_ERASER;
     }
-    if (cfg->use_norm_bands) {
-        if (c->norm_size > 0.0f && c->norm_size < cfg->norm_stylus_max) {
-            return TOOL_STYLUS;
-        }
-        return TOOL_FINGER;
-    }
-    if (cfg->geometry_fallback && c->minor_mm > 0.1f && c->minor_mm <= cfg->stylus_max_minor_mm) {
-        return TOOL_STYLUS;
-    }
-
-    return TOOL_FINGER;
+    return cls;
 }
 
-static int32_t compute_eraser_pressure(float span_mm, float min_mm) {
-    /* Map eraser diameter / palm cluster span [min_mm .. 180mm] -> [1200 .. 4095]
+static int32_t compute_eraser_pressure(float span_mm, float base_mm) {
+    /* Map eraser cluster span [base_mm .. 180mm] -> [1200 .. 4095]
      * so pressure-sensitive whiteboard apps widen the eraser swath for palms & blocks */
-    float denom = 180.0f - min_mm;
+    float denom = 180.0f - base_mm;
     if (denom < 10.0f) denom = 10.0f;
-    float t = (span_mm - min_mm) / denom;
+    float t = (span_mm - base_mm) / denom;
     if (t < 0.0f) t = 0.0f;
     if (t > 1.0f) t = 1.0f;
     return 1200 + (int32_t)lrintf(t * 2895.0f);
-}
-
-static void compute_stylus_tilt(const struct contact_raw *c,
-                                const struct daemon_cfg *cfg,
-                                int32_t *tilt_x,
-                                int32_t *tilt_y) {
-    *tilt_x = 0;
-    *tilt_y = 0;
-
-    /* Below wedge_start_mm (~4.7 mm = 15 px on 4K), stylus is upright fine-tip */
-    if (c->major_mm <= cfg->wedge_start_mm) {
-        return;
-    }
-
-    float t = (c->major_mm - cfg->wedge_start_mm) /
-              (cfg->wedge_full_mm - cfg->wedge_start_mm);
-    if (t < 0.0f) t = 0.0f;
-    if (t > 1.0f) t = 1.0f;
-
-    float deg = t * 70.0f; /* 0..70 degrees tilt shading */
-    float sum = c->w_mm + c->h_mm;
-    if (sum < 0.1f) sum = 0.1f;
-
-    *tilt_x = (int32_t)lrintf(deg * (c->w_mm / sum));
-    *tilt_y = (int32_t)lrintf(deg * (c->h_mm / sum));
 }
 
 static uint16_t get_u16_le(const uint8_t *p) {
     return (uint16_t)p[0] | ((uint16_t)p[1] << 8);
 }
 
+static const char *kind_name(enum tool_kind k) {
+    switch (k) {
+        case TOOL_STYLUS: return "STYLUS";
+        case TOOL_FINGER: return "FINGER";
+        case TOOL_ERASER: return "ERASER";
+        default:          return "NONE";
+    }
+}
+
 static void usage(const char *prog) {
     fprintf(stderr,
         "Usage: %s [options]\n\n"
         "Options:\n"
-        "  --hidraw <path>            Explicit /dev/hidrawX path (auto-detected by default)\n"
+        "  --hidraw <path>            Explicit /dev/hidrawX path (auto-detected by default;\n"
+        "                             the 3149-byte extended interface is preferred)\n"
         "  --no-grab                  Do not EVIOCGRAB raw RAPT kernel evdev nodes\n"
         "  --dump                     Print decoded active contacts to stdout\n"
         "  --verbose                  Verbose startup and tool transition logging\n"
-        "  --no-geometry-fallback     Classify stylus strictly from Vendor 0xFF00:0x0001\n"
-        "  --use-norm-bands           Use stock JamKiosk normalized avg(W,H)/14999 bands\n"
-        "                             (<0.40 stylus, 0.40..0.475 finger, >=0.475 eraser)\n"
-        "  --vendor-stylus <int>      Vendor 0xFF00:0x0001 value for Stylus (default: 1)\n"
-        "  --vendor-eraser <int>      Vendor 0xFF00:0x0001 value for Eraser (default: 3)\n"
-        "  --stylus-minor-mm <float>  Max minor-axis mm for passive stylus (default: 4.6)\n"
-        "  --eraser-min-mm <float>    Min major-axis mm for any eraser/palm (default: 32.0)\n"
+        "  --sum-classifier           Ignore the firmware class; classify by Width+Height\n"
+        "  --sum-stylus-max <int>     Width+Height below this is a stylus (default: 18000)\n"
+        "  --sum-finger-max <int>     Width+Height below this is a finger, else eraser (default: 27000)\n"
+        "  --eraser-base-mm <float>   Nominal eraser size used for swath pressure (default: 40.0)\n"
         "  --eraser-cluster-mm <flt>  Capture radius mm to merge palm/block blobs (default: 70.0)\n"
         "  -h, --help                 Show this help\n",
         prog);
@@ -423,55 +401,44 @@ static void usage(const char *prog) {
 
 int main(int argc, char **argv) {
     struct daemon_cfg cfg = {
-        .hidraw_path         = NULL,
-        .grab_evdev          = true,
-        .dump_frames         = false,
-        .verbose             = false,
-        .geometry_fallback   = true,
-        .use_norm_bands      = false,
-        .vendor_stylus       = 1,
-        .vendor_eraser       = 3,
-        .vendor_eraser_alt   = -1,
-        .stylus_max_minor_mm = 4.6f,
-        .wedge_start_mm      = 4.7f,
-        .wedge_full_mm       = 18.5f,
-        .eraser_min_mm       = 32.0f,
-        .eraser_cluster_mm   = 70.0f,
-        .norm_stylus_max     = 0.40f,
-        .norm_eraser_min     = 0.475f,
-        .latch_radius_mm     = 55.0f,
-        .latch_ms            = 150,
+        .hidraw_path       = NULL,
+        .grab_evdev        = true,
+        .dump_frames       = false,
+        .verbose           = false,
+        .sum_classifier    = false,
+        .sum_stylus_max    = 18000,
+        .sum_finger_max    = 27000,
+        .eraser_base_mm    = 40.0f,
+        .eraser_cluster_mm = 70.0f,
+        .latch_radius_mm   = 55.0f,
+        .latch_ms          = 150,
     };
 
     static const struct option long_opts[] = {
-        {"hidraw",               required_argument, NULL, 'd'},
-        {"no-grab",              no_argument,       NULL, 'G'},
-        {"dump",                 no_argument,       NULL, 'D'},
-        {"verbose",              no_argument,       NULL, 'v'},
-        {"no-geometry-fallback", no_argument,       NULL, 'F'},
-        {"use-norm-bands",       no_argument,       NULL, 'N'},
-        {"vendor-stylus",        required_argument, NULL, 's'},
-        {"vendor-eraser",        required_argument, NULL, 'e'},
-        {"stylus-minor-mm",      required_argument, NULL, 'm'},
-        {"eraser-min-mm",        required_argument, NULL, 'E'},
-        {"eraser-cluster-mm",    required_argument, NULL, 'C'},
-        {"help",                 no_argument,       NULL, 'h'},
+        {"hidraw",             required_argument, NULL, 'd'},
+        {"no-grab",            no_argument,       NULL, 'G'},
+        {"dump",               no_argument,       NULL, 'D'},
+        {"verbose",            no_argument,       NULL, 'v'},
+        {"sum-classifier",     no_argument,       NULL, 'S'},
+        {"sum-stylus-max",     required_argument, NULL, 's'},
+        {"sum-finger-max",     required_argument, NULL, 'f'},
+        {"eraser-base-mm",     required_argument, NULL, 'B'},
+        {"eraser-cluster-mm",  required_argument, NULL, 'C'},
+        {"help",               no_argument,       NULL, 'h'},
         {NULL, 0, NULL, 0}
     };
 
     int opt;
-    while ((opt = getopt_long(argc, argv, "d:GDvFNs:e:m:E:C:h", long_opts, NULL)) != -1) {
+    while ((opt = getopt_long(argc, argv, "d:GDvSs:f:B:C:h", long_opts, NULL)) != -1) {
         switch (opt) {
             case 'd': cfg.hidraw_path = optarg; break;
             case 'G': cfg.grab_evdev = false; break;
             case 'D': cfg.dump_frames = true; break;
             case 'v': cfg.verbose = true; break;
-            case 'F': cfg.geometry_fallback = false; break;
-            case 'N': cfg.use_norm_bands = true; break;
-            case 's': cfg.vendor_stylus = atoi(optarg); break;
-            case 'e': cfg.vendor_eraser = atoi(optarg); break;
-            case 'm': cfg.stylus_max_minor_mm = strtof(optarg, NULL); break;
-            case 'E': cfg.eraser_min_mm = strtof(optarg, NULL); break;
+            case 'S': cfg.sum_classifier = true; break;
+            case 's': cfg.sum_stylus_max = atoi(optarg); break;
+            case 'f': cfg.sum_finger_max = atoi(optarg); break;
+            case 'B': cfg.eraser_base_mm = strtof(optarg, NULL); break;
             case 'C': cfg.eraser_cluster_mm = strtof(optarg, NULL); break;
             case 'h':
             default:
@@ -483,10 +450,12 @@ int main(int argc, char **argv) {
     signal(SIGINT, on_signal);
     signal(SIGTERM, on_signal);
 
+    const struct frame_layout *layout = NULL;
     char auto_hidraw[128] = {0};
     if (!cfg.hidraw_path) {
-        if (find_rapt_hidraw(auto_hidraw, sizeof(auto_hidraw)) < 0) {
-            fprintf(stderr, "[jamboard-pen] ERROR: RAPT hidraw device not found.\n");
+        layout = find_rapt_hidraw(auto_hidraw, sizeof(auto_hidraw));
+        if (!layout) {
+            fprintf(stderr, "[jamboard-pen] ERROR: RAPT hidraw device not found (need root?).\n");
             return 1;
         }
         cfg.hidraw_path = auto_hidraw;
@@ -497,6 +466,18 @@ int main(int argc, char **argv) {
     if (hid_fd < 0) {
         perror("[jamboard-pen] open hidraw");
         return 1;
+    }
+
+    if (!layout) {
+        int rdesc_size = 0;
+        ioctl(hid_fd, HIDIOCGRDESCSIZE, &rdesc_size);
+        layout = layout_for_rdesc(rdesc_size);
+        if (!layout) {
+            fprintf(stderr,
+                    "[jamboard-pen] WARNING: unexpected report descriptor size %d; assuming basic layout.\n",
+                    rdesc_size);
+            layout = &LAYOUT_BASIC;
+        }
     }
 
     /* Ensure RAPT max contact count (Feature Report 0xF2 = 24) is enabled */
@@ -517,8 +498,10 @@ int main(int argc, char **argv) {
     }
 
     fprintf(stderr,
-            "[jamboard-pen] Active on %s (grabbed %zu raw evdev node(s)). Streaming to uinput.\n",
-            cfg.hidraw_path, num_grabbed);
+            "[jamboard-pen] Active on %s (%s layout, %s classifier, grabbed %zu raw evdev node(s)). Streaming to uinput.\n",
+            cfg.hidraw_path, layout->name,
+            (layout->has_fw_class && !cfg.sum_classifier) ? "firmware" : "Width+Height",
+            num_grabbed);
 
     struct slot_tracker slots[RAPT_MAX_SLOTS];
     memset(slots, 0, sizeof(slots));
@@ -526,7 +509,7 @@ int main(int argc, char **argv) {
     int next_tracking_id = 1;
     enum tool_kind prev_pen_tool = TOOL_NONE;
 
-    uint8_t buf[512];
+    uint8_t buf[1024];
     while (!g_stop) {
         ssize_t r = read(hid_fd, buf, sizeof(buf));
         if (r < 0) {
@@ -534,38 +517,35 @@ int main(int argc, char **argv) {
             perror("[jamboard-pen] hidraw read");
             break;
         }
-        if (r < RAPT_REPORT_LEN || buf[0] != RAPT_REPORT_ID) {
+        /* Skips Report 0xF6 (contamination map) and any short/foreign reports */
+        if (r < layout->report_len || buf[0] != RAPT_REPORT_ID) {
             continue;
         }
 
         int64_t ts = now_ms();
-        uint8_t contact_count = buf[337];
-        uint16_t scan_time = get_u16_le(&buf[338]);
+        uint8_t contact_count = buf[layout->count_off];
+        uint16_t scan_time = get_u16_le(&buf[layout->scan_off]);
 
         struct contact_raw contacts[RAPT_MAX_SLOTS];
         int seed_eraser_slot = -1;
-        float seed_eraser_major = -1.0f;
+        uint16_t seed_eraser_size = 0;
 
         /* Pass 1: Decode all 24 slots, retire lifted contacts, and classify tools */
         for (int i = 0; i < RAPT_MAX_SLOTS; i++) {
-            const uint8_t *s = &buf[1 + i * 14];
+            const uint8_t *s = &buf[1 + i * layout->contact_len];
             struct contact_raw *c = &contacts[i];
             c->active    = (s[0] & 0x01) != 0;
+            c->fw_class  = layout->has_fw_class ? (s[0] >> 1) : 0;
             c->cid       = s[1];
             c->x         = get_u16_le(&s[2]);
             c->y         = get_u16_le(&s[4]);
             c->w         = get_u16_le(&s[6]);
             c->h         = get_u16_le(&s[8]);
             c->pressure  = get_u16_le(&s[10]);
-            c->vendor01  = get_u16_le(&s[12]);
 
             c->x_mm      = (float)c->x * RAPT_PHYS_WIDTH_MM / 30000.0f;
             c->y_mm      = (float)c->y * RAPT_PHYS_HEIGHT_MM / 30000.0f;
-            c->w_mm      = (float)c->w * RAPT_PHYS_WIDTH_MM / 30000.0f;
-            c->h_mm      = (float)c->h * RAPT_PHYS_HEIGHT_MM / 30000.0f;
-            c->major_mm  = c->w_mm >= c->h_mm ? c->w_mm : c->h_mm;
-            c->minor_mm  = c->w_mm >= c->h_mm ? c->h_mm : c->w_mm;
-            c->norm_size = 0.5f * (float)(c->w + c->h) / (float)RAPT_LOGICAL_MAX_WH;
+            c->cls       = classify_contact(c, layout, &cfg);
 
             if (!c->active) {
                 if (slots[i].active) {
@@ -591,16 +571,14 @@ int main(int argc, char **argv) {
                 slots[i].tracking_id        = next_tracking_id++ & 0x7FFF;
                 slots[i].sent_as_finger     = false;
                 slots[i].absorbed_by_eraser = false;
-                slots[i].kind               = classify_new_contact(c, &cfg, &latch, ts);
+                slots[i].kind               = apply_eraser_latch(c->cls, c, &cfg, &latch, ts);
                 if (cfg.verbose && slots[i].kind != TOOL_FINGER) {
                     fprintf(stderr,
-                            "[jamboard-pen] Slot %d cid=%u -> %s (major=%.1fmm minor=%.1fmm norm=%.3f P=%u v01=%u)\n",
-                            i, c->cid,
-                            slots[i].kind == TOOL_ERASER ? "ERASER" : "STYLUS",
-                            c->major_mm, c->minor_mm, c->norm_size, c->pressure, c->vendor01);
+                            "[jamboard-pen] Slot %d cid=%u -> %s (W=%u H=%u P=%u fw_class=%u)\n",
+                            i, c->cid, kind_name(slots[i].kind),
+                            c->w, c->h, c->pressure, c->fw_class);
                 }
-            } else if (slots[i].kind != TOOL_ERASER && is_eraser_sized(c, &cfg)) {
-                /* Promote to eraser if palm heel or whiteboard block settles flat on frame 2+ */
+            } else if (slots[i].kind != TOOL_ERASER && c->cls == TOOL_ERASER) {
                 slots[i].kind = TOOL_ERASER;
                 if (slots[i].sent_as_finger) {
                     emit_event(finger_ufd, EV_ABS, ABS_MT_SLOT, i);
@@ -609,14 +587,14 @@ int main(int argc, char **argv) {
                 }
                 if (cfg.verbose) {
                     fprintf(stderr,
-                            "[jamboard-pen] Slot %d cid=%u promoted -> ERASER (major=%.1fmm norm=%.3f)\n",
-                            i, c->cid, c->major_mm, c->norm_size);
+                            "[jamboard-pen] Slot %d cid=%u promoted -> ERASER (W=%u H=%u)\n",
+                            i, c->cid, c->w, c->h);
                 }
             }
 
-            if (slots[i].kind == TOOL_ERASER && c->major_mm > seed_eraser_major) {
-                seed_eraser_slot  = i;
-                seed_eraser_major = c->major_mm;
+            if (slots[i].kind == TOOL_ERASER && (seed_eraser_slot < 0 || c->h > seed_eraser_size)) {
+                seed_eraser_slot = i;
+                seed_eraser_size = c->h;
             }
         }
 
@@ -646,7 +624,7 @@ int main(int argc, char **argv) {
                         emit_event(finger_ufd, EV_ABS, ABS_MT_TRACKING_ID, -1);
                         slots[i].sent_as_finger = false;
                     }
-                    float weight = contacts[i].major_mm > 5.0f ? contacts[i].major_mm : 5.0f;
+                    float weight = contacts[i].h > 100 ? (float)contacts[i].h : 100.0f;
                     eraser_x_raw += (float)contacts[i].x * weight;
                     eraser_y_raw += (float)contacts[i].y * weight;
                     eraser_cx_mm += contacts[i].x_mm * weight;
@@ -662,16 +640,17 @@ int main(int argc, char **argv) {
                 eraser_cy_mm /= w_sum;
             }
 
-            /* Compute overall swath span (mirrors TouchGroup::GetRadius @ 0x00476e04) */
+            /* Overall swath span (mirrors TouchGroup::GetRadius @ 0x00476e04): widest centroid
+             * distance of any member, plus the nominal eraser size. Width/Height are not
+             * physical, so blob extent is not used. */
             float max_rad_mm = 0.0f;
             for (int i = 0; i < RAPT_MAX_SLOTS; i++) {
                 if (!in_eraser_cluster[i]) continue;
                 float r_mm = hypotf(contacts[i].x_mm - eraser_cx_mm,
-                                    contacts[i].y_mm - eraser_cy_mm) +
-                             0.5f * contacts[i].major_mm;
+                                    contacts[i].y_mm - eraser_cy_mm);
                 if (r_mm > max_rad_mm) max_rad_mm = r_mm;
             }
-            eraser_span_mm = 2.0f * max_rad_mm;
+            eraser_span_mm = 2.0f * max_rad_mm + cfg.eraser_base_mm;
         }
 
         int primary_stylus_slot = -1;
@@ -683,12 +662,13 @@ int main(int argc, char **argv) {
             if (!c->active) continue;
 
             if (cfg.dump_frames) {
-                printf("scan=%5u cnt=%2u slot=%2d cid=%3u X=%5u Y=%5u W=%4u(%.1fmm) H=%4u(%.1fmm) norm=%.3f P=%5u v01=%u -> %s\n",
+                printf("scan=%5u cnt=%2u slot=%2d cid=%3u X=%5u Y=%5u W=%5u H=%4u P=%5u fw=%u sum=%s -> %s\n",
                        scan_time, contact_count, i, c->cid, c->x, c->y,
-                       c->w, c->w_mm, c->h, c->h_mm, c->norm_size, c->pressure, c->vendor01,
+                       c->w, c->h, c->pressure, c->fw_class,
+                       kind_name(class_from_sum(c, &cfg)),
                        in_eraser_cluster[i] ? "ERASER_CLUSTER" :
                        (slots[i].absorbed_by_eraser ? "ERASER_TRAIL" :
-                       (slots[i].kind == TOOL_STYLUS ? "STYLUS" : "FINGER")));
+                       kind_name(slots[i].kind)));
             }
 
             /* Suppress trailing knuckles that were part of an eraser wipe until lift-off */
@@ -703,17 +683,12 @@ int main(int argc, char **argv) {
                 if (first_finger_slot < 0) first_finger_slot = i;
                 slots[i].sent_as_finger = true;
 
-                uint16_t maj_raw = c->w >= c->h ? c->w : c->h;
-                uint16_t min_raw = c->w >= c->h ? c->h : c->w;
-                int32_t orient   = c->w >= c->h ? 90 : 0;
-
                 emit_event(finger_ufd, EV_ABS, ABS_MT_SLOT, i);
                 emit_event(finger_ufd, EV_ABS, ABS_MT_TRACKING_ID, slots[i].tracking_id);
                 emit_event(finger_ufd, EV_ABS, ABS_MT_POSITION_X, c->x);
                 emit_event(finger_ufd, EV_ABS, ABS_MT_POSITION_Y, c->y);
-                emit_event(finger_ufd, EV_ABS, ABS_MT_TOUCH_MAJOR, maj_raw);
-                emit_event(finger_ufd, EV_ABS, ABS_MT_TOUCH_MINOR, min_raw);
-                emit_event(finger_ufd, EV_ABS, ABS_MT_ORIENTATION, orient);
+                emit_event(finger_ufd, EV_ABS, ABS_MT_TOUCH_MAJOR, c->h);
+                emit_event(finger_ufd, EV_ABS, ABS_MT_TOUCH_MINOR, c->h);
                 emit_event(finger_ufd, EV_ABS, ABS_MT_PRESSURE, c->pressure);
             }
         }
@@ -729,7 +704,7 @@ int main(int argc, char **argv) {
         /* Sync Stylus / Universal Eraser direct tablet uinput device */
         if (seed_eraser_slot >= 0 || primary_stylus_slot >= 0) {
             enum tool_kind cur_tool = seed_eraser_slot >= 0 ? TOOL_ERASER : TOOL_STYLUS;
-            int32_t out_x, out_y, scaled_p, tilt_x = 0, tilt_y = 0;
+            int32_t out_x, out_y, scaled_p;
 
             if (cur_tool == TOOL_ERASER) {
                 out_x = (int32_t)lrintf(eraser_x_raw);
@@ -738,7 +713,7 @@ int main(int argc, char **argv) {
                 if (out_x > RAPT_LOGICAL_MAX_XY) out_x = RAPT_LOGICAL_MAX_XY;
                 if (out_y < 0) out_y = 0;
                 if (out_y > RAPT_LOGICAL_MAX_XY) out_y = RAPT_LOGICAL_MAX_XY;
-                scaled_p = compute_eraser_pressure(eraser_span_mm, cfg.eraser_min_mm);
+                scaled_p = compute_eraser_pressure(eraser_span_mm, cfg.eraser_base_mm);
 
                 latch.kind         = TOOL_ERASER;
                 latch.x_mm         = eraser_cx_mm;
@@ -748,15 +723,9 @@ int main(int argc, char **argv) {
                 const struct contact_raw *pc = &contacts[primary_stylus_slot];
                 out_x = pc->x;
                 out_y = pc->y;
-                /* RAPT encodes optical contact width / chisel wedge roll into Tip Pressure (0..29999) */
+                /* RAPT Tip Pressure (0..29999) tracks optical contact area, not force */
                 scaled_p = (int32_t)((uint32_t)pc->pressure * 4095U / RAPT_LOGICAL_MAX_P);
                 if (scaled_p < 256) scaled_p = 256;
-                compute_stylus_tilt(pc, &cfg, &tilt_x, &tilt_y);
-
-                latch.kind         = TOOL_STYLUS;
-                latch.x_mm         = pc->x_mm;
-                latch.y_mm         = pc->y_mm;
-                latch.last_seen_ms = ts;
             }
 
             if (prev_pen_tool != TOOL_NONE && prev_pen_tool != cur_tool) {
@@ -768,8 +737,6 @@ int main(int argc, char **argv) {
             emit_event(pen_ufd, EV_ABS, ABS_X, out_x);
             emit_event(pen_ufd, EV_ABS, ABS_Y, out_y);
             emit_event(pen_ufd, EV_ABS, ABS_PRESSURE, scaled_p);
-            emit_event(pen_ufd, EV_ABS, ABS_TILT_X, tilt_x);
-            emit_event(pen_ufd, EV_ABS, ABS_TILT_Y, tilt_y);
             emit_event(pen_ufd, EV_KEY, cur_tool == TOOL_ERASER ? BTN_TOOL_RUBBER : BTN_TOOL_PEN, 1);
             emit_event(pen_ufd, EV_KEY, BTN_TOUCH, 1);
             emit_event(pen_ufd, EV_SYN, SYN_REPORT, 0);

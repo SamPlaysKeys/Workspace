@@ -3,27 +3,40 @@
 # rapt-live-probe.sh — Google Jamboard (baracus) RAPT HID Report 0xF1 Calibrator
 # ==============================================================================
 # Purpose:
-#   Streams and decodes raw 340-byte USB HID Input Reports (Report ID 0xF1) from
-#   the Jamboard's RAPT Touch InGlass digitizer (VID:PID 1cbe:0003 / 2986:0137),
-#   recording empirical Width, Height, Tip Pressure, normalized TouchInputMapper
-#   size (avg(W,H)/14999 vs stock JamKiosk 0.40/0.475 bands), and Vendor
-#   (0xFF00:0x0001) values across five guided test phases:
-#     1. Single Finger
-#     2. Passive Stylus (upright fine tip)
-#     3. Passive Stylus (tilted onto flat wedge / chisel shoulder)
-#     4. Official Microfiber Eraser puck
-#     5. Heel of Palm / Any Standard Whiteboard Eraser Block
+#   Captures and decodes the raw USB HID Input Reports (Report ID 0xF1) from the
+#   Jamboard's RAPT Touch InGlass digitizer (VID:PID 2986:0137 / 1cbe:0003) and
+#   summarises, per guided test phase:
+#     - firmware contact class (Vendor 0xFF00:0x02: 1=stylus, 2=finger, 3=eraser)
+#     - Width / Height / Width+Height (Width+Height is constant per class)
+#     - Tip Pressure (optical contact area, not force)
+#     - simultaneous contacts per frame (palm / eraser blob splitting)
+#
+#   The extended 3149-byte-descriptor interface is preferred: it carries the
+#   firmware class (484-byte Report 0xF1 with 20-byte contacts) and also streams
+#   103-byte Report 0xF6 (contamination map), which is skipped. The basic
+#   2313-byte interface (340-byte Report 0xF1, 14-byte contacts) is used as a
+#   fallback; classes are then derived from Width+Height.
+#
+# Phases:
+#   01_finger            Single finger
+#   02_stylus            Passive stylus (upright)
+#   03_eraser_or_block   Any whiteboard eraser / felt block (or the Google puck)
+#   04_palm              Heel of palm
+#   05_pen_plus_palm     Stylus with palm resting on the glass
 #
 # Usage:
-#   From host PC over Root ADB (LineageOS):
+#   From host PC over Root ADB (LineageOS; enable Developer options > Rooted debugging):
 #     ./rapt-live-probe.sh [output_dir]
 #
 #   Directly on the Jamboard (Fedora / local root shell):
 #     sudo ./rapt-live-probe.sh --local [output_dir]
 #
+#   PROBE_SECS=20 ./rapt-live-probe.sh   # capture length per phase (default 12 s)
+#
 # Prerequisites:
-#   - Host mode: adb (with Root ADB enabled on LineageOS), python3 (on host)
+#   - Host mode: adb (with Root ADB enabled), python3 (on host)
 #   - Local mode: root privileges, python3
+#   - Reading /dev/hidraw* requires root: SELinux blocks the unprivileged adb shell.
 # ==============================================================================
 
 set -euo pipefail
@@ -35,6 +48,7 @@ if [[ "${1:-}" == "--local" ]]; then
 fi
 
 OUT_DIR="${1:-./rapt-probe-$(date +%Y%m%d-%H%M%S)}"
+SECS="${PROBE_SECS:-12}"
 mkdir -p "$OUT_DIR"
 
 run_target() {
@@ -45,43 +59,48 @@ run_target() {
   fi
 }
 
-echo "==> Mode: $MODE | Output directory: $OUT_DIR"
+echo "==> Mode: $MODE | Output directory: $OUT_DIR | Capture length: ${SECS}s"
 
 if [[ "$MODE" == "adb" ]]; then
   echo "==> Ensuring ADB root access..."
   adb wait-for-device
   adb root >/dev/null 2>&1 || true
   sleep 1
+  if [[ "$(adb shell id -u | tr -d '\r\n')" != "0" ]]; then
+    echo "ERROR: adb is not root. Enable Settings > Developer options > Rooted debugging." >&2
+    exit 1
+  fi
+else
+  if [[ "$(id -u)" != "0" ]]; then
+    echo "ERROR: --local mode requires root (sudo)." >&2
+    exit 1
+  fi
 fi
 
-# Locate the primary RAPT Touch Screen hidraw device (Report Descriptor == 2313 bytes)
-HIDRAW_DEV="$(run_target '
-best=""
+# Pick the hidraw node: extended (3149-byte rdesc) preferred, else basic (2313)
+PICK="$(run_target '
+ext=""; basic=""
 for sys in /sys/class/hidraw/hidraw*; do
   [ -e "$sys/device/uevent" ] || continue
-  if grep -qiE "1CBE:0003|2986:0137|RAPT" "$sys/device/uevent" 2>/dev/null; then
-    dev="/dev/$(basename "$sys")"
-    sz=0
-    if [ -f "$sys/device/report_descriptor" ]; then
-      sz=$(wc -c < "$sys/device/report_descriptor" | tr -d " ")
-    fi
-    if [ "$sz" = "2313" ]; then
-      echo "$dev"
-      exit 0
-    fi
-    [ -z "$best" ] && best="$dev"
-  fi
+  grep -qiE "0003:00002986:00000137|0003:00001CBE:00000003" "$sys/device/uevent" 2>/dev/null || continue
+  dev="/dev/$(basename "$sys")"
+  sz=0
+  [ -f "$sys/device/report_descriptor" ] && sz=$(wc -c < "$sys/device/report_descriptor" | tr -d " ")
+  [ "$sz" = "3149" ] && ext="$dev"
+  [ "$sz" = "2313" ] && basic="$dev"
 done
-echo "$best"
-' | tr -d '\r\n')"
+if [ -n "$ext" ]; then echo "extended $ext"; elif [ -n "$basic" ]; then echo "basic $basic"; fi
+' | tr -d '\r')"
 
-if [[ -z "$HIDRAW_DEV" ]]; then
-  echo "ERROR: Could not find RAPT hidraw device (1cbe:0003 / 2986:0137)." >&2
+if [[ -z "$PICK" ]]; then
+  echo "ERROR: Could not find a RAPT hidraw device (2986:0137 / 1cbe:0003)." >&2
   echo "       Ensure hazeldos-ctrl spifi_boot / jamboard-touch-init has run." >&2
   exit 1
 fi
 
-echo "==> Found RAPT primary HID device: $HIDRAW_DEV"
+LAYOUT="${PICK%% *}"
+HIDRAW_DEV="${PICK##* }"
+echo "==> Using RAPT $LAYOUT interface: $HIDRAW_DEV"
 
 capture_phase() {
   local phase_id="$1"
@@ -94,83 +113,102 @@ capture_phase() {
   echo "PHASE: $phase_id"
   echo "INSTRUCTION: $prompt_msg"
   echo "----------------------------------------------------------------------"
-  read -r -p "Press [Enter] when ready, then touch/draw continuously for ~5 seconds..." _
-
-  echo "==> Capturing ~400 HID frames from $HIDRAW_DEV..."
-  if [[ "$MODE" == "adb" ]]; then
-    adb exec-out "dd if=$HIDRAW_DEV bs=340 count=400 2>/dev/null" > "$raw_bin"
-  else
-    dd if="$HIDRAW_DEV" bs=340 count=400 status=none > "$raw_bin"
+  read -r -p "Press [Enter] to start, then touch/draw continuously for ${SECS} seconds (type 's' + Enter to skip)..." ans
+  if [[ "${ans:-}" == "s" ]]; then
+    echo "  (skipped)"
+    return 0
   fi
 
-  python3 - "$raw_bin" "$csv_out" "$phase_id" <<'PYEOF'
+  echo "==> Capturing ${SECS}s from $HIDRAW_DEV..."
+  if [[ "$MODE" == "adb" ]]; then
+    adb exec-out "timeout $SECS cat $HIDRAW_DEV" > "$raw_bin" || true
+  else
+    timeout "$SECS" cat "$HIDRAW_DEV" > "$raw_bin" || true
+  fi
+
+  python3 - "$raw_bin" "$csv_out" "$phase_id" "$LAYOUT" <<'PYEOF'
+import collections
+import statistics
 import struct
 import sys
-import statistics
 
-raw_path, csv_path, phase = sys.argv[1], sys.argv[2], sys.argv[3]
+raw_path, csv_path, phase, layout = sys.argv[1:5]
 data = open(raw_path, "rb").read()
 
-# Resynchronize on 0xF1 frames (340 bytes each)
-rows = []
-i = 0
-n = len(data)
-while i + 340 <= n:
-    if data[i] != 0xF1:
-        nxt = data.find(b"\xf1", i + 1)
-        if nxt == -1:
-            break
-        i = nxt
+if layout == "extended":
+    lens, clen, has_class = {0xF1: 484, 0xF6: 103}, 20, True
+else:
+    lens, clen, has_class = {0xF1: 340}, 14, False
+CC_OFF = 1 + 24 * clen
+SCAN_OFF = CC_OFF + 1
+
+# Frame walk: each report starts with its Report ID; unknown bytes are skipped
+rows, frames, f6, i = [], 0, 0, 0
+while i < len(data):
+    n = lens.get(data[i])
+    if n is None:
+        i += 1
         continue
-    frame = data[i : i + 340]
-    i += 340
-    contact_count = frame[337]
-    scan_time = struct.unpack_from("<H", frame, 338)[0]
+    if i + n > len(data):
+        break
+    frame = data[i:i + n]
+    i += n
+    if frame[0] == 0xF6:
+        f6 += 1
+        continue
+    frames += 1
+    cc = frame[CC_OFF]
+    scan = struct.unpack_from("<H", frame, SCAN_OFF)[0]
     for slot in range(24):
-        base = 1 + slot * 14
-        tip, cid, x, y, w, h, p, v01 = struct.unpack_from("<BBHHHHHH", frame, base)
-        if tip & 0x01:
-            w_mm = w * 1210.0 / 30000.0
-            h_mm = h * 680.0 / 30000.0
-            norm_sz = 0.5 * (w + h) / 14999.0
-            rows.append((scan_time, contact_count, slot, cid, x, y, w, h, round(w_mm, 2), round(h_mm, 2), round(norm_sz, 4), p, v01))
+        b = 1 + slot * clen
+        tip = frame[b] & 1
+        if not tip:
+            continue
+        fw = frame[b] >> 1 if has_class else 0
+        cid = frame[b + 1]
+        x, y, w, h, p = struct.unpack_from("<HHHHH", frame, b + 2)
+        total = w + h
+        sum_cls = 1 if total < 18000 else (2 if total < 27000 else 3)
+        rows.append((scan, cc, slot, cid, fw, sum_cls, x, y, w, h, total, p,
+                     round(x * 1207.6 / 30000.0, 1), round(y * 678.4 / 30000.0, 1)))
 
-with open(csv_path, "w") as f:
-    f.write("scan_time,contact_count,slot,cid,x,y,width_raw,height_raw,width_mm,height_mm,norm_size,pressure,vendor_0xff00_01\n")
+with open(csv_path, "w") as fh:
+    fh.write("scan_time,contact_count,slot,cid,fw_class,sum_class,x,y,width,height,w_plus_h,tip_pressure,x_mm,y_mm\n")
     for r in rows:
-        f.write(",".join(map(str, r)) + "\n")
+        fh.write(",".join(map(str, r)) + "\n")
 
+print(f"  F1 frames: {frames}   F6 (contamination map) frames: {f6}   contact rows: {len(rows)} -> {csv_path}")
 if not rows:
-    print(f"  [!] No active touch contacts captured in {phase}! Try pressing firmly while capturing.")
+    print(f"  [!] No active contacts captured in {phase}. Keep touching the glass during capture.")
     sys.exit(0)
 
-cnts = [r[1] for r in rows]
-ws = [r[6] for r in rows]
-hs = [r[7] for r in rows]
-wmms = [r[8] for r in rows]
-hmms = [r[9] for r in rows]
-norms = [r[10] for r in rows]
-maj_mms = [max(r[8], r[9]) for r in rows]
-min_mms = [min(r[8], r[9]) for r in rows]
-ps = [r[11] for r in rows]
-vs = sorted(set(r[12] for r in rows))
 
-print(f"  Captured {len(rows)} active contact samples -> {csv_path}")
-print(f"  Simultaneous contacts/frame      : min={min(cnts)}  median={int(statistics.median(cnts))}  max={max(cnts)}")
-print(f"  Vendor 0xFF00:0x0001 values      : {vs}")
-print(f"  Norm Size avg(W,H)/14999         : min={min(norms):.3f}  median={statistics.median(norms):.3f}  max={max(norms):.3f}  (JamKiosk: <0.40 stylus, 0.40..0.475 finger, >=0.475 eraser)")
-print(f"  Width  (raw / mm)                : min={min(ws)} ({min(wmms):.1f}mm)  median={int(statistics.median(ws))} ({statistics.median(wmms):.1f}mm)  max={max(ws)} ({max(wmms):.1f}mm)")
-print(f"  Height (raw / mm)                : min={min(hs)} ({min(hmms):.1f}mm)  median={int(statistics.median(hs))} ({statistics.median(hmms):.1f}mm)  max={max(hs)} ({max(hmms):.1f}mm)")
-print(f"  Major / Minor mm                 : median_major={statistics.median(maj_mms):.1f}mm  median_minor={statistics.median(min_mms):.1f}mm")
-print(f"  Tip Pressure (optical width/occ) : min={min(ps)}  median={int(statistics.median(ps))}  max={max(ps)}")
+def stat(name, vals):
+    print(f"  {name:<22}: min={min(vals)}  median={int(statistics.median(vals))}  max={max(vals)}")
+
+
+stat("simultaneous contacts", [r[1] for r in rows])
+stat("Width", [r[8] for r in rows])
+stat("Height", [r[9] for r in rows])
+stat("Width+Height", [r[10] for r in rows])
+stat("Tip Pressure", [r[11] for r in rows])
+names = {0: "n/a", 1: "stylus", 2: "finger", 3: "eraser"}
+if has_class:
+    fw_hist = collections.Counter(r[4] for r in rows)
+    print("  firmware class        : " + ", ".join(f"{names.get(k, k)}={v}" for k, v in sorted(fw_hist.items())))
+sum_hist = collections.Counter(r[5] for r in rows)
+print("  Width+Height class    : " + ", ".join(f"{names[k]}={v}" for k, v in sorted(sum_hist.items())))
+if has_class:
+    mism = sum(1 for r in rows if r[4] != r[5])
+    print(f"  firmware vs W+H class mismatches: {mism} / {len(rows)}")
 PYEOF
 }
 
-capture_phase "01_finger"       "Draw circles on screen using ONE FINGER."
-capture_phase "02_stylus_tip"   "Draw lines holding the PASSIVE STYLUS UPRIGHT (fine tip)."
-capture_phase "03_stylus_wedge" "Draw broad strokes holding the PASSIVE STYLUS TILTED FLAT onto its chisel/wedge edge."
-capture_phase "04_eraser_puck"  "Wipe across the screen flat with the OFFICIAL ERASER PUCK (press Enter to skip if unavailable)."
-capture_phase "05_palm_or_block" "Wipe across the screen using the HEEL OF YOUR PALM or ANY STANDARD WHITEBOARD ERASER."
+capture_phase "01_finger"          "Draw circles on screen using ONE FINGER."
+capture_phase "02_stylus"          "Draw lines with the PASSIVE STYLUS held upright."
+capture_phase "03_eraser_or_block" "Wipe across the screen flat with ANY WHITEBOARD ERASER / felt block (or the Google puck)."
+capture_phase "04_palm"            "Wipe across the screen using the HEEL OF YOUR PALM."
+capture_phase "05_pen_plus_palm"   "Draw with the STYLUS while RESTING YOUR PALM on the glass."
 
 echo ""
-echo "==> Calibration probe complete! All raw dumps and CSVs saved in: $OUT_DIR"
+echo "==> Calibration probe complete! Raw dumps and CSVs saved in: $OUT_DIR"
