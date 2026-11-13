@@ -5,12 +5,14 @@
 # Purpose:
 #   Streams and decodes raw 340-byte USB HID Input Reports (Report ID 0xF1) from
 #   the Jamboard's RAPT Touch InGlass digitizer (VID:PID 1cbe:0003 / 2986:0137),
-#   recording empirical Width, Height, Tip Pressure, and Vendor (0xFF00:0x0001)
-#   values across four guided test phases:
+#   recording empirical Width, Height, Tip Pressure, normalized TouchInputMapper
+#   size (avg(W,H)/14999 vs stock JamKiosk 0.40/0.475 bands), and Vendor
+#   (0xFF00:0x0001) values across five guided test phases:
 #     1. Single Finger
 #     2. Passive Stylus (upright fine tip)
 #     3. Passive Stylus (tilted onto flat wedge / chisel shoulder)
-#     4. Passive Microfiber Eraser puck
+#     4. Official Microfiber Eraser puck
+#     5. Heel of Palm / Any Standard Whiteboard Eraser Block
 #
 # Usage:
 #   From host PC over Root ADB (LineageOS):
@@ -130,10 +132,11 @@ while i + 340 <= n:
         if tip & 0x01:
             w_mm = w * 1210.0 / 30000.0
             h_mm = h * 680.0 / 30000.0
-            rows.append((scan_time, contact_count, slot, cid, x, y, w, h, round(w_mm, 2), round(h_mm, 2), p, v01))
+            norm_sz = 0.5 * (w + h) / 14999.0
+            rows.append((scan_time, contact_count, slot, cid, x, y, w, h, round(w_mm, 2), round(h_mm, 2), round(norm_sz, 4), p, v01))
 
 with open(csv_path, "w") as f:
-    f.write("scan_time,contact_count,slot,cid,x,y,width_raw,height_raw,width_mm,height_mm,pressure,vendor_0xff00_01\n")
+    f.write("scan_time,contact_count,slot,cid,x,y,width_raw,height_raw,width_mm,height_mm,norm_size,pressure,vendor_0xff00_01\n")
     for r in rows:
         f.write(",".join(map(str, r)) + "\n")
 
@@ -141,28 +144,33 @@ if not rows:
     print(f"  [!] No active touch contacts captured in {phase}! Try pressing firmly while capturing.")
     sys.exit(0)
 
+cnts = [r[1] for r in rows]
 ws = [r[6] for r in rows]
 hs = [r[7] for r in rows]
 wmms = [r[8] for r in rows]
 hmms = [r[9] for r in rows]
+norms = [r[10] for r in rows]
 maj_mms = [max(r[8], r[9]) for r in rows]
 min_mms = [min(r[8], r[9]) for r in rows]
-ps = [r[10] for r in rows]
-vs = sorted(set(r[11] for r in rows))
+ps = [r[11] for r in rows]
+vs = sorted(set(r[12] for r in rows))
 
 print(f"  Captured {len(rows)} active contact samples -> {csv_path}")
-print(f"  Vendor 0xFF00:0x0001 distinct values : {vs}")
-print(f"  Width  (raw / mm) : min={min(ws)} ({min(wmms):.1f}mm)  median={int(statistics.median(ws))} ({statistics.median(wmms):.1f}mm)  max={max(ws)} ({max(wmms):.1f}mm)")
-print(f"  Height (raw / mm) : min={min(hs)} ({min(hmms):.1f}mm)  median={int(statistics.median(hs))} ({statistics.median(hmms):.1f}mm)  max={max(hs)} ({max(hmms):.1f}mm)")
-print(f"  Major / Minor mm  : median_major={statistics.median(maj_mms):.1f}mm  median_minor={statistics.median(min_mms):.1f}mm")
-print(f"  Tip Pressure      : min={min(ps)}  median={int(statistics.median(ps))}  max={max(ps)}")
+print(f"  Simultaneous contacts/frame      : min={min(cnts)}  median={int(statistics.median(cnts))}  max={max(cnts)}")
+print(f"  Vendor 0xFF00:0x0001 values      : {vs}")
+print(f"  Norm Size avg(W,H)/14999         : min={min(norms):.3f}  median={statistics.median(norms):.3f}  max={max(norms):.3f}  (JamKiosk: <0.40 stylus, 0.40..0.475 finger, >=0.475 eraser)")
+print(f"  Width  (raw / mm)                : min={min(ws)} ({min(wmms):.1f}mm)  median={int(statistics.median(ws))} ({statistics.median(wmms):.1f}mm)  max={max(ws)} ({max(wmms):.1f}mm)")
+print(f"  Height (raw / mm)                : min={min(hs)} ({min(hmms):.1f}mm)  median={int(statistics.median(hs))} ({statistics.median(hmms):.1f}mm)  max={max(hs)} ({max(hmms):.1f}mm)")
+print(f"  Major / Minor mm                 : median_major={statistics.median(maj_mms):.1f}mm  median_minor={statistics.median(min_mms):.1f}mm")
+print(f"  Tip Pressure (optical width/occ) : min={min(ps)}  median={int(statistics.median(ps))}  max={max(ps)}")
 PYEOF
 }
 
 capture_phase "01_finger"       "Draw circles on screen using ONE FINGER."
 capture_phase "02_stylus_tip"   "Draw lines holding the PASSIVE STYLUS UPRIGHT (fine tip)."
 capture_phase "03_stylus_wedge" "Draw broad strokes holding the PASSIVE STYLUS TILTED FLAT onto its chisel/wedge edge."
-capture_phase "04_eraser"       "Wipe across the screen flat with the MICROFIBER ERASER PUCK."
+capture_phase "04_eraser_puck"  "Wipe across the screen flat with the OFFICIAL ERASER PUCK (press Enter to skip if unavailable)."
+capture_phase "05_palm_or_block" "Wipe across the screen using the HEEL OF YOUR PALM or ANY STANDARD WHITEBOARD ERASER."
 
 echo ""
 echo "==> Calibration probe complete! All raw dumps and CSVs saved in: $OUT_DIR"

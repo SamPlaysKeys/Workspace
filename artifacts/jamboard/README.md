@@ -32,9 +32,11 @@ chmod +x artifacts/jamboard/rapt-live-probe.sh
 ./artifacts/jamboard/rapt-live-probe.sh ./jamboard-probe-results
 ```
 
-Follow the four prompts (**Finger**, **Stylus Upright Tip**, **Stylus Tilted Wedge**, **Physical Eraser**) to record CSVs and summary statistics (`Width`, `Height`, `Pressure`, and `Vendor 0xFF00:0x0001`).
+Follow the five prompts (**Finger**, **Stylus Upright Tip**, **Stylus Tilted Wedge**, **Official Eraser Puck**, and **Heel of Palm / Any Standard Whiteboard Eraser**) to record CSVs and summary statistics (`Width`, `Height`, `Norm Size` vs. stock `0.40`/`0.475` bands, `Tip Pressure`, and `Vendor 0xFF00:0x0001`).
 
 ### B. Live-Test `jamboard-pen-daemon` on LineageOS
+`jamboard-pen-daemon` supports open-ended universal eraser detection (Google's puck, any standard dry-erase block, or the heel of your palm) with `70 mm` spatial palm/knuckle clustering (`--eraser-cluster-mm 70.0`) so palm wipes never trigger accidental two-finger pan/zoom.
+
 Cross-compile a static `aarch64` binary on Linux (or inside a Linux container on macOS) and run it directly from `/data/local/tmp`:
 
 ```bash

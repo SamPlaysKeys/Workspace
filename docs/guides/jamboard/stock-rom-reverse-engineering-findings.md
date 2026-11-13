@@ -70,35 +70,39 @@ Rather than patching custom non-standard `ABS_MT_TOOL_TYPE = 3` values into both
 
 ---
 
-## 3. How Stock Jamboard Handled Stylus "Tilt" (Wedge / Chisel) & Eraser
+## 3. How Stock Jamboard Handled Stylus "Tilt" (Wedge / Chisel), Universal Erasers, & Palm Wiping
 
-Inspecting the Android `MotionEvent` -> JNI bridge and C++ stroke engine inside `JamKiosk.apk` (`PectinSurfaceView` touch translator and `libjamkiosk.so`) clarified exactly what optical axes matter:
+Inspecting the unobfuscated Protobuf schema `com.google.apps.pectin.android.proto.Touch$TouchPoint` in `classes2.dex` (`PectinContainer.transferTouchMotionEventToPectin`) alongside `libjamkiosk.so` revealed how Google supported **any** physical dry-erase block, the heel of a palm, and passive chisel-edge shading:
 
-### 1. Stock Jamboard Never Used `AXIS_TILT` (`ABS_TILT_X` / `ABS_TILT_Y`)
-When translating an Android `MotionEvent` into internal touch points, the app reads only:
-- `getPointerId(i)`
-- `getToolType(i)` → mapped to `FINGER` (`1`), `STYLUS` (`2`), or `ERASER` (`4` → internal enum `5`)
-- `getX(i)` and `getY(i)`
-- **`getTouchMajor(i)` and `getTouchMinor(i)`**
-- `getPressure(i)`
-- **`getOrientation(i)`** (optional float angle in radians)
+### 1. Stock `PectinContainer` Touch Schema (`Touch$TouchPoint`)
+When `JamKiosk` translates an Android `MotionEvent` into its native C++ stroke engine (`pectin::platform::android::PectinContainer::Respond`), it populates only:
+- `id_` (`field 1`): `MotionEvent.getPointerId(i)`
+- `type_` (`field 2`): `BEGIN (1)`, `MOVE (2)`, `STAY (3)`, `END (4)`, `CANCEL (5)`
+- `toolType_` (`field 3`): **`FINGER (1)` or `STYLUS (2)` only** (`MotionEvent.getToolType(i) == 2 ? STYLUS : FINGER` — `Touch$TouchPoint` has no `ERASER` enum value!)
+- `x_` / `y_` / `lastX_` / `lastY_` (`fields 4..7`): `getX(i)`, `getY(i)`, and previous coordinates
+- **`size_` (`field 8`): `MotionEvent.getSize(i)`** (computed by Android `TouchInputMapper::cookPointerData` as `0.5 * (rawTouchMajor + rawTouchMinor) / 14999.0`)
+- `timestamp_` (`field 9`): `MotionEvent.getEventTime()`
+- **`pressure_` (`field 10`): `MotionEvent.getPressure(i)`** (optional float from RAPT HID `Tip Pressure` `0x0D:0x30`)
 
-### 2. Passive Stylus Broad-Edge ("Tilt" / Chisel) Geometry
-Because the Jamboard stylus is completely passive (an optical interruptor with a ~2 mm fine tip and a ~15–18 mm flat chisel shoulder), tilting the stylus onto its flat edge physically widens the infrared shadow on the glass into an elongated ellipse:
-- In `PolylinePacker::AddPoint`, when drawing with `STYLUS`, the engine evaluates `major_px = max(touchMajor, touchMinor)` on the 3840×2160 canvas:
-  - **`major_px <= 15.0 px` (~4.7 mm physical span):** Treated as a normal upright fine-tip pen stroke (base stroke width multiplier = `1.0`).
-  - **`15.0 px < major_px <= 60.0 px` (~4.7 mm – 19.0 mm physical span):** Treated as an angled wedge/broad-edge stroke; stroke width expands linearly up to the tool's maximum ribbon width, and the ribbon normal vector rotates by `(sin(orientation), -cos(orientation))` to produce calligraphic/chisel strokes.
+*(Note: A generic `Lagsr;` compatibility helper in `classes14.dex` references `getTouchMajor` and `getOrientation`, and `PolylinePacker::AddPoint` retains ribbon-orientation code, but Jamboard's active `PectinContainer` bridge never calls `AXIS_TILT` or `getOrientation`.)*
 
-### 3. Hardware Puck Eraser vs. Finger Wipe Eraser
-In `DrawingController::StartTouchGroupAtPoint`:
-- Contacts arriving with `TOOL_TYPE_ERASER` immediately start a dedicated hardware eraser group (`CreateEraserTouchGroup`), rendering an eraser cursor sized to the puck's contact diameter.
-- Contacts arriving with `TOOL_TYPE_FINGER` manipulate canvas objects unless the optional `FingerEraser` feature is enabled and `max(touchMajor, touchMinor)` exceeds ~`36 px` (~11.4 mm), allowing palm/multi-finger wiping.
+### 2. Open-Ended Universal Eraser Size Bands (`DrawingController::TouchTypeFromSize` @ `0x00474714`)
+On Jamboard hardware (`pectin::device::Device::type == 3`, initialized unconditionally at `0x00280e24`), `DrawingController::TouchTypeFromSize(float size)` classifies `MotionEvent.getSize(i)` against two normalized float thresholds **with no upper cap**:
+- **`size < 0.40f` (`0x3ecccccd`) → `2` (Stylus / Draw):** Fine-tip or tilted chisel strokes route to `UpdateDataFeedsWithTouchPoint` (`0x00475048`).
+- **`0.40f <= size < 0.475f` (`0x3ef33333`) → `1` (Finger):** Standard touch/UI manipulation—or finger-wipe erasing when `CanUseFingerEraser()` (`KioskSettingsManager::FingerEraser`) is enabled.
+- **`size >= 0.475f` (open-ended `[0.475f, 1.0+]`, no upper bound) → `3` (Universal Eraser):** Routes to `UpdateEraserTouchGroups` (`0x00474754`). Because there is no upper size limit, Google's official microfiber puck, **any third-party felt whiteboard eraser**, a folded cloth, or **the heel/side of a user's palm** all trigger hardware-class erasing identically.
 
-### 4. Translating Optical Wedge into Standard `ABS_TILT_X` / `ABS_TILT_Y` for Linux & Android Apps
-Desktop Linux whiteboard apps (RNote, Xournal++, Krita) and modern Android apps expect standard Wacom-style `ABS_TILT_X` / `ABS_TILT_Y` (`-90°..+90°`) on a `BTN_TOOL_PEN` device rather than `ABS_MT_TOUCH_MAJOR` width on a stylus.
-From RAPT's physical `Width` (`w_mm`) and `Height` (`h_mm`):
-- `major_mm = max(w_mm, h_mm)` and `minor_mm = min(w_mm, h_mm)`
-- When `major_mm > 4.5 mm` on a stylus contact, the tilt magnitude (`0°..75°`) can be synthesized smoothly from either contact elongation `acos(clamp(minor_mm / major_mm, 0.25, 1.0))` or linear wedge span `(major_mm - 4.5) / (18.0 - 4.5)`, projected onto X/Y axes according to whether `w_mm >= h_mm`.
+### 3. Multi-Contact Palm & Whiteboard-Block Clustering (`UpdateEraserTouchGroups` @ `0x00474754`)
+Because a palm wipe or a worn rectangular whiteboard eraser often splits into multiple adjacent IR shadow blobs (e.g., palm heel + knuckles, or two edges of a felt block):
+- **Spatial Capture Radius (`200.0f * dpi_scale` px @ `0x004749e8`, ~63 mm on the 55" 4K panel):** Any contact landing within `200 px` of an active eraser `TouchGroup::GetCenterPoint()` (`0x00476da8`) is merged into that same `TouchGroup` (`TouchGroup::AddPoint` @ `0x00476d50`) rather than spawning stray finger gestures or pen strokes.
+- **Dynamic Swath Width (`TouchGroup::GetRadius` @ `0x00476e04` & `EraserRenderer::CalculateStrokeThickness` @ `0x004a5dd0`):** `GetRadius()` computes the maximum Euclidean spread (`max_i hypot(pt_i - center)`, capped at `450.0f` px @ `0x00475e20`) across all contacts in the group and scales the eraser brush dynamically:
+  $$\text{thickness} = 28\text{ px} + 2.0 \times \text{group\_radius} + 0.001 \times \text{speed}^2$$
+
+### 4. Passive Stylus Wedge ("Tilt") Width via Optical `Tip Pressure` + Shadow Geometry
+Because an optical InGlass bezel measures infrared beam occlusion rather than mechanical downward force:
+- Rolling the passive stylus onto its flat ~15–18 mm chisel/wedge shoulder increases RAPT's reported **`Tip Pressure` (`0x0D:0x30`, `0..29999`)** as well as **`Width` / `Height` (`0x0D:0x48` / `0x49`)**.
+- Stock `JamKiosk` feeds `MotionEvent.getPressure(i)` (`TouchPoint.pressure_`) into `LocalDataFeed::AppendPoint` (`0x0052b3fc`) → `ParticleRenderer::FeedPoint` (`0x004b57e8`), interpolating stroke width between `min_width` and `max_width`.
+- For standard desktop Linux (GNOME Wayland, Rnote, Xournal++, Krita) and Android canvas apps, `jamboard-pen-daemon` **both** passes RAPT's raw `Tip Pressure` (`0..29999` → `ABS_PRESSURE` `256..4095`) **and** synthesizes `ABS_TILT_X` / `ABS_TILT_Y` (`0°..70°`) from `major_mm = max(w_mm, h_mm)` (`4.7 mm .. 18.5 mm`), while mapping palm/eraser cluster span (`32 mm .. 180 mm`) into `ABS_PRESSURE` when `BTN_TOOL_RUBBER` is active.
 
 ---
 

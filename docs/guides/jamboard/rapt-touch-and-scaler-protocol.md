@@ -91,23 +91,23 @@ chmod +x artifacts/jamboard/rapt-live-probe.sh
 ./artifacts/jamboard/rapt-live-probe.sh ./jamboard-calibration-logs
 ```
 
-The script walks the operator through four 5-second touch captures (**Finger**, **Stylus Fine Tip**, **Stylus Tilted/Wedge Edge**, and **Physical Eraser**) and prints a summary table of `Width`, `Height`, `Pressure`, and `Vendor_0xFF00_01` (`v01`) for each tool.
+The script walks the operator through five 5-second touch captures (**Finger**, **Stylus Fine Tip**, **Stylus Tilted/Wedge Edge**, **Official Eraser Puck**, and **Heel of Palm / Any Whiteboard Eraser Block**) and prints a summary table of `Width`, `Height`, `Norm Size` (`avg(W,H) / 14999.0`), `Tip Pressure`, and `Vendor_0xFF00_01` (`v01`) for each tool.
 
-- **Expected `Vendor_0xFF00_01` behavior:** Based on stock `libinputflinger.so`'s `0/1/3` tool table, `v01` (or its low bits) directly distinguishes Finger (`0`), Stylus (`1`), and Eraser (`3` or `2`), while `Width`/`Height` measure the ~2 mm tip vs. ~15 mm wedge vs. ~50 mm eraser puck.
-- Even if a firmware revision leaves `v01 == 0`, `jamboard-pen-daemon` supports **both** `v01` hardware IDs and physical millimeter thresholds (`--stylus-max-mm` / `--eraser-min-mm`) simultaneously.
+- **Stock Universal Eraser & Size Bands (`TouchTypeFromSize`):** Stock `JamKiosk` classified `norm_size = avg(Width, Height) / 14999.0` into `< 0.40` (Stylus), `0.40 .. < 0.475` (Finger), and an **open-ended `>= 0.475` band** (Universal Eraser—matching Google's puck, any standard whiteboard felt eraser, or the heel of a palm).
+- **Hardware `v01` + Geometry + Norm-Band Support:** `jamboard-pen-daemon` supports `v01` hardware IDs, open-ended physical millimeter thresholds (`--stylus-minor-mm 4.6` / `--eraser-min-mm 32.0`, default), and stock normalized bands (`--use-norm-bands`).
 
 ---
 
 ### 1.4 Configuration Step 2: Build & Run `jamboard-pen-daemon`
 
-`artifacts/jamboard/jamboard-pen-daemon.c` solves both the missing stylus/eraser protocol and the duplicate RAPT `evdev` interface quirk in one lightweight daemon:
+`artifacts/jamboard/jamboard-pen-daemon.c` solves the missing stylus/eraser protocol, universal palm/block erasing, and the duplicate RAPT `evdev` interface quirk in one lightweight daemon:
 
 1. **Grabs raw RAPT `evdev` nodes (`EVIOCGRAB`):** Prevents the duplicate `usb-70090000.xusb-4/input0` and `input1` kernel devices from sending conflicting finger clicks while writing with the stylus or erasing.
 2. **Exposes `Jamboard RAPT Finger Touch` (`uinput`, `INPUT_PROP_DIRECT`):** Clean 24-slot Type-B multi-touch screen for 1–24 finger gestures.
 3. **Exposes `Jamboard RAPT Stylus & Eraser` (`uinput`, `INPUT_PROP_DIRECT`):** Dedicated direct pen/eraser tablet emitting:
-   - `BTN_TOOL_PEN` + `BTN_TOUCH` for stylus strokes,
-   - `BTN_TOOL_RUBBER` + `BTN_TOUCH` for physical eraser strokes,
-   - `ABS_X` / `ABS_Y` (`0..29999`), `ABS_PRESSURE` (`0..4095`), and synthesized `ABS_TILT_X` / `ABS_TILT_Y` (`-90..+90` degrees) calculated from the optical wedge ellipse when tilting the passive stylus onto its flat chisel edge!
+   - `BTN_TOOL_PEN` + `BTN_TOUCH` for stylus strokes, passing RAPT's optical `Tip Pressure` (`0..29999` → `ABS_PRESSURE` `256..4095`) **and** synthesized `ABS_TILT_X` / `ABS_TILT_Y` (`-90..+90` degrees) for broad chisel/wedge strokes,
+   - `BTN_TOOL_RUBBER` + `BTN_TOUCH` for **any** physical eraser (official puck, standard dry-erase block, or heel of palm) using an open-ended size threshold (`>= 32 mm` or `>= 0.475` norm size, no upper cap),
+   - **Spatial Palm & Block Clustering (`--eraser-cluster-mm 70.0`, matching stock Jamboard's `200 px` radius):** Absorbs nearby secondary palm/knuckle/felt-block blobs into a single weighted eraser centroid so multi-blob palm wipes never leak stray two-finger pan/zoom gestures, while scaling `ABS_PRESSURE` (`1200..4095`) with overall cluster width!
 
 #### Testing Live on LineageOS (via Static Cross-Compile on Host PC)
 ```bash
