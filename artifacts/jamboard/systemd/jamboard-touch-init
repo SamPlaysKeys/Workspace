@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# ==============================================================================
+# jamboard-touch-init — Google Jamboard RAPT Optical Touch SPIFI Power-On
+# ==============================================================================
+# Sequences Tegra210 gpiochip0 lines 174 (V6 pwren, active-low), 184 (X0
+# bootmode: 0=SPIFI), and 185 (X1 reset, active-high) so the internal RAPT Touch
+# InGlass digitizer enumerates on USB (usb-70090000.xusb-4).
+# Requires: libgpiod-utils (gpioset v2 syntax on Fedora 40+)
+# ==============================================================================
+
+set -euo pipefail
+
+# Hold reset (185=1), select SPIFI flash boot (184=0), enable power rail (174=0)
+gpioset -c gpiochip0 185=1 184=0 174=0 &
+GP_PID=$!
+sleep 0.25
+kill "$GP_PID" 2>/dev/null || true
+wait "$GP_PID" 2>/dev/null || true
+
+# Release reset (185=0) and hold power rail enabled for session lifetime
+exec gpioset -c gpiochip0 185=0 184=0 174=0

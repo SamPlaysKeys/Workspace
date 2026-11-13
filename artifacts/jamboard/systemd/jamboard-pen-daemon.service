@@ -1,0 +1,15 @@
+[Unit]
+Description=Google Jamboard RAPT Stylus, Wedge Tilt, Eraser & Multi-Touch Daemon
+After=jamboard-touch-init.service systemd-udevd.service
+Wants=jamboard-touch-init.service
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/modprobe uinput
+ExecStartPre=/usr/bin/sleep 2
+ExecStart=/usr/local/bin/jamboard-pen-daemon --verbose
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

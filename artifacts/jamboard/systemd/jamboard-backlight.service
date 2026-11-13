@@ -1,0 +1,13 @@
+[Unit]
+Description=Google Jamboard MStar Scaler Default Backlight & Internal Input
+After=dev-ttyTHS1.device
+Requires=dev-ttyTHS1.device
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/jamboard-scaler input internal
+ExecStart=/usr/local/bin/jamboard-scaler brightness 80
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

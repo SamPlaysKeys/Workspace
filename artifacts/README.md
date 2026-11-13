@@ -19,6 +19,7 @@ artifacts/
 ├── code-review/          # Smooth Brain Review skill (context-free subagent congress) + ADRs
 ├── git-workflows/        # Agent Skills for PR lifecycle (Copilot triage, PR drift synchronization)
 ├── homelab-doc-kit/      # Portable, dependency-free kit to scaffold homelab docs with an AI assistant
+├── jamboard/             # Google Jamboard (baracus) RAPT HID probe, uinput pen/eraser daemon, scaler CLI & systemd units
 ├── openshift/            # OpenShift automation (YAML, Ansible, scripts, AI execution plans)
 │   ├── bigfix-agent-deployment/       # BigFix Host Agent privileged DaemonSet (Helm / GitOps)
 │   ├── bigfix-discovery-deployment/   # BigFix Inventory & Node Feature Discovery Operator (Helm / GitOps)

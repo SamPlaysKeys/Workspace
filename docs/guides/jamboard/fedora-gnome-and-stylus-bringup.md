@@ -2,7 +2,9 @@
 type: Guide
 status: Active
 system: Google Jamboard (baracus)
-related_to: []
+related_to:
+  - ./stock-rom-reverse-engineering-findings.md
+  - ./rapt-touch-and-scaler-protocol.md
 references:
   - https://wiki.lineageos.org/devices/baracus/install/
   - https://github.com/LineageOS/android_device_google_baracus
@@ -511,3 +513,9 @@ fastboot reboot
 - [`LineageOS/android_hardware_nvidia_t21x_lineage`](https://github.com/LineageOS/android_hardware_nvidia_t21x_lineage) - Linux 6.x mainline Tegra210 device tree port including `tegra210-baracus.dts` and HazelRed GPIOs.
 - [`pb4ugoout/Jamboard`](https://github.com/pb4ugoout/Jamboard) - Hardware teardown, carrier board connector pinouts, and internal subsystem documentation.
 - [`TheFitzZZ/jamboard-brightness-baracus`](https://github.com/TheFitzZZ/jamboard-brightness-baracus) - Reverse-engineered 9600-baud `/dev/ttyTHS1` UART brightness packet protocol from stock `scalerdaemon`.
+
+## Related
+
+- [Clean-Room Reverse-Engineering Findings from Stock Google Jamboard ROM](./stock-rom-reverse-engineering-findings.md) - Full findings from `stock-system.img` explaining why unpatched `hid-multitouch` drops RAPT `Vendor 0xFF00:0x0001` and how passive wedge strokes work.
+- [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](./rapt-touch-and-scaler-protocol.md) - Byte-level HID Report `0xF1` and `/dev/ttyTHS1` scaler protocol specs + daemon configuration.
+- [`artifacts/jamboard/`](../../../artifacts/jamboard/README.md) - Ready-to-use `rapt-live-probe.sh`, `jamboard-pen-daemon.c`, `jamboard-scaler.sh`, and `systemd` service units.

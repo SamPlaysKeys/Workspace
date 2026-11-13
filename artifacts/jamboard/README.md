@@ -1,0 +1,92 @@
+---
+type: README-Note
+---
+# Google Jamboard (`baracus`) Hardware Support Artifacts
+
+Clean-room diagnostic tools, Linux/Android `uinput` stylus/tilt/eraser driver, MStar display scaler CLI, and `systemd` units for running **LineageOS** and **Fedora Workstation (`aarch64`, GNOME Wayland)** on a Google Jamboard.
+
+## Contents
+
+```text
+artifacts/jamboard/
+├── README.md                    # Build, testing, and installation instructions
+├── rapt-live-probe.sh           # Guided ADB / local RAPT HID Report 0xF1 calibration tool
+├── jamboard-pen-daemon.c        # Zero-dependency C daemon (/dev/hidraw* -> uinput Finger + Pen/Eraser)
+├── jamboard-scaler.sh           # MStar MST9U23T1 /dev/ttyTHS1 CLI (brightness, HDMI/USB-C input, mute)
+└── systemd/
+    ├── jamboard-touch-init          # Tegra210 GPIO 174/184/185 SPIFI boot sequence
+    ├── jamboard-touch-init.service  # Early-boot touchscreen power-on service
+    ├── jamboard-pen-daemon.service  # Persistent RAPT uinput translator service
+    └── jamboard-backlight.service   # Sets internal video source & 80% brightness at boot
+```
+
+---
+
+## 1. Stage 1 Testing on LineageOS (Over Root ADB)
+
+### A. Capture Empirical Tool Measurements (`rapt-live-probe.sh`)
+Run from your laptop with the Jamboard booted into LineageOS (`baracus_tab`) and Root ADB enabled:
+
+```bash
+chmod +x artifacts/jamboard/rapt-live-probe.sh
+./artifacts/jamboard/rapt-live-probe.sh ./jamboard-probe-results
+```
+
+Follow the four prompts (**Finger**, **Stylus Upright Tip**, **Stylus Tilted Wedge**, **Physical Eraser**) to record CSVs and summary statistics (`Width`, `Height`, `Pressure`, and `Vendor 0xFF00:0x0001`).
+
+### B. Live-Test `jamboard-pen-daemon` on LineageOS
+Cross-compile a static `aarch64` binary on Linux (or inside a Linux container on macOS) and run it directly from `/data/local/tmp`:
+
+```bash
+aarch64-linux-gnu-gcc -O2 -static -Wall -Wextra \
+  -o jamboard-pen-daemon artifacts/jamboard/jamboard-pen-daemon.c -lm
+
+adb root
+adb push jamboard-pen-daemon artifacts/jamboard/jamboard-scaler.sh /data/local/tmp/
+adb shell chmod +x /data/local/tmp/jamboard-pen-daemon /data/local/tmp/jamboard-scaler.sh
+
+# Stream live Stylus / Wedge Tilt / Eraser uinput events on LineageOS:
+adb shell /data/local/tmp/jamboard-pen-daemon --verbose
+```
+
+---
+
+## 2. Stage 2 Installation on Fedora Workstation (`aarch64`)
+
+Once Fedora boots (or inside an `aarch64` `systemd-nspawn` chroot during image assembly):
+
+```bash
+sudo dnf install -y gcc libgpiod-utils
+
+gcc -O2 -Wall -Wextra -o jamboard-pen-daemon artifacts/jamboard/jamboard-pen-daemon.c -lm
+
+sudo install -m 0755 jamboard-pen-daemon /usr/local/bin/jamboard-pen-daemon
+sudo install -m 0755 artifacts/jamboard/jamboard-scaler.sh /usr/local/bin/jamboard-scaler
+sudo install -m 0755 artifacts/jamboard/systemd/jamboard-touch-init /usr/local/bin/jamboard-touch-init
+sudo cp artifacts/jamboard/systemd/*.service /etc/systemd/system/
+
+sudo systemctl daemon-reload
+sudo systemctl enable --now \
+  jamboard-touch-init.service \
+  jamboard-pen-daemon.service \
+  jamboard-backlight.service
+```
+
+### Display Scaler CLI Examples
+```bash
+sudo jamboard-scaler brightness 75     # Set 55" 4K panel brightness to 75%
+sudo jamboard-scaler get-brightness    # Read current brightness (0..100)
+sudo jamboard-scaler input usbc        # Switch panel to side USB-C DisplayPort laptop input
+sudo jamboard-scaler input hdmi1       # Switch panel to side HDMI port
+sudo jamboard-scaler input hdmi2       # Switch panel to rear HDMI port
+sudo jamboard-scaler input internal    # Switch panel back to internal Fedora / Tegra X1
+sudo jamboard-scaler unmute            # Unmute internal scaler speakers
+```
+
+---
+
+## Related Guides
+
+- [Fedora Workstation (GNOME) & Stylus/Eraser Bring-Up Plan](../../docs/guides/jamboard/fedora-gnome-and-stylus-bringup.md)
+- [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](../../docs/guides/jamboard/rapt-touch-and-scaler-protocol.md)
+- [Clean-Room Reverse-Engineering Findings from Stock Google Jamboard ROM](../../docs/guides/jamboard/stock-rom-reverse-engineering-findings.md)
