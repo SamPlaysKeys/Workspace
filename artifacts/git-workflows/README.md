@@ -16,6 +16,9 @@ artifacts/git-workflows/
 └── skills/
     ├── copilot-review-cycle/ # Review, fix, and reply to Copilot/automated PR comments
     └── pr-drift-sync/        # Synchronize PR titles and descriptions with branch diffs
+        ├── SKILL.md
+        └── templates/
+            └── pr-description.md # Two-tier PR body template (concise opener + collapsible details)
 ```
 
 ---
@@ -38,8 +41,8 @@ artifacts/git-workflows/
 - **Objective:** Prevent pull request descriptions and titles from going stale after long iterative development sessions.
 - **Workflow:**
   1. Inspects real branch commit history (`base..head`) and changed files.
-  2. Synthesizes commit themes, architectural decisions, and current test verification status.
-  3. Uses safe heredoc formatting (`gh pr edit <id> --title ... --body-file -`) to prevent shell quoting bugs and markdown truncation.
+  2. Synthesizes commit themes, architectural decisions, and verification status into a two-tier description (a concise 10-second summary above the fold, with granular changes and commit logs collapsed inside `<details><summary>`).
+  3. Uses safe heredoc formatting (`gh pr edit <id> --title ... --body-file -`) using `templates/pr-description.md` to prevent shell quoting bugs and markdown truncation.
   4. Confirms updated PR state via `gh pr view`.
 - **Triggers:** "sync pr description", "update pr title", "fix pr drift", "refresh pr summary".
 

@@ -30,20 +30,20 @@ git diff --name-only origin/<base>..origin/<head>
 
 ## Step 2 — Build updated metadata
 
-Use the actual diff + commit themes to produce:
-- accurate title scope
-- summary of meaningful technical changes
-- current verification status and explicit remaining gates
+Use the actual diff + commit themes to populate `templates/pr-description.md`.
+Follow the two-tier layout:
+- **Visible top-level:** 1–2 sentence problem/intent explanation, key highlights, and current verification checklist. Keep this readable in under 10 seconds.
+- **Collapsible depth:** Fold granular subsystem changes, commit history themes, and raw diagnostic output inside `<details><summary>Detailed technical changes & commit breakdown</summary>`. Ensure a blank line precedes and follows content inside `<details>` for proper GitHub Markdown rendering.
 
-Avoid stale role names, stale SHA references, and outdated "status" blocks.
+Ensure title scope accurately reflects the primary change (`type(scope): concise description`) without laundry-listing details captured in the body. Avoid stale role names, stale SHA references, and outdated "status" blocks.
 
 ## Step 3 — Safe update command pattern (required)
 
-Always update body via stdin/file, never inline shell interpolation for markdown:
+Always update body via stdin/file from the populated template, never inline shell interpolation for markdown:
 
 ```bash
 cat <<'EOF' | gh pr edit <id> --title "<new-title>" --body-file -
-<new body markdown>
+<populated markdown from templates/pr-description.md>
 EOF
 ```
 
