@@ -8,6 +8,10 @@ related_to:
   - StorageClass
 references:
   - https://github.com/tosin2013/openshiftv4-devday/blob/master/15.UsingPersistentStorage.adoc - Reference guide for PVC workflow
+category: Guides
+title: "PVC Testing Walkthrough — OpenShift Virtualization"
+tags: [openshift-virtualization, pvc, test]
+date: 2026-06-12
 ---
 
 # PVC Testing Walkthrough — OpenShift Virtualization

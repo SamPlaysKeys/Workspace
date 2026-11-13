@@ -4,6 +4,11 @@ category: Guides
 status: Active
 tags:
   - CI/CD
+system: GitHub Actions
+title: "Chaining GitHub Actions Workflows Without a PAT or GitHub App"
+date: 2026-05-06
+related_to: []
+references: []
 ---
 # Chaining GitHub Actions Workflows Without a PAT or GitHub App
 

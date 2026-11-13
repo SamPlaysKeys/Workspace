@@ -1,5 +1,13 @@
 ---
 type: Design
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Design Document: AAP + ACM Execution Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, aap-acm, design]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Design Document: AAP + ACM Execution Path

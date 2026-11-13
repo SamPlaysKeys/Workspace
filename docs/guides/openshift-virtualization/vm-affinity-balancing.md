@@ -8,6 +8,10 @@ related_to:
   - Affinity Rules
 references:
   - https://www.redhat.com/en/blog/node-selection-and-affinity-for-virtual-machines-in-openshift
+category: Guides
+title: "VM Affinity Balancing for Multi-Group Deployment"
+tags: [openshift-virtualization, affinity, balancing]
+date: 2026-07-24
 ---
 
 # VM Affinity Balancing for Multi-Group Deployment

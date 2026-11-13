@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Execution Checklist: AAP + ACM Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, aap-acm, checklist]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Execution Checklist: AAP + ACM Path

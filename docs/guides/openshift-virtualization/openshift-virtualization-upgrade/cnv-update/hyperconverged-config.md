@@ -1,5 +1,13 @@
 ---
 type: Design
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "HyperConverged CR Configuration for CNV Updates"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, cnv-update, hyperconverged, config]
+date: 2026-07-17
+related_to: []
+references: []
 ---
 # HyperConverged CR Configuration for CNV Updates
 

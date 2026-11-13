@@ -1,5 +1,13 @@
 ---
 type: ADR
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "ADR 0001: VM Policy Thresholds for Live Migration Classification"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, adr, policy, thresholds]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 # ADR 0001: VM Policy Thresholds for Live Migration Classification
 

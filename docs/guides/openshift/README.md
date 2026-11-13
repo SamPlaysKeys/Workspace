@@ -1,5 +1,13 @@
 ---
-type: Reference
+type: Index
+status: Active
+system: OpenShift Container Platform
+category: Guides
+title: "OpenShift guides (documentation)"
+tags: [openshift]
+date: 2026-05-13
+related_to: []
+references: []
 ---
 # OpenShift guides (documentation)
 

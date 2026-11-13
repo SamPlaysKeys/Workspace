@@ -5,6 +5,10 @@ status: Active
 tags:
   - OpenShift
 date: 2026-08-01
+system: OpenShift Container Platform
+title: "Checking OpenShift Certificates"
+related_to: []
+references: []
 ---
 # Checking OpenShift Certificates
 

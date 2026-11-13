@@ -2,6 +2,12 @@
 type: Reference
 status: Active
 category: Guides
+system: OpenShift Container Platform
+title: "NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)"
+tags: [openshift, nvidia, vgpu, manager, internal, registry, clusterpolicy]
+date: 2026-05-13
+related_to: []
+references: []
 ---
 # NVIDIA vGPU Manager: build, integrated registry, and ClusterPolicy (OpenShift Virtualization)
 

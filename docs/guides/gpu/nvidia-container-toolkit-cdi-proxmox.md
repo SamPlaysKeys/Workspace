@@ -1,7 +1,13 @@
 ---
-type: Note
+type: Reference
 category: Guides
 status: Active
+system: NVIDIA GPU
+title: "NVIDIA Container Toolkit & CDI Setup on Proxmox GPU Passthrough VMs"
+tags: [gpu, nvidia, container, toolkit, cdi, proxmox]
+date: 2026-06-20
+related_to: []
+references: []
 ---
 
 # NVIDIA Container Toolkit & CDI Setup on Proxmox GPU Passthrough VMs

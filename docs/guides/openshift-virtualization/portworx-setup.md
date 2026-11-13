@@ -8,6 +8,10 @@ related_to:
   - OperatorHub
 references:
   - https://docs.portworx.com/portworx-enterprise/install-portworx/openshift
+category: Guides
+title: "Configuring Portworx for OpenShift Virtualization"
+tags: [openshift-virtualization, portworx, setup]
+date: 2026-06-12
 ---
 
 # Configuring Portworx for OpenShift Virtualization

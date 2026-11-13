@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "CNV Update Prerequisites"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, cnv-update, prerequisites]
+date: 2026-07-17
+related_to: []
+references: []
 ---
 # CNV Update Prerequisites
 

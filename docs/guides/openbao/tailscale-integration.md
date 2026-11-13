@@ -8,6 +8,9 @@ references:
   - Tailscale Keys API Documentation: https://tailscale.com/kb/1101/api#keys
   - OpenBao Plugin Development: https://openbao.org/docs/plugins/developing/
 category: Architecture
+title: "Tailscale Integration for OpenBao"
+tags: [openbao, tailscale, integration]
+date: 2026-06-07
 ---
 
 # Tailscale Integration for OpenBao

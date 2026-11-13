@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Monitoring CNV Upgrade Progress"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, cnv-update, monitoring, upgrade]
+date: 2026-07-17
+related_to: []
+references: []
 ---
 # Monitoring CNV Upgrade Progress
 

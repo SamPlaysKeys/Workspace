@@ -13,6 +13,8 @@ tags:
   - OpenShift
   - app-of-apps
   - BigFix
+title: "BigFix Host Agent Client Deployment on OpenShift via GitOps"
+date: 2026-07-31
 ---
 
 # BigFix Host Agent Client Deployment on OpenShift via GitOps

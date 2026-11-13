@@ -7,6 +7,8 @@ references:
   - HCL BigFix Platform Documentation: https://help.hcl-software.com/bigfix/11.0/platform/index.html
 category: Guides
 title: HCL BigFix Agent Architecture Guide
+tags: [bigfix, planning]
+date: 2026-07-20
 ---
 
 # HCL BigFix Planning & Architecture Guide

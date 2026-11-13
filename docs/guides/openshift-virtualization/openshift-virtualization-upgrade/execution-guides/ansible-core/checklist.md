@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Execution Checklist: Ansible Core Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, ansible-core, checklist]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Execution Checklist: Ansible Core Path

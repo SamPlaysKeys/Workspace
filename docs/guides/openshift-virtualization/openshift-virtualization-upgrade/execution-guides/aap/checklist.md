@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Execution Checklist: Ansible Automation Platform (AAP) Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, aap, checklist]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Execution Checklist: Ansible Automation Platform (AAP) Path

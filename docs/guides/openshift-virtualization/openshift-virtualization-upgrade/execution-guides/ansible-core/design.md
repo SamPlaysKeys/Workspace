@@ -1,5 +1,13 @@
 ---
 type: Design
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Design Document: Ansible Core Execution Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, ansible-core, design]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Design Document: Ansible Core Execution Path

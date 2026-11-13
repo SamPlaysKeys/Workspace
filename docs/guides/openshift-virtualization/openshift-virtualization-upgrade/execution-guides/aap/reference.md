@@ -1,5 +1,13 @@
 ---
 type: Reference
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Reference Document: Ansible Automation Platform (AAP) Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, aap, reference]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Reference Document: Ansible Automation Platform (AAP) Path

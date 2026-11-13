@@ -1,5 +1,13 @@
 ---
 type: Reference
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Migration Timeout Calculation Reference"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, migration, timeout, calculation]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 # Migration Timeout Calculation Reference
 

@@ -1,5 +1,13 @@
 ---
-type: Guide
+type: Index
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "OpenShift Virtualization VM Migration Strategy"
+tags: [openshift-virtualization, openshift-virtualization-upgrade]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 # OpenShift Virtualization VM Migration Strategy
 

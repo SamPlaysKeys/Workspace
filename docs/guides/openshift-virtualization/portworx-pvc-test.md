@@ -7,6 +7,10 @@ related_to:
   - PersistentVolumeClaim
   - ReadWriteMany
 references:
+category: Guides
+title: "Portworx PVC Testing Walkthrough (RWX)"
+tags: [openshift-virtualization, portworx, pvc, test]
+date: 2026-06-12
 ---
 
 # Portworx PVC Testing Walkthrough (RWX)

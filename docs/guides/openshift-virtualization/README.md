@@ -1,5 +1,13 @@
 ---
-type: Reference
+type: Index
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "OpenShift Virtualization guides (documentation)"
+tags: [openshift-virtualization]
+date: 2026-07-24
+related_to: []
+references: []
 ---
 # OpenShift Virtualization guides (documentation)
 

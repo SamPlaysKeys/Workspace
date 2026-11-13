@@ -1,5 +1,13 @@
 ---
-type: README-Note
+type: Index
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "OpenShift Virtualization (CNV) Update Strategy"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, cnv-update]
+date: 2026-07-17
+related_to: []
+references: []
 ---
 # OpenShift Virtualization (CNV) Update Strategy
 

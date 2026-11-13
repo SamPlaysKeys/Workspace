@@ -2,6 +2,12 @@
 type: Reference
 status: Active
 category: Guides
+system: Dev Environment
+title: "VSCode Setup for Enterprise Development"
+tags: [dev-environment, vscode]
+date: 2026-05-29
+related_to: []
+references: []
 ---
 # VSCode Setup for Enterprise Development
 

@@ -6,6 +6,10 @@ related_to:
   - artifacts/ansible/aap-template-export/
 references:
   - https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/
+category: Guides
+title: "Exporting and Enriching AAP Job Templates and Workflows"
+tags: [ansible, aap, job, template, export]
+date: 2026-09-10
 ---
 
 # Exporting and Enriching AAP Job Templates and Workflows

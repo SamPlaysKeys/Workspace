@@ -5,6 +5,11 @@ status: Active
 tags:
   - OpenShift
   - Containers
+system: OpenShift Container Platform
+title: "Using the integrated OpenShift container image registry"
+date: 2026-05-13
+related_to: []
+references: []
 ---
 # Using the integrated OpenShift container image registry
 

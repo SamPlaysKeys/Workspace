@@ -12,6 +12,8 @@ references:
   - https://github.com/containers/krunkit
 category: Guides
 title: Installing Podman on MacOS
+tags: [dev-environment, podman, desktop, macos]
+date: 2026-06-12
 ---
 
 # Podman Desktop Setup on macOS

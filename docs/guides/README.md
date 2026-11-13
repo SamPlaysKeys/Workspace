@@ -1,7 +1,13 @@
 ---
-layout: page
 title: Setup & Prevention Guides
 status: Meta
+type: Index
+system: Workspace Documentation
+category: Guides
+tags: [guides, index]
+date: 2026-06-07
+related_to: []
+references: []
 ---
 
 This directory contains guides and walkthroughs for correctly configuring and maintaining systems.
@@ -38,3 +44,11 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 - [RAPT Optical Touch/Stylus HID & MStar Scaler UART Protocol Guide](./jamboard/rapt-touch-and-scaler-protocol.md) - Wire-level specification for RAPT HID Report `0xF1` (340/484-byte interfaces), `uinput` stylus/eraser daemon setup, and MStar `/dev/ttyTHS1` 9600-baud UART brightness and HDMI/USB-C input switching.
 - [Live Input Capture Findings for the Google Jamboard RAPT Touch Controller](./jamboard/live-input-capture-findings.md) - Measured RAPT firmware tool classes (stylus/finger/eraser), extended HID interface, palm clustering data, and where it differs from the stock-ROM analysis.
 
+
+## Frontmatter Convention
+
+Every `.md` file under `docs/guides/` must carry these keys (values may be empty, keys may not be missing):
+
+`type` (`Guide`, `Reference`, `Troubleshooting`, `Design`, `ADR`, `Index`), `status`, `system`, `category`, `title`, `tags`, `date`, `related_to`, `references`.
+
+The repo pre-commit hook (`.githooks/pre-commit` -> `.github/scripts/guides_frontmatter.py`) adds any missing keys to staged guide files and rejects unknown `type` values. Enable it once per clone with `git config --local core.hooksPath .githooks`. Check everything manually with `python3 .github/scripts/guides_frontmatter.py --all`.

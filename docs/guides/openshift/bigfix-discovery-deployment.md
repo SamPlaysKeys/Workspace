@@ -14,6 +14,8 @@ tags:
   - OpenShift
   - BigFix
   - app-of-apps
+title: "BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps"
+date: 2026-07-31
 ---
 
 # BigFix Inventory (BFI) Discovery & NFD Deployment via GitOps

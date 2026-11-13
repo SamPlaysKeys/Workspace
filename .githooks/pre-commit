@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Repo pre-commit hook. Enable once per clone with:
+#   git config --local core.hooksPath .githooks
+# Setting core.hooksPath locally overrides the global hooks directory,
+# so the global betterleaks scan is chained here.
+
+if command -v betterleaks >/dev/null 2>&1; then
+    betterleaks git --pre-commit --staged -v || exit 1
+fi
+
+python3 .github/scripts/guides_frontmatter.py --staged

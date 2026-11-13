@@ -1,5 +1,13 @@
 ---
 type: Guide
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Control Plane Only Updates (OpenShift 4.16+)"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, cnv-update, control, plane, only]
+date: 2026-07-17
+related_to: []
+references: []
 ---
 # Control Plane Only Updates (OpenShift 4.16+)
 

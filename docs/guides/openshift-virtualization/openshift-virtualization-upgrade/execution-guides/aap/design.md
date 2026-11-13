@@ -1,5 +1,13 @@
 ---
 type: Design
+status: Active
+system: OpenShift Virtualization
+category: Guides
+title: "Design Document: Ansible Automation Platform (AAP) Execution Path"
+tags: [openshift-virtualization, openshift-virtualization-upgrade, execution-guides, aap, design]
+date: 2026-07-15
+related_to: []
+references: []
 ---
 
 # Design Document: Ansible Automation Platform (AAP) Execution Path
