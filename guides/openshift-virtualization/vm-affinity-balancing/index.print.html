@@ -1,0 +1,411 @@
+<!doctype html><html id=R-html lang=en-us dir=ltr itemscope itemtype=http://schema.org/Article data-r-output-format=print><head><meta charset=utf-8><meta name=viewport content="height=device-height,width=device-width,initial-scale=1,minimum-scale=1"><meta name=generator content="Hugo 0.169.0"><meta name=generator content="Relearn 9.5.1"><meta name=description content="Overview This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only one VM from each group (GRP01, GRP02) lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes."><meta name=author content><meta name=twitter:card content="summary"><meta name=twitter:title content="VM Affinity Balancing for Multi-Group Deployment :: Workspace Docs"><meta name=twitter:description content="Overview This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only one VM from each group (GRP01, GRP02) lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes."><meta property="og:url" content="https://samplayskeys.github.io/Workspace/guides/openshift-virtualization/vm-affinity-balancing/index.html"><meta property="og:site_name" content="Workspace Docs"><meta property="og:title" content="VM Affinity Balancing for Multi-Group Deployment :: Workspace Docs"><meta property="og:description" content="Overview This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only one VM from each group (GRP01, GRP02) lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes."><meta property="og:locale" content="en_us"><meta property="og:type" content="article"><meta property="article:section" content="Guides"><meta property="article:published_time" content="2026-07-24T00:00:00+00:00"><meta property="article:modified_time" content="2026-07-24T00:00:00+00:00"><meta property="article:tag" content="Openshift-Virtualization"><meta property="article:tag" content="Affinity"><meta property="article:tag" content="Balancing"><meta itemprop=name content="VM Affinity Balancing for Multi-Group Deployment :: Workspace Docs"><meta itemprop=description content="Overview This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only one VM from each group (GRP01, GRP02) lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes."><meta itemprop=datePublished content="2026-07-24T00:00:00+00:00"><meta itemprop=dateModified content="2026-07-24T00:00:00+00:00"><meta itemprop=wordCount content="1341"><meta itemprop=keywords content="Openshift-Virtualization,Affinity,Balancing"><title>VM Affinity Balancing for Multi-Group Deployment :: Workspace Docs</title><link href=https://samplayskeys.github.io/Workspace/guides/openshift-virtualization/vm-affinity-balancing/index.html rel=canonical type=text/html title="VM Affinity Balancing for Multi-Group Deployment :: Workspace Docs"><link href=/Workspace/css/search.19b8eb7faa53e727a407aa2d781e21185a35cfc9330628acc11df190f919f003.css rel=stylesheet><script src=/Workspace/js/search.en.59a00d815c4b8482b720f386df03f0f3f848e06c31b89d0f8ca2adecdd176b80.js defer></script>
+    <script type="application/json" id="R-search-config">{
+      "indexFile": "searchindex.en.min.79447c35ee2ff844fb64ea99542a5565d00923a28f7c1a1aec88905273ffe128.js"
+    }</script>
+<link href=/Workspace/fonts/fontawesome/css/all.min.e0b69df26e19596d4b81bf7eb0c54b6047e7221ec18d5d4d40c11eefd3ef8a4b.css rel=stylesheet media=print class=R-async-style><noscript><link href=/Workspace/fonts/fontawesome/css/all.min.e0b69df26e19596d4b81bf7eb0c54b6047e7221ec18d5d4d40c11eefd3ef8a4b.css rel=stylesheet></noscript><link href=/Workspace/css/theme.min.715efeaaf7e51bb41656c645861b7a0e6e951466c518b0d1726651e5d20e4591.css rel=stylesheet><link href=/Workspace/css/format-print.min.d43b492ccd1cf136d056dca748bf2689884c88d5ee8794f285b2266c5753cdba.css rel=stylesheet id=R-format-style><script type=application/json id=R-theme-config>{"disableInlineCopyToClipboard":false,"enableBlockCodeWrap":true,"path":"/guides/openshift-virtualization/vm-affinity-balancing/index.html","relBasePath":"../../..","relBaseUri":"../../../..","themevariants":["relearn-dark"],"translations":{"Browser_unsupported_feature":"This browser doesn't support this feature","Change_sorting":"Change sorting","Close_graph":"Close enlarged graph","Copied_to_clipboard":"Text copied to clipboard!","Copy_to_clipboard":"Copy text to clipboard","Deleted_text_end":"End of deleted text","Deleted_text_start":"Start of deleted text","Enlarge_graph":"Enlarge graph","History_cleared":"History cleared","Inserted_text_end":"End of inserted text","Inserted_text_start":"Start of inserted text","Link_copied_to_clipboard":"Link copied to clipboard!","N_matches_on_page":"{1} matches for \"{0}\" on this page","N_results_found":"{1} results found for \"{0}\"","No_results_found":"No results found for \"{0}\"","Reset_sorting":"Reset sorting","Reset_view":"Reset view","Sort_key_ascending":"sorted at position {0}, ascending","Sort_key_descending":"sorted at position {0}, descending","Sortable_columns":"Column headers with buttons are sortable.","Sorted_by_ascending":"Sorted by \"{0}\", ascending","Sorted_by_descending":"Sorted by \"{0}\", descending","Sorting_reset":"Sorting reset!","Unsorted_by":"No longer sorted by \"{0}\"","View_reset":"View reset!"}}</script><script src=/Workspace/js/theme-head.min.297e164d1356ea6a8496ff47882ce6a24e781180d66683222d3e523246cd4b38.js></script></head><body class="mobile-support print" data-origin=/Workspace/guides/openshift-virtualization/vm-affinity-balancing/index.html><a id=R-skiplink href=#R-main>Skip to main content</a><div id=R-body class=default-animation><div id=R-body-overlay></div><header id=R-topbar class=default-animation><a id=R-logo class="R-default layout-sidebar-row" href=/Workspace/index.html><span class="logo-title default-animation">Workspace Docs</span></a><div class="topbar-wrapper default-animation"><div class="topbar-sidebar-divider default-animation"></div><div class="topbar-area topbar-area-start" data-area=start><div class="topbar-button topbar-button-sidebar default-animation" data-content-empty=disable data-width-s=show data-width-m=hide data-width-l=hide data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><button data-button-action=toggle-nav type=button title="Menu (CTRL+ALT+n)" aria-expanded=false><i class="fa-fw fas fa-bars" aria-hidden=true></i> <span class=title>Menu</span></button></span></div><div class="topbar-button topbar-button-toc default-animation" data-content-empty=hide data-width-s=show data-width-m=show data-width-l=show data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><button data-button-action=toggle-flyout type=button title="Table of Contents (CTRL+ALT+t)" aria-expanded=false><i class="fa-fw fas fa-table-list" aria-hidden=true></i> <span class=title>Table of Contents</span></button></span><div class=topbar-content><div class=topbar-content-wrapper><nav class=TableOfContents aria-label="Table of Contents"><ul><li><a href=#overview>Overview</a></li><li><a href=#how-it-works>How It Works</a></li><li><a href=#prerequisites>Prerequisites</a></li><li><a href=#target-architecture>Target Architecture</a></li><li><a href=#step-1-label-your-nodes-optional>Step 1: Label Your Nodes (Optional)</a><ul><li><a href=#when-to-use-node-labeling>When to Use Node Labeling</a></li></ul></li><li><a href=#step-2-create-vms-with-affinity-rules>Step 2: Create VMs with Affinity Rules</a><ul><li><a href=#grp01-vms-4-total>GRP01 VMs (4 Total)</a></li><li><a href=#grp02-vms-4-total>GRP02 VMs (4 Total)</a></li></ul></li><li><a href=#step-3-deploy-and-start-vms>Step 3: Deploy and Start VMs</a></li><li><a href=#step-4-verify-distribution>Step 4: Verify Distribution</a></li><li><a href=#how-anti-affinity-enforces-balance>How Anti-Affinity Enforces Balance</a></li><li><a href=#required-vs-preferred-affinity>Required vs Preferred Affinity</a></li><li><a href=#common-pitfalls>Common Pitfalls</a></li><li><a href=#scaling-guidance>Scaling Guidance</a></li><li><a href=#quick-one-liner-for-verification>Quick One-Liner for Verification</a></li><li><a href=#references>References</a><ul><li></li></ul></li></ul></nav></div></div></div></div><div class="topbar-area topbar-area-middle" data-area=middle><nav class="topbar-breadcrumbs breadcrumbs highlightable" aria-label=Breadcrumbs data-overflow-title="Documentation > Guides > OpenShift Virtualization guides (documentation) > VM Affinity Balancing for Multi-Group Deployment"><ol itemscope itemtype=http://schema.org/BreadcrumbList><li class=topbar-breadcrumbs-divider aria-hidden=true>&nbsp;>&nbsp;</li><li itemscope itemtype=https://schema.org/ListItem itemprop=itemListElement><a itemprop=item href=/Workspace/index.html><span itemprop=name>Documentation</span></a><meta itemprop=position content="1">&nbsp;>&nbsp;</li><li itemscope itemtype=https://schema.org/ListItem itemprop=itemListElement><a itemprop=item href=/Workspace/guides/index.html><span itemprop=name>Guides</span></a><meta itemprop=position content="2">&nbsp;>&nbsp;</li><li itemscope itemtype=https://schema.org/ListItem itemprop=itemListElement><a itemprop=item href=/Workspace/guides/openshift-virtualization/index.html><span itemprop=name>OpenShift Virtualization guides (documentation)</span></a><meta itemprop=position content="3">&nbsp;>&nbsp;</li><li itemscope itemtype=https://schema.org/ListItem itemprop=itemListElement aria-current=page><span itemprop=name>VM Affinity Balancing for Multi-Group Deployment</span><meta itemprop=position content="4"></li></ol></nav></div><div class="topbar-area topbar-area-end" data-area=end><div class="topbar-button topbar-button-print default-animation" data-content-empty=disable data-width-s=area-more data-width-m=show data-width-l=show data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><a href=/Workspace/guides/openshift-virtualization/vm-affinity-balancing/index.print.html title="Print whole chapter (CTRL+ALT+p)"><i class="fa-fw fas fa-print" aria-hidden=true></i> <span class=title>Print whole chapter</span></a></span></div><div class="topbar-button topbar-button-prev default-animation" data-content-empty=disable data-width-s=show data-width-m=show data-width-l=show data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><a href=/Workspace/guides/openshift-virtualization/index.html title="OpenShift Virtualization guides (documentation) (🡐)"><i class="fa-fw fas fa-chevron-left" aria-hidden=true></i> <span class=title>Previous page</span></a></span></div><div class="topbar-button topbar-button-next default-animation" data-content-empty=disable data-width-s=show data-width-m=show data-width-l=show data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><a href=/Workspace/guides/openshift-virtualization/openshift-virtualization-upgrade/index.html title="OpenShift Virtualization VM Migration Strategy (🡒)"><i class="fa-fw fas fa-chevron-right" aria-hidden=true></i> <span class=title>Next page</span></a></span></div><div class="topbar-button topbar-button-more default-animation" data-content-empty=hide data-width-s=show data-width-m=show data-width-l=show data-title-width-s=hide data-title-width-m=hide data-title-width-l=hide><span class="btn cstyle button link noborder interactive"><button data-button-action=toggle-flyout type=button title=More aria-expanded=false><i class="fa-fw fas fa-ellipsis-v" aria-hidden=true></i> <span class=title>More</span></button></span><div class=topbar-content><div class=topbar-content-wrapper><div class="topbar-area topbar-area-more" data-area=more></div></div></div></div></div></div></header><div id=R-main-overlay></div><main id=R-main class="highlightable Guide"><div class=flex-block-wrapper><article class=default><header class=headline><div class="R-taxonomy taxonomy-tags tags" title=Tags><i class="fa-fw fas fa-layer-group" aria-hidden=true></i><ul><li><a class=term-link href=/Workspace/tags/affinity/index.html>Affinity</a></li><li><a class=term-link href=/Workspace/tags/balancing/index.html>Balancing</a></li><li><a class=term-link href=/Workspace/tags/openshift-virtualization/index.html>Openshift-Virtualization</a></li></ul></div></header><h1 id=vm-affinity-balancing-for-multi-group-deployment>VM Affinity Balancing for Multi-Group Deployment</h1><h2 id=overview>Overview<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><p>This guide configures node affinity and pod anti-affinity to evenly distribute VMs across OpenShift nodes. The goal: ensure only <strong>one VM from each group (GRP01, GRP02)</strong> lands on each node, maximizing redundancy and preventing single points of failure. For the purpose of this guide, we will be using examples of 4 nodes, and 8 VMs, but this can be done with any amount of VMs/nodes.</p><h2 id=how-it-works>How It Works<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><table><thead><tr><th>Mechanism</th><th>Purpose</th></tr></thead><tbody><tr><td><strong>Node Affinity</strong></td><td>Restricts which nodes a VM can schedule on (optional filtering)</td></tr><tr><td><strong>Pod Anti-Affinity</strong></td><td>Prevents multiple VMs from the same group on the same node</td></tr></tbody></table><h2 id=prerequisites>Prerequisites<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><ul><li>OpenShift cluster with OpenShift Virtualization operator installed</li><li>Cluster-admin or namespace-admin access</li><li><strong>4 nodes</strong> in the cluster (required for 4 VMs per group with anti-affinity)</li><li>VMs deployed via <code>VirtualMachine</code> CRD (KubeVirt)</li></ul><h2 id=target-architecture>Target Architecture<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><table><thead><tr><th>Group</th><th>VM Count</th><th>Distribution</th></tr></thead><tbody><tr><td>GRP01</td><td>4 VMs</td><td>1 per node</td></tr><tr><td>GRP02</td><td>4 VMs</td><td>1 per node</td></tr><tr><td><strong>Total</strong></td><td><strong>8 VMs</strong></td><td><strong>2 per node</strong></td></tr></tbody></table><h2 id=step-1-label-your-nodes-optional>Step 1: Label Your Nodes (Optional)<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><p><strong>Skip this step if you want VMs to schedule on all nodes in the cluster.</strong></p><p>Only label nodes if you want to restrict VMs to a specific subset of nodes:</p><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Example: Label specific nodes to restrict VM placement</span>
+</span></span><span style=display:flex><span>oc label node &lt;node1&gt; node-role.kubernetes.io/vm-workload<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>oc label node &lt;node2&gt; node-role.kubernetes.io/vm-workload<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>oc label node &lt;node3&gt; node-role.kubernetes.io/vm-workload<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span>
+</span></span><span style=display:flex><span>oc label node &lt;node4&gt; node-role.kubernetes.io/vm-workload<span style=color:#f92672>=</span><span style=color:#e6db74>&#34;&#34;</span></span></span></code></pre></div><h3 id=when-to-use-node-labeling>When to Use Node Labeling<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h3><p><strong>Example scenario:</strong> Your cluster has 6 nodes, but only 4 have the larger storage volumes required for these VMs. Label those 4 nodes to ensure VMs only schedule where storage is available:</p><pre><code>Cluster: 6 nodes total
+├── node-1 (large storage)  ← labeled vm-workload
+├── node-2 (large storage)  ← labeled vm-workload
+├── node-3 (large storage)  ← labeled vm-workload
+├── node-4 (large storage)  ← labeled vm-workload
+├── node-5 (small storage)  ← not labeled
+└── node-6 (small storage)  ← not labeled</code></pre><p>Without labeling, the scheduler might place VMs on nodes 5-6, causing storage issues or pending pods.</p><p><strong>How balancing works without node labels:</strong></p><p>The anti-affinity rule uses <code>topologyKey: kubernetes.io/hostname</code>, which Kubernetes automatically sets to a unique value per node. This means each node is treated as a separate &ldquo;zone&rdquo; for scheduling purposes - no extra labels required.</p><h2 id=step-2-create-vms-with-affinity-rules>Step 2: Create VMs with Affinity Rules<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><blockquote><p><strong>Note:</strong> If you skipped Step 1 (using all nodes), remove the <code>nodeAffinity</code> section from the YAML below. Only <code>podAntiAffinity</code> is required for balancing.</p></blockquote><h3 id=grp01-vms-4-total>GRP01 VMs (4 Total)<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h3><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp01-vm-01</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp01-vm-01</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp01-vm-01-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp01-vm-02</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp01-vm-02</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp01-vm-02-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp01-vm-03</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp01-vm-03</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp01-vm-03-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp01-vm-04</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp01-vm-04</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp01</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp01-vm-04-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span></span></span></code></pre></div><h3 id=grp02-vms-4-total>GRP02 VMs (4 Total)<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h3><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-yaml data-lang=yaml><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp02-vm-01</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp02-vm-01</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp02-vm-01-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp02-vm-02</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp02-vm-02</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp02-vm-02-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp02-vm-03</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp02-vm-03</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp02-vm-03-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>---
+</span></span><span style=display:flex><span><span style=color:#f92672>apiVersion</span>: <span style=color:#ae81ff>kubevirt.io/v1</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>kind</span>: <span style=color:#ae81ff>VirtualMachine</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>name</span>: <span style=color:#ae81ff>grp02-vm-04</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>namespace</span>: <span style=color:#ae81ff>your-namespace</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span><span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>  <span style=color:#f92672>running</span>: <span style=color:#66d9ef>false</span>
+</span></span><span style=display:flex><span>  <span style=color:#f92672>template</span>:
+</span></span><span style=display:flex><span>    <span style=color:#f92672>metadata</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>labels</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>vm-group</span>: <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>kubevirt.io/domain</span>: <span style=color:#ae81ff>grp02-vm-04</span>
+</span></span><span style=display:flex><span>    <span style=color:#f92672>spec</span>:
+</span></span><span style=display:flex><span>      <span style=color:#f92672>affinity</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>nodeAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>            <span style=color:#f92672>nodeSelectorTerms</span>:
+</span></span><span style=display:flex><span>            - <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>node-role.kubernetes.io/vm-workload</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>Exists</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>podAntiAffinity</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>requiredDuringSchedulingIgnoredDuringExecution</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>labelSelector</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>matchExpressions</span>:
+</span></span><span style=display:flex><span>              - <span style=color:#f92672>key</span>: <span style=color:#ae81ff>vm-group</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>operator</span>: <span style=color:#ae81ff>In</span>
+</span></span><span style=display:flex><span>                <span style=color:#f92672>values</span>:
+</span></span><span style=display:flex><span>                - <span style=color:#ae81ff>grp02</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>topologyKey</span>: <span style=color:#ae81ff>kubernetes.io/hostname</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>domain</span>:
+</span></span><span style=display:flex><span>        <span style=color:#f92672>cpu</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>cores</span>: <span style=color:#ae81ff>2</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>memory</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>guest</span>: <span style=color:#ae81ff>4Gi</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>devices</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>disks</span>:
+</span></span><span style=display:flex><span>          - <span style=color:#f92672>disk</span>:
+</span></span><span style=display:flex><span>              <span style=color:#f92672>bus</span>: <span style=color:#ae81ff>virtio</span>
+</span></span><span style=display:flex><span>            <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span>
+</span></span><span style=display:flex><span>      <span style=color:#f92672>volumes</span>:
+</span></span><span style=display:flex><span>      - <span style=color:#f92672>persistentVolumeClaim</span>:
+</span></span><span style=display:flex><span>          <span style=color:#f92672>claimName</span>: <span style=color:#ae81ff>grp02-vm-04-pvc</span>
+</span></span><span style=display:flex><span>        <span style=color:#f92672>name</span>: <span style=color:#ae81ff>rootdisk</span></span></span></code></pre></div><h2 id=step-3-deploy-and-start-vms>Step 3: Deploy and Start VMs<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Apply VM definitions</span>
+</span></span><span style=display:flex><span>oc apply -f grp01-vms.yaml
+</span></span><span style=display:flex><span>oc apply -f grp02-vms.yaml
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Start all GRP01 VMs</span>
+</span></span><span style=display:flex><span>oc patch vm grp01-vm-01 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp01-vm-02 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp01-vm-03 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp01-vm-04 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Start all GRP02 VMs</span>
+</span></span><span style=display:flex><span>oc patch vm grp02-vm-01 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp02-vm-02 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp02-vm-03 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span>
+</span></span><span style=display:flex><span>oc patch vm grp02-vm-04 --type merge -p <span style=color:#e6db74>&#39;{&#34;spec&#34;:{&#34;running&#34;:true}}&#39;</span></span></span></code></pre></div><h2 id=step-4-verify-distribution>Step 4: Verify Distribution<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Check which node each VMI (VirtualMachineInstance) is running on</span>
+</span></span><span style=display:flex><span>oc get vmi -o custom-columns<span style=color:#f92672>=</span>NAME:.metadata.name,NODE:.status.nodeName,GROUP:.metadata.labels.vm-group
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Expected output (4 nodes, 8 VMs):</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># NAME          NODE          GROUP</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp01-vm-01   node-1        grp01</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp01-vm-02   node-2        grp01</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp01-vm-03   node-3        grp01</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp01-vm-04   node-4        grp01</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp02-vm-01   node-1        grp02</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp02-vm-02   node-2        grp02</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp02-vm-03   node-3        grp02</span>
+</span></span><span style=display:flex><span><span style=color:#75715e># grp02-vm-04   node-4        grp02</span>
+</span></span><span style=display:flex><span>
+</span></span><span style=display:flex><span><span style=color:#75715e># Check pod placement directly</span>
+</span></span><span style=display:flex><span>oc get pods -l kubevirt.io/domain -o wide</span></span></code></pre></div><h2 id=how-anti-affinity-enforces-balance>How Anti-Affinity Enforces Balance<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><pre><code>Node-1              Node-2              Node-3              Node-4
+-------             -------             -------             -------
+grp01-vm-01         grp01-vm-02         grp01-vm-03         grp01-vm-04
+grp02-vm-01         grp02-vm-02         grp02-vm-03         grp02-vm-04</code></pre><p>Each group&rsquo;s anti-affinity rule prevents a second VM from that group landing on an already-occupied node. Result: <strong>one GRP01 VM + one GRP02 VM per node</strong>.</p><h2 id=required-vs-preferred-affinity>Required vs Preferred Affinity<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><table><thead><tr><th>Type</th><th>Behavior</th><th>Use Case</th></tr></thead><tbody><tr><td><code>requiredDuringSchedulingIgnoredDuringExecution</code></td><td>Hard constraint - pod stays pending if no valid node</td><td>Critical HA requirements</td></tr><tr><td><code>preferredDuringSchedulingIgnoredDuringExecution</code></td><td>Soft constraint - best effort scheduling</td><td>Flexible distribution</td></tr></tbody></table><p>For strict &ldquo;one per group per node&rdquo; enforcement, use <strong>required</strong>.</p><h2 id=common-pitfalls>Common Pitfalls<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><table><thead><tr><th>Issue</th><th>Cause</th><th>Fix</th></tr></thead><tbody><tr><td>VM stuck in <code>Pending</code></td><td>Not enough nodes to satisfy anti-affinity</td><td>Add nodes or reduce VM count per group</td></tr><tr><td>All VMs on one node</td><td>Missing or incorrect label selector</td><td>Verify <code>vm-group</code> label matches in VM spec and selector</td></tr><tr><td>Anti-affinity ignored</td><td>Used <code>preferred</code> instead of <code>required</code></td><td>Use <code>requiredDuringSchedulingIgnoredDuringExecution</code></td></tr><tr><td>Node affinity blocks scheduling</td><td>Node label missing or typo&rsquo;d</td><td>Verify labels with <code>oc get nodes --show-labels</code></td></tr></tbody></table><h2 id=scaling-guidance>Scaling Guidance<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><table><thead><tr><th>VMs per Group</th><th>Minimum Nodes Required</th></tr></thead><tbody><tr><td>1</td><td>1 (no anti-affinity effect)</td></tr><tr><td>2</td><td>2</td></tr><tr><td>3</td><td>3</td></tr><tr><td><strong>4</strong></td><td><strong>4</strong> (this guide)</td></tr><tr><td>N</td><td>N</td></tr></tbody></table><h2 id=quick-one-liner-for-verification>Quick One-Liner for Verification<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><div class="highlight actionbar-wrapper wrap-code" dir=auto><pre style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span>oc get vmi -L vm-group -o custom-columns<span style=color:#f92672>=</span>NAME:.metadata.name,NODE:.status.nodeName,GROUP:.metadata.labels.vm-group | column -t</span></span></code></pre></div><h2 id=references>References<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h2><h4 id=primary-documentation>Primary Documentation<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h4><ul><li><a href=https://www.redhat.com/en/blog/node-selection-and-affinity-for-virtual-machines-in-openshift rel=external>Node Selection and Affinity on OpenShift</a></li></ul><h4 id=additional-references>Additional References<span class="btn cstyle anchor copyanchor scrollanchor link noborder notitle interactive"><button type=button title="Copy link to clipboard" aria-label="Copy link to clipboard"><i class="fa-fw fas fa-link fa-lg" aria-hidden=true></i></button></span></h4><ul><li><a href=https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#affinity-and-anti-affinity rel=external>Kubernetes Affinity Documentation</a></li><li><a href=https://kubevirt.io/user-guide/virtual_machines/scheduling/ rel=external>KubeVirt VM Scheduling</a></li></ul><footer class=footline><i class='fa-fw fas fa-calendar-days' aria-hidden=true></i> Jul 24, 2026</footer></article></div></main></div><script src=/Workspace/js/theme.min.5a693fcd4eb93b9982cdd4fb43e008ed4eea9f63eb42dd754ecace9e26b47620.js defer></script><div id=toast-container role=status aria-live=polite aria-atomic=false></div></body></html>
