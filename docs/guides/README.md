@@ -31,3 +31,7 @@ This directory contains guides and walkthroughs for correctly configuring and ma
 
 ### HCL BigFix
 - [Planning & Architecture Guide](./bigfix/planning.md) - Sizing, network ports, database selection, and discovery checklists for deployment.
+
+### Hardware & Embedded Linux
+- [Fedora Workstation (GNOME) & Stylus/Eraser Bring-Up on Google Jamboard](./jamboard/fedora-gnome-and-stylus-bringup.md) - Complete two-stage plan for backing up stock Android 7, reverse-engineering the RAPT optical stylus/tilt/eraser via LineageOS ADB, and installing stock Fedora `aarch64` onto the internal 16 GB eMMC.
+
