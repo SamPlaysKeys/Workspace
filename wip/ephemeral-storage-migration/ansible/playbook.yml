@@ -1,0 +1,192 @@
+---
+- name: Migrate Mirrored RAID to Split LVM for Logs & Kubelet Ephemeral Storage
+  hosts: k8s_nodes
+  become: true
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Ensure required system packages are installed
+      ansible.builtin.package:
+        name:
+          - lvm2
+          - rsync
+          - xfsprogs
+        state: present
+
+    # -------------------------------------------------------------
+    # 1. Graceful Node Drain (Optional / Controlled)
+    # -------------------------------------------------------------
+    - name: Drain Kubernetes Node (if enabled)
+      when: perform_k8s_drain | bool
+      delegate_to: localhost
+      become: false
+      kubernetes.core.k8s_drain:
+        name: "{{ k8s_node_name }}"
+        state: drain
+        ignore_daemonsets: true
+        delete_emptydir_data: true
+        force: true
+
+    # -------------------------------------------------------------
+    # 2. Stop Services to Prevent Inconsistent Writes
+    # -------------------------------------------------------------
+    - name: Stop Kubelet and Container Runtime
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - kubelet
+        - "{{ container_runtime_service }}"
+
+    - name: Stop Log Daemons
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - systemd-journald
+        - rsyslog
+      ignore_errors: true
+
+    # -------------------------------------------------------------
+    # 3. Setup LVM on Mirrored RAID Device
+    # -------------------------------------------------------------
+    - name: Create Physical Volume on RAID device
+      community.general.lvg:
+        vg: "{{ lvm_vg_name }}"
+        pvs: "{{ raid_block_device }}"
+        state: present
+
+    - name: Create Logical Volume for Logs
+      community.general.lvol:
+        vg: "{{ lvm_vg_name }}"
+        lv: "lv_log"
+        size: "{{ lvm_log_size }}"
+        state: present
+
+    - name: Create Logical Volume for Kubelet & Ephemeral Storage
+      community.general.lvol:
+        vg: "{{ lvm_vg_name }}"
+        lv: "lv_kubelet"
+        size: "{{ lvm_kubelet_size }}"
+        state: present
+
+    # -------------------------------------------------------------
+    # 4. Format Filesystems
+    # -------------------------------------------------------------
+    - name: Format Filesystem for lv_log
+      community.general.filesystem:
+        fstype: "{{ fs_type }}"
+        dev: "/dev/{{ lvm_vg_name }}/lv_log"
+
+    - name: Format Filesystem for lv_kubelet
+      community.general.filesystem:
+        fstype: "{{ fs_type }}"
+        dev: "/dev/{{ lvm_vg_name }}/lv_kubelet"
+
+    # -------------------------------------------------------------
+    # 5. Staging & Data Migration (Rsync)
+    # -------------------------------------------------------------
+    - name: Create temporary staging mount points
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - /mnt/stage_log
+        - /mnt/stage_kubelet
+
+    - name: Mount temporary staging targets
+      ansible.posix.mount:
+        path: "{{ item.path }}"
+        src: "{{ item.src }}"
+        fstype: "{{ fs_type }}"
+        state: mounted
+      loop:
+        - { path: "/mnt/stage_log", src: "/dev/{{ lvm_vg_name }}/lv_log" }
+        - { path: "/mnt/stage_kubelet", src: "/dev/{{ lvm_vg_name }}/lv_kubelet" }
+
+    - name: Rsync existing /var/log contents into staging volume
+      ansible.builtin.command:
+        cmd: rsync -aHAX /var/log/ /mnt/stage_log/
+      changed_when: true
+
+    - name: Rsync existing /var/lib/kubelet contents into staging volume
+      ansible.builtin.command:
+        cmd: rsync -aHAX /var/lib/kubelet/ /mnt/stage_kubelet/
+      changed_when: true
+
+    - name: Unmount staging targets
+      ansible.posix.mount:
+        path: "{{ item }}"
+        state: unmounted
+      loop:
+        - /mnt/stage_log
+        - /mnt/stage_kubelet
+
+    - name: Remove temporary staging directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /mnt/stage_log
+        - /mnt/stage_kubelet
+
+    # -------------------------------------------------------------
+    # 6. Configure Persistent Mounts in /etc/fstab and Mount
+    # -------------------------------------------------------------
+    - name: Configure /var/log persistent mount
+      ansible.posix.mount:
+        path: /var/log
+        src: "/dev/{{ lvm_vg_name }}/lv_log"
+        fstype: "{{ fs_type }}"
+        opts: "{{ log_mount_options }}"
+        state: mounted
+
+    - name: Configure /var/lib/kubelet persistent mount
+      ansible.posix.mount:
+        path: /var/lib/kubelet
+        src: "/dev/{{ lvm_vg_name }}/lv_kubelet"
+        fstype: "{{ fs_type }}"
+        opts: "{{ kubelet_mount_options }}"
+        state: mounted
+
+    # -------------------------------------------------------------
+    # 7. Restore SELinux Contexts (if SELinux active)
+    # -------------------------------------------------------------
+    - name: Restore SELinux contexts on /var/log and /var/lib/kubelet
+      ansible.builtin.command:
+        cmd: restorecon -Rv {{ item }}
+      loop:
+        - /var/log
+        - /var/lib/kubelet
+      when: ansible_selinux.status is defined and ansible_selinux.status == "enabled"
+      changed_when: false
+
+    # -------------------------------------------------------------
+    # 8. Start Services and Restore Node
+    # -------------------------------------------------------------
+    - name: Start Logging Services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+      loop:
+        - systemd-journald
+        - rsyslog
+      ignore_errors: true
+
+    - name: Start Container Runtime and Kubelet
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: started
+      loop:
+        - "{{ container_runtime_service }}"
+        - kubelet
+
+    - name: Uncordon Kubernetes Node (if enabled)
+      when: perform_k8s_drain | bool
+      delegate_to: localhost
+      become: false
+      kubernetes.core.k8s_drain:
+        name: "{{ k8s_node_name }}"
+        state: uncordon

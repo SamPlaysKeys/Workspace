@@ -8,6 +8,7 @@ Human-in-the-loop review and tracking of what has been done and what is in progr
 
 ## In Progress
 
+- [ ] **Storm Session: Ephemeral Pod Storage Migration**: Repurpose mirrored RAID array for dev pod ephemeral storage (`emptyDir`) and log isolation via LVM (`wip/ephemeral-storage-migration/`)
 - [x] **Storm Session: AAP Template Queries**: Export and enrich AAP Controller job templates and workflow templates into CSV/JSON → graduated to `artifacts/ansible/aap-template-export/` and `docs/guides/ansible/aap-job-template-export.md`
 - [x] **AI VM Management**: LlamaFarm-based AI model management layer on Debian + Quadro P5000 — ADR 0001, architecture plan, and Ansible draft → graduated to `docs/homelab/ai-vm/`
 - [ ] **Storm Session: Tailscale IDP for OpenBao**: Brainstorm and research auth methods for node identity integration (`wip/tailscale-idp-openbao/`)

@@ -1,0 +1,26 @@
+---
+# Storage Migration Variables
+
+# Target RAID block device (e.g. /dev/md0 for mdadm, or /dev/sdb for hardware RAID)
+raid_block_device: "/dev/md0"
+
+# LVM Configuration
+lvm_vg_name: "vg_node_storage"
+
+# Logical volume sizes
+# lv_log size can be explicit (e.g., 60g) or percentage of VG
+lvm_log_size: "60g"
+# lv_kubelet consumes remainder
+lvm_kubelet_size: "100%FREE"
+
+# Filesystem types & mount options
+fs_type: "xfs"
+kubelet_mount_options: "defaults,pquota"
+log_mount_options: "defaults"
+
+# Service names based on distribution
+container_runtime_service: "containerd" # or "crio"
+
+# Node name for kubectl drain/uncordon (optional; leave empty to skip drain)
+k8s_node_name: "{{ inventory_hostname }}"
+perform_k8s_drain: false
