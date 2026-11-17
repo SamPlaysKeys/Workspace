@@ -14,11 +14,13 @@ artifacts/jamboard/
 ├── jamboard-pen-daemon.c        # Zero-dependency C daemon (/dev/hidraw* -> uinput Finger + Pen/Eraser)
 ├── captures/                    # Live LineageOS HID descriptors + per-phase capture summaries
 ├── jamboard-scaler.sh           # MStar MST9U23T1 /dev/ttyTHS1 CLI (brightness, HDMI/USB-C input, mute)
-└── systemd/
-    ├── jamboard-touch-init          # Tegra210 GPIO 174/184/185 SPIFI boot sequence
-    ├── jamboard-touch-init.service  # Early-boot touchscreen power-on service
-    ├── jamboard-pen-daemon.service  # Persistent RAPT uinput translator service
-    └── jamboard-backlight.service   # Sets internal video source & 80% brightness at boot
+├── systemd/
+│   ├── jamboard-touch-init          # Tegra210 GPIO 174/184/185 SPIFI boot sequence (libgpiod v1 + v2)
+│   ├── jamboard-touch-init.service  # Early-boot touchscreen power-on service
+│   ├── jamboard-pen-daemon.service  # Persistent RAPT uinput translator service
+│   └── jamboard-backlight.service   # Sets internal video source & 80% brightness at boot
+└── udev/
+    └── 99-jamboard-scaler-uart.rules  # Tags serial@70006040 so dev-ttyTHS1.device exists
 ```
 
 ---
@@ -68,6 +70,10 @@ sudo install -m 0755 jamboard-pen-daemon /usr/local/bin/jamboard-pen-daemon
 sudo install -m 0755 artifacts/jamboard/jamboard-scaler.sh /usr/local/bin/jamboard-scaler
 sudo install -m 0755 artifacts/jamboard/systemd/jamboard-touch-init /usr/local/bin/jamboard-touch-init
 sudo cp artifacts/jamboard/systemd/*.service /etc/systemd/system/
+sudo cp artifacts/jamboard/udev/99-jamboard-scaler-uart.rules /etc/udev/rules.d/
+sudo udevadm control --reload
+sudo udevadm trigger --subsystem-match=tty
+touch /.autorelabel    # only when injecting into an offline image
 
 sudo systemctl daemon-reload
 sudo systemctl enable --now \
@@ -75,6 +81,8 @@ sudo systemctl enable --now \
   jamboard-pen-daemon.service \
   jamboard-backlight.service
 ```
+
+`jamboard-touch-init` works with both **libgpiod v2** (Fedora 45, `gpioset --mode=wait gpiochip0`) and **v1** (`gpioset -m wait -c gpiochip0`); it detects the version at run time. The udev rule is required: without the `systemd` tag there is no `dev-ttyTHS1.device` unit, so `jamboard-backlight.service` fails its `Requires=`.
 
 ### Display Scaler CLI Examples
 ```bash

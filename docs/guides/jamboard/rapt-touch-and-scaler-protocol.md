@@ -32,13 +32,14 @@ This guide provides the complete wire-level protocol specification and Linux/And
   - `artifacts/jamboard/jamboard-pen-daemon.c`
   - `artifacts/jamboard/jamboard-scaler.sh`
   - `artifacts/jamboard/systemd/*`
+  - `artifacts/jamboard/udev/99-jamboard-scaler-uart.rules`
 
 ---
 
 ## Part 1: RAPT Optical Touchscreen & Stylus/Eraser Subsystem
 
 ### 1.1 GPIO Power-Up & SPIFI Boot Sequence
-The internal RAPT Touch controller (`VID:PID 1cbe:0003` on Jamboard; `2986:0137` on generic RAPT firmware) is wired to internal Tegra XUSB port `usb2-3` (`usb-70090000.xusb-4`). It remains powered down at cold boot until three Tegra210 GPIOs on `gpiochip0` (`tegra-gpio`) are sequenced:
+The internal RAPT Touch controller (this Jamboard reports `VID:PID 2986:0137`; Google's stock descriptor uses `1cbe:0003`, so handle both) is wired to internal Tegra XUSB port `usb2-3` (`usb-70090000.xusb-4`). It remains powered down at cold boot until three Tegra210 GPIOs on `gpiochip0` (`tegra-gpio`) are sequenced:
 
 | Signal | Tegra GPIO Name | `gpiochip0` Offset | Active State | Purpose |
 | :--- | :--- | :--- | :--- | :--- |
@@ -151,9 +152,14 @@ sudo install -m 0755 jamboard-pen-daemon /usr/local/bin/jamboard-pen-daemon
 sudo install -m 0755 artifacts/jamboard/systemd/jamboard-touch-init /usr/local/bin/jamboard-touch-init
 sudo install -m 0755 artifacts/jamboard/jamboard-scaler.sh /usr/local/bin/jamboard-scaler
 sudo cp artifacts/jamboard/systemd/*.service /etc/systemd/system/
+sudo cp artifacts/jamboard/udev/99-jamboard-scaler-uart.rules /etc/udev/rules.d/
+sudo udevadm control --reload
+sudo udevadm trigger --subsystem-match=tty
 sudo systemctl daemon-reload
 sudo systemctl enable --now jamboard-touch-init.service jamboard-pen-daemon.service jamboard-backlight.service
 ```
+
+`jamboard-touch-init` detects libgpiod v2 (Fedora 45: `gpioset --mode=wait gpiochip0`) or v1 (`gpioset -m wait -c gpiochip0`) at run time. The udev rule is required: `systemd` creates `dev-ttyTHS1.device` only for udev devices that carry the `systemd` tag, and TTYs are not tagged by default.
 
 ---
 

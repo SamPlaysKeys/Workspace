@@ -5,17 +5,35 @@
 # Sequences Tegra210 gpiochip0 lines 174 (V6 pwren, active-low), 184 (X0
 # bootmode: 0=SPIFI), and 185 (X1 reset, active-high) so the internal RAPT Touch
 # InGlass digitizer enumerates on USB (usb-70090000.xusb-4).
-# Requires: libgpiod-utils (gpioset v2 syntax on Fedora 40+)
+#
+# Requires: libgpiod-utils. Both libgpiod v2 (Fedora 45) and v1 are supported;
+# the syntax is detected at run time because v2 removed the v1 `-c gpiochip0`
+# form.
+#
+# Two details matter:
+#   1. `gpioset` must hold the lines after setting them. Without a wait mode it
+#      exits at once and every line returns to its default state.
+#   2. The pause must signal the real `gpioset` process. Do not put the call in
+#      a subshell or a pipeline: `$!` would then name the wrong process and the
+#      reset pulse never ends.
 # ==============================================================================
 
 set -euo pipefail
 
+if gpioset --version 2>/dev/null | grep -q 'v2\.'; then
+	# libgpiod v2: --mode=wait holds the lines until a signal arrives.
+	GS=(gpioset --mode=wait gpiochip0)
+else
+	# libgpiod v1: -m wait holds the lines until a signal arrives.
+	GS=(gpioset -m wait -c gpiochip0)
+fi
+
 # Hold reset (185=1), select SPIFI flash boot (184=0), enable power rail (174=0)
-gpioset -c gpiochip0 185=1 184=0 174=0 &
+"${GS[@]}" 185=1 184=0 174=0 &
 GP_PID=$!
 sleep 0.25
-kill "$GP_PID" 2>/dev/null || true
+kill -TERM "$GP_PID" 2>/dev/null || true
 wait "$GP_PID" 2>/dev/null || true
 
 # Release reset (185=0) and hold power rail enabled for session lifetime
-exec gpioset -c gpiochip0 185=0 184=0 174=0
+exec "${GS[@]}" 185=0 184=0 174=0
