@@ -1,0 +1,9 @@
+# Google Jamboard scaler UART (Tegra210 UARTB, serial@70006040).
+#
+# systemd only creates a `.device` unit for a udev device that carries the
+# `systemd` tag, and TTYs are not tagged by default. Without this rule
+# `dev-ttyTHS1.device` never appears, so `jamboard-backlight.service` cannot
+# start in time on Fedora.
+#
+# Install as /etc/udev/rules.d/99-jamboard-scaler-uart.rules
+SUBSYSTEM=="tty", KERNELS=="70006040.serial", TAG+="systemd", SYMLINK+="ttyTHS1"
